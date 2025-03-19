@@ -39,8 +39,8 @@ function GoodsDetail() {
           상품 가격 : {goods.goods_price} <br></br>
           상품 설명 : {goods.goods_description} <br></br>
           상품 등록일 : {goods.goods_created_at} <br></br>
-          상품 조회수 : {goods.goods_views} <br></br>
-          상품 주문수 : {goods.goods_orders} <br></br>
+        
+          상품 재고 : {goods.goods_stock}
         </div>
       )}
     </>

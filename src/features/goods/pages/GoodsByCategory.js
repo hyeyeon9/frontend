@@ -66,8 +66,7 @@ function GoodsByCategory() {
                     상품 가격 : {item.goods_price} <br></br>
                     상품 설명 : {item.goods_description} <br></br>
                     상품 등록일 : {item.goods_created_at} <br></br>
-                    상품 조회수 : {item.goods_views} <br></br>
-                    상품 주문수 : {item.goods_orders} <br></br>
+                    상품 재고 : {item.goods_stock}
                   </div>
                 </Link>
               </div>

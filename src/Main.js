@@ -4,19 +4,17 @@ import RootLayout from "./pages/RootLayout";
 import Association from "./features/cart_analysis/pages/Association";
 
 import Statistics from "./features/statistics/Statistics";
+
 import InventoriesList from "./features/inventory/pages/InventoriesList";
-<<<<<<< HEAD
 import SalesToday from "./features/statistics/pages/SalesToday";
 import DashBoard from "./pages/DashBoard";
 import AddGoods from "./features/goods/pages/AddGoods";
 
-=======
 import GoodsList from "./features/goods/pages/GoodsList";
 import GoodsByCategory from "./features/goods/pages/GoodsByCategory";
 import GoodsBySubCategory from "./features/goods/pages/GoodsBySubCategory";
 import GoodsDetail from "./features/goods/pages/GoodDetail";
 import GoodsManagement from "./features/goods/pages/GoodsManagement";
->>>>>>> 74b3699 (상품관리 기능코드를 goods 폴더로 이동/재고관리 렌더링 코드 수정(InventoriesList.js))
 
 const router = createBrowserRouter([
   {

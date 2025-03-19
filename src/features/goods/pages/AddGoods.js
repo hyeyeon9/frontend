@@ -1,6 +1,7 @@
 
 import {useRef,  useState} from 'react'
-import { fetchFileUpload } from './api/httpService';
+import { fetchFileUpload } from '../api/HttpService';
+
 
 function AddGoods() {
 
