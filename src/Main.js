@@ -24,16 +24,19 @@ const router = createBrowserRouter(
           path: "app/member/login", // 상대 경로로 변경
           element: <Login />, // 로그인 페이지 컴포넌트를 추가
         },
-      ],
-    },
-  ],
-  {
-    future: {
-      v7_relativeSplatPath: true, // v7 방식으로 경로 해석
-    },
-  }
-);
+      {
+        // 메인 화면
+        path: "/",
+        element: <Home />,
+      },
+      {
+        // 매출 조회
+        path: "/statistics",
+        element: <Statistics />,
+      },
+    ],
+  },
+]);
 
 export default function Main() {
   return <RouterProvider router={router} />;
-}
