@@ -1,9 +1,9 @@
 
 import {useRef,  useState} from 'react'
-import { fetchFileUpload } from './api/httpService';
+import { fetchFileUpload } from '../api/HttpService';
+
 
 function AddGoods() {
-
   const goods_id = useRef(null);
   const category_id = useRef(null);
   const goods_name = useRef(null);
@@ -12,18 +12,18 @@ function AddGoods() {
   const goods_stock = useRef(null);
   const goods_image = useRef(null);
 
-   //에러처리
-    const [error, setError] = useState();
-    const [selectedFile, setSelectedFile] = useState(null);
+  //에러처리
+  const [error, setError] = useState();
+  const [selectedFile, setSelectedFile] = useState(null);
 
-    const handleFileChange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        setSelectedFile(file); // ✅ 파일이 선택되면 상태 업데이트
-      }
-    };
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file); // ✅ 파일이 선택되면 상태 업데이트
+    }
+  };
 
-    async function handleSubmit(e){
+  async function handleSubmit(e) {
     e.preventDefault();
     const goods_id2 = goods_id.current.value;
     const category_id2 = category_id.current.value;
@@ -42,18 +42,14 @@ function AddGoods() {
     formData.append("goods_stock", goods_stock2);
     formData.append("goods_image", goods_image2);
 
-    console.log("formData: ", formData )
-     try {
-            let response = await fetchFileUpload(formData);
-            console.log("response: ", response);
-    
-      
-          } catch (err) {
-            console.log("App.fetchUserUpdate", err);
-            setError({ message: "fetchUserUpdate 에러발생" });
-          }
-
-
+    console.log("formData: ", formData);
+    try {
+      let response = await fetchFileUpload(formData);
+      console.log("response: ", response);
+    } catch (err) {
+      console.log("App.fetchUserUpdate", err);
+      setError({ message: "fetchUserUpdate 에러발생" });
+    }
   }
 
   return (
@@ -116,7 +112,9 @@ function AddGoods() {
             />
           </div>
           <div>
-            <label className="block font-semibold text-gray-700">상품 설명</label>
+            <label className="block font-semibold text-gray-700">
+              상품 설명
+            </label>
             <textarea
               name="goods_description"
               ref={goods_description}
@@ -162,7 +160,9 @@ function AddGoods() {
 
         {selectedFile && (
           <div className="mt-4 text-center">
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">이미지 미리보기</h2>
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">
+              이미지 미리보기
+            </h2>
             <img
               src={URL.createObjectURL(selectedFile)}
               alt="상품 이미지"

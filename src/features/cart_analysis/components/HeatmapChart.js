@@ -5,7 +5,7 @@ function HeatmapChart({ data }) {
     return <p>데이터가 존재하지 않습니다.</p>;
   }
 
-  console.log("🔥 원본 데이터:", data);
+
 
   // 1️⃣ 세로축(A), 가로축(B) 데이터 추출
   const itemA = [...new Set(data.map((d) => d.itemset_a))]; // 세로축
@@ -22,10 +22,9 @@ function HeatmapChart({ data }) {
     }),
   }));
 
-  console.log("✅ 변환된 데이터:", transformedData);
 
   return (
-    <div style={{ width: "900px", height: "550px", margin: "0 auto" }}>
+    <div style={{ width: "800px", height: "450px", margin: "0 auto" }}>
       <ResponsiveHeatMap
         data={transformedData}
         margin={{ top: 60, right: 90, bottom: 60, left: 90 }}
