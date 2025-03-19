@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchGoodsDetail } from "../api/HttpService";
+
 import MenuNavigation from './../components/MenuNavigation';
+import { fetchGoodsDetail } from "../api/HttpService";
 
 function GoodsDetail() {
   const { id } = useParams();

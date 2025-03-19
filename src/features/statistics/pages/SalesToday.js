@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchGetSales, fetchTodaySales } from "../api/httpStatisticsService";
+import { fetchGetSales } from "../api/httpStatisticsService";
 import DiffChart from "../components/DiffChart";
 
 const today = new Date().toISOString().split("T")[0];
