@@ -1,11 +1,6 @@
 import { Outlet } from "react-router-dom";
-<<<<<<< HEAD
 import Sidebar from "../components/Sidebar";
 import Headers from "../components/Header";
-=======
-import Headers from "../components/Headers";
-import Sidebar from "../components/Sidebar";
->>>>>>> parent of b224ced (Merge pull request #34 from KDT7team1/dev)
 
 export default function RootLayout() {
   return (
