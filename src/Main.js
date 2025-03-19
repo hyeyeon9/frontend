@@ -18,6 +18,9 @@ import Login from "./features/member/components/Login";
 
 import Statistics from "./features/statistics/pages/Statistics";
 import SalesToday from "./features/statistics/pages/SalesToday";
+import DashBoard from "./pages/DashBoard";
+import AddGoods from './features/goods/pages/AddGoods';
+import GoodsManagement from "./features/goods/pages/GoodsManagement";
 
 const router = createBrowserRouter([
   {
