@@ -46,11 +46,7 @@ export default function Weather() {
             className="w-6 h-6"
           />
           <span>
-<<<<<<< HEAD
-            {weather.name} {weather.main.temp}℃
-=======
             {weather.name} {parseFloat(weather.main.temp.toFixed(1))}℃
->>>>>>> parent of b224ced (Merge pull request #34 from KDT7team1/dev)
           </span>
         </div>
       ) : (
