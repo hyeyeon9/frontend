@@ -89,12 +89,12 @@ function Association() {
   return (
     <div className="w-full flex-col mb-3">
 
-      <div className="flex justify-center">
+      <div className="flex justify-center gap-5">
          <HeatmapChart data={filteredRules} />
 
 
-        <div className=" flex-col mt-4 ml-0">
-           <div className="border flex-row w-72 mb-10 p-3">
+        <div className=" flex-col mt-4">
+           <div className="border flex-row w-96 mb-10 p-3">
               <p className="pb-2">🎯 점주님, 고객들이 자주 함께 구매하는 조합입니다!</p>
               {topRules.map((item) => {
                 return (

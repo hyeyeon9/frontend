@@ -1,6 +1,4 @@
 // 현재 시각을 출력하는 함수
-
-import { useEffect, useState } from "react";
 import { useTime } from "../contexts/TimeContext";
 
 export default function Time() {
