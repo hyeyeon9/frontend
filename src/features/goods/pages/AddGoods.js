@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { fetchFileUpload } from "../api/HttpService";
+import { fetchFileUpload } from "../api/HttpGoodsService";
 
 const categories = [
   { id: 1, first_name: "식품", second_name: "즉석식품" },

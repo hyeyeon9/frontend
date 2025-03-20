@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import {
   fetchGoodsByCategory,
   fetchGoodsBySubCategory,
-} from "../../goods/api/HttpService";
+} from "../../goods/api/HttpGoodsService";
 
 function InventoriesList() {
   const [inventoryList, setInventoryList] = useState([]);

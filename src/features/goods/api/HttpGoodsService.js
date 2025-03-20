@@ -1,11 +1,10 @@
 import axios from "axios";
 
-
 // 상품 저장 (파일 포함)
 // export const saveGoods = async (formData) => {
 //   console.log("formData1:", formData)
 //   try {
-//       const response = await axios.post("http://localhost:8090/app/goods/save", 
+//       const response = await axios.post("http://localhost:8090/app/goods/save",
 //           formData, {
 //             headers: { "Content-Type": "multipart/form-data" }
 //       });
@@ -21,23 +20,26 @@ export async function fetchFileUpload(formData) {
   console.log("📌 FormData 확인:", formData);
 
   try {
-      const response = await axios.post("http://localhost:8090/app/goods/save", formData, {
-          headers: {
-              "Content-Type": "multipart/form-data"
-          }
-      });
-
-      console.log("✅ 서버 응답:", response.data);
-      return response.data;
-  } catch (error) {
-      console.error("🚨 상품 등록 중 에러 발생:", error);
-      if (error.response && error.response.data) {
-          console.log("📌 서버 응답:", error.response.data);
+    const response = await axios.post(
+      "http://localhost:8090/app/goods/save",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }
-      throw error;
+    );
+
+    console.log("✅ 서버 응답:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("🚨 상품 등록 중 에러 발생:", error);
+    if (error.response && error.response.data) {
+      console.log("📌 서버 응답:", error.response.data);
+    }
+    throw error;
   }
 }
-
 
 // 1. 전체 상품 목록 가져오기
 export async function fetchGoodsList() {
@@ -96,4 +98,3 @@ export async function fetchGoodsBySubCategory(firstname, secondName) {
   console.log(response.data);
   return response.data;
 }
-
