@@ -15,7 +15,6 @@ function getTimePeriod(time) {
   if (hour >= 15 && hour < 18) return "한가한 오후";
   if (hour >= 18 && hour < 23) return "저녁";
   if (hour >= 23 || hour < 5) return "저녁";
-
 }
 
 function Association() {
@@ -67,7 +66,7 @@ function Association() {
       }
     }
     getAssociationTimeRules();
-  }, []);
+  }, [timePeriod]);
 
   // 전체 연관관계 필터링
   const filteredRules = rules.filter(
@@ -84,27 +83,28 @@ function Association() {
     .sort((a, b) => b.confidence - a.confidence)
     .slice(0, 1);
 
- //console.log("topTimeRules", timeRules);
+  console.log("topTimeRules", topTimeRules);
+
 
   return (
     <div className="w-full flex-col mb-3">
-
       <div className="flex justify-center gap-5">
-         <HeatmapChart data={filteredRules} />
-
+        <HeatmapChart data={filteredRules} />
 
         <div className=" flex-col mt-4">
-           <div className="border flex-row w-96 mb-10 p-3">
-              <p className="pb-2">🎯 점주님, 고객들이 자주 함께 구매하는 조합입니다!</p>
-              {topRules.map((item) => {
-                return (
-                  <p> 
-                    "{item.itemset_a}" + "{item.itemset_b}" : {item.confidence}
-                  </p>
-                );
-              })}
-            </div>
-          
+          <div className="border flex-row w-96 mb-10 p-3">
+            <p className="pb-2">
+              🎯 점주님, 고객들이 자주 함께 구매하는 조합입니다!
+            </p>
+            {topRules.map((item) => {
+              return (
+                <p>
+                  "{item.itemset_a}" + "{item.itemset_b}" : {item.confidence}
+                </p>
+              );
+            })}
+          </div>
+
           <div className="border flex-row w-72 p-3">
             {timePeriod === "아침" ? (
               <div>
@@ -112,7 +112,7 @@ function Association() {
                 <p>출근길 고객을 위한 아침 추천 상품을 준비하세요!</p>
               </div>
             ) : timePeriod === "점심" ? (
-              <div >
+              <div>
                 <p className="pb-2">🍙 점심 추천 (11:00~14:00)</p>
                 <p>점심 피크 시간! 인기 상품 미리 준비하세요.</p>
               </div>
@@ -121,8 +121,7 @@ function Association() {
                 <p className="pb-2">😪 오후 추천 (15:00~17:00)</p>
                 <p>가벼운 간식과 에너지를 채울 음료를 준비하세요!</p>
               </div>
-            )
-            : timePeriod === "저녁" ? (
+            ) : timePeriod === "저녁" ? (
               <div>
                 <p className="pb-2">🌆 저녁 추천 (18:00~22:00)</p>
                 <p>퇴근 후 고객을 위한 상품을 미리 확보하세요!</p>
@@ -135,7 +134,7 @@ function Association() {
             ) : (
               ""
             )}
-
+            
             {topTimeRules.length > 0 ? (
               topTimeRules.map((item, index) => {
                 const { itemset_a, itemset_b, confidence } = item;
@@ -145,11 +144,18 @@ function Association() {
 
                 if (timePeriod === "아침") {
                   recommendationMesg = `출근길에 많이 찾는 ${itemset_a}, ${itemset_b}!  재고 확인 후 빠르게 채워주세요. 🍙🥪`;
-                } else if (timePeriod === "점심") {
+                } 
+                else if (timePeriod === "점심") {
                   recommendationMesg = `바쁜 점심시간! ${itemset_a}를 구매하는 손님들이 
                   ${confidencePercent}% 확률로 ${itemset_b}도 함께 구매합니다.  추천 진열을 고려해보세요! 🍽
                   `;
-                } else if (timePeriod === "저녁") {
+                } 
+                else if (timePeriod === "한가한 오후") {
+                  recommendationMesg = `
+                  ${itemset_a}와 ${itemset_b}가 인기 메뉴예요! 
+                  추가 진열을 확인하고 고객들에게 추천해 보세요! 🌆`;
+                } 
+                else if (timePeriod === "저녁") {
                   recommendationMesg = `
                   퇴근 후 간편한 저녁식사! ${itemset_a}와 ${itemset_b}도 인기가 많아요.
                   추가 진열을 확인하세요! 🌆`;
@@ -164,10 +170,8 @@ function Association() {
             )}
           </div>
         </div>
-
       </div>
-    
-       
+
       <div className="flex-row">
         <input
           type="text"
@@ -178,12 +182,10 @@ function Association() {
         />
 
         <div className="flex justify-center">
-            <AssociationTable data={filteredRules} filteringText={searchText} />
+          <AssociationTable data={filteredRules} filteringText={searchText} />
         </div>
       </div>
-    
     </div>
-  
   );
 }
 
