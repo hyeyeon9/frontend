@@ -111,7 +111,6 @@ function AddGoods() {
     { sub_category_id: 68, category_id: 17, sub_category_name: "스티커" }
 ];
 
-  
 
   // 이미지 선택 핸들러
   const handleFileChange = (e) => {
