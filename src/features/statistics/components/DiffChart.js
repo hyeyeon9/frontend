@@ -1,50 +1,36 @@
 import { ResponsiveLine } from "@nivo/line";
 
-export default function DiffChart({ todayData, yesterdayData }) {
+export default function DiffChart({ data }) {
+  console.log("proped data: ", { data });
+
   // 데이터 변환
-  const chartData = (todayData, yesterdayData) => {
+  const transformData = ({ data }) => {
     // data가 배열인지 체크
-    if (!todayData || !Array.isArray(todayData)) {
-      console.error("Invalid data format in DiffChart:", todayData);
-      return { id: "today", color: "hsl(308, 70%, 50%)", todayData: [] };
+    if (!data || !Array.isArray(data)) {
+      console.error("Invalid data format in DiffChart:", data);
+      return { id: "salesData", color: "hsl(308, 70%, 50%)", data: [] };
     }
 
-    if (!yesterdayData || !Array.isArray(yesterdayData)) {
-      console.error("Invalid data format in DiffChart:", yesterdayData);
-      return {
-        id: "yesterday",
-        color: "hsl(308, 70%, 50%)",
-        yesterdayData: [],
-      };
-    }
-
-    return [
-      {
-        id: "오늘",
-        color: "hsl(308, 70%, 50%)",
-        data: todayData.map((item) => ({
-          x: item.salesHour.toString(),
-          y: item.dailyPrice ?? 0,
-        })),
-      },
-      {
-        id: "어제",
-        color: "hsl(308, 70%, 50%)",
-        data: yesterdayData.map((item) => ({
-          x: item.salesHour.toString(),
-          y: item.dailyPrice ?? 0,
-        })),
-      },
-    ];
+    return {
+      id: "salesData",
+      color: "hsl(308, 70%, 50%)",
+      data: data.map((item) => ({
+        x: item.salesHour.toString(),
+        y: item.dailyPrice ?? 0,
+      })),
+    };
   };
+
+  const transformedData = transformData({ data });
+  console.log("TransformedDATA:", transformedData);
 
   return (
     <div>
       <div style={{ height: 400 }}>
         chart
         <ResponsiveLine
-          data={chartData(todayData, yesterdayData)} // 데이터 배열을 전달
-          margin={{ top: 50, right: 110, bottom: 50, left: 70 }}
+          data={[transformedData]} // 데이터 배열을 전달
+          margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
           xScale={{ type: "point" }}
           yScale={{
             type: "linear",
@@ -53,14 +39,14 @@ export default function DiffChart({ todayData, yesterdayData }) {
             stacked: false,
             reverse: false,
           }}
-          yFormat=">-0,.0f"
+          yFormat=" >.0f"
           axisTop={null}
           axisRight={null}
           axisBottom={{
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: "시간(24시간)",
+            legend: "Sales Hour",
             legendOffset: 36,
             legendPosition: "middle",
             truncateTickAt: 0,
@@ -69,20 +55,17 @@ export default function DiffChart({ todayData, yesterdayData }) {
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: "판매량",
-            legendOffset: -60,
+            legend: "Daily Price",
+            legendOffset: -40,
             legendPosition: "middle",
             truncateTickAt: 0,
           }}
-          colors={{ scheme: "category10" }}
-          lineWidth={3}
-          pointSize={7}
-          pointColor={{ from: "color", modifiers: [] }}
+          pointSize={10}
+          pointColor={{ theme: "background" }}
           pointBorderWidth={2}
           pointBorderColor={{ from: "serieColor" }}
           pointLabel="data.yFormatted"
           pointLabelYOffset={-12}
-          areaOpacity={0}
           enableTouchCrosshair={true}
           useMesh={true}
           legends={[
