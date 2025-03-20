@@ -1,6 +1,5 @@
 import { useMemo } from "react";
-import {  useSortBy, useTable } from "react-table";
-
+import { useSortBy, useTable } from "react-table";
 
 function AssociationTable({ data, filteringText }) {
   const columns = useMemo(

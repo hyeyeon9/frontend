@@ -1,25 +1,5 @@
-import { useState, useMemo } from "react";
+import { useRef, useState } from "react";
 import { fetchFileUpload } from "../api/HttpService";
-
-const categories = [
-  { id: 1, first_name: "식품", second_name: "즉석식품" },
-  { id: 2, first_name: "식품", second_name: "라면 & 면류" },
-  { id: 3, first_name: "식품", second_name: "베이커리 & 샌드위치" },
-  { id: 4, first_name: "식품", second_name: "냉장/냉동식품" },
-  { id: 5, first_name: "식품", second_name: "과자 & 스낵" },
-  { id: 6, first_name: "식품", second_name: "아이스크림 & 디저트" },
-  { id: 7, first_name: "음료", second_name: "커피 & 차" },
-  { id: 8, first_name: "음료", second_name: "탄산음료" },
-  { id: 9, first_name: "음료", second_name: "주스 & 건강음료" },
-  { id: 10, first_name: "음료", second_name: "유제품 & 두유" },
-  { id: 11, first_name: "음료", second_name: "주류" },
-  { id: 12, first_name: "생활용품", second_name: "위생용품" },
-  { id: 13, first_name: "생활용품", second_name: "욕실용품" },
-  { id: 14, first_name: "생활용품", second_name: "뷰티 & 화장품" },
-  { id: 15, first_name: "생활용품", second_name: "의약 & 건강" },
-  { id: 16, first_name: "디지털 & 문구", second_name: "전자기기 & 액세서리" },
-  { id: 17, first_name: "디지털 & 문구", second_name: "문구류" },
-];
 
 function AddGoods() {
   const [goodsId, setGoodsId] = useState("");

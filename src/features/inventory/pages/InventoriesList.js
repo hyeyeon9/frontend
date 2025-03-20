@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  addStock,
   fetchInventoryById,
   fetchInventoryList,
+  updateStockByBatchId,
   updateStockById,
 } from "../api/HttpService";
 import { useFilters, useSortBy, useTable } from "react-table";
@@ -27,6 +29,11 @@ function InventoriesList() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedGoods, setSelectedGoods] = useState(""); // 선택된 상품 ID
+  const [addStockAmount, setAddStockAmount] = useState(""); // 입고 수량
+  const [expirationDate, setExpirationDate] = useState(""); // 유통기한
+
   // 전체 재고현황 불러오는 메서드
   useEffect(() => {
     async function getInventoryList() {
@@ -46,6 +53,7 @@ function InventoriesList() {
   // 테이블 헤더
   const columns = useMemo(
     () => [
+      { Header: "입고코드", accessor: "batchId" },
       { Header: "재고 수정일", accessor: "stockUpdateAt" },
       { Header: "상품코드", accessor: "goodsId" },
       { Header: "상품명", accessor: "goodsName" },
@@ -77,25 +85,27 @@ function InventoriesList() {
   }, [filteredInventory]);
 
   // 수정 버튼 클릭시  => 수정모드로 이동
-  function handleEditStock(goodsId, currentStock) {
-    setEditingRow(goodsId); // 수정할 상품 번호 지정
-    setNewStock((prev) => ({ ...prev, [goodsId]: currentStock }));
+  function handleEditStock(batchId, currentStock) {
+    console.log("선택한 수정 버튼의 배치 번호", batchId);
+    setEditingRow(batchId); // 수정할 상품 번호 지정
+    setNewStock((prev) => ({ ...prev, [batchId]: currentStock }));
   }
 
   // 완료 버튼 클릭시  => 업데이트
-  async function handleUpdateStock(goodsId) {
-    const updatedStock = newStock[goodsId];
+  async function handleUpdateStock(batchId) {
+    const updatedStock = newStock[batchId];
+    console.log("updatedStock : ", updatedStock);
 
     try {
-      const response = await updateStockById(goodsId, updatedStock);
+      const response = await updateStockByBatchId(batchId, updatedStock);
       console.log("재고 업데이트 완료", response);
 
-      const data = await fetchInventoryById(goodsId);
+      const data = await fetchInventoryById(batchId);
       console.log("업데이트 된 재고", data);
 
       setInventoryList((list) =>
         list.map((item) =>
-          item.goodsId === goodsId
+          item.batchId === batchId
             ? {
                 ...item,
                 stockQuantity: data.stockQuantity,
@@ -161,6 +171,41 @@ function InventoriesList() {
       setFilteredInventory(inventoryList);
     }
   }, [category, subCategory, inventoryList]);
+
+  // 입고하기 버튼을 누른경우
+  async function handleConfirmAddStock() {
+    console.log("입고하기 버튼 클릭");
+    // 모달 창 띄워서 입고할 수 있도록 하기
+    // 입고하고 싶은 상품 선택
+    // 입고 수량 입력
+    // 유통기한 입력
+
+    // 이루 addStock함수 호출하기
+
+    //  addStock(goodsId, addStock, expirationDate)
+
+    if (!selectedGoods || !addStockAmount || !expirationDate) {
+      alert("모든 항목을 입력해주세요!");
+      return;
+    }
+
+    try {
+      const response = await addStock(
+        selectedGoods,
+        addStockAmount,
+        expirationDate
+      );
+      console.log("입고 완료", response);
+
+      setIsModalOpen(false);
+
+      setSelectedGoods("");
+      setAddStockAmount("");
+      setExpirationDate("");
+    } catch (error) {
+      console.error("입고 중 오류 발생", error.message);
+    }
+  }
 
   return (
     <>
@@ -228,6 +273,13 @@ function InventoriesList() {
 
               <div>
                 <button
+                  className="bg-green-500 px-3 py-2 text-white rounded hover:bg-green-700 mr-8"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  입고하기
+                </button>
+
+                <button
                   className="bg-red-500 px-3 py-2 text-white rounded hover:bg-red-700 mr-3"
                   onClick={() => setIsVisible(!isVisible)}
                 >
@@ -240,7 +292,7 @@ function InventoriesList() {
                   {lowStockItems.length > 0 ? (
                     lowStockItems.map((item) => (
                       <div
-                        key={item.goodsId}
+                        key={item.batchId}
                         className="text-sm text-gray-700 mt-2"
                       >
                         {item.goodsName} :{" "}
@@ -290,16 +342,16 @@ function InventoriesList() {
                         if (cell.column.id === "stockQuantity") {
                           return (
                             <td>
-                              {editingRow === row.original.goodsId ? (
+                              {editingRow === row.original.batchId ? (
                                 <input
                                   type="number"
-                                  value={newStock[row.original.goodsId]}
+                                  value={newStock[row.original.batchId]}
                                   min="0"
                                   className="border p-1 w-20 text-center"
                                   onChange={(e) =>
                                     setNewStock((prev) => ({
                                       ...prev,
-                                      [row.original.goodsId]: e.target.value,
+                                      [row.original.batchId]: e.target.value,
                                     }))
                                   }
                                 ></input>
@@ -316,7 +368,7 @@ function InventoriesList() {
                             className="px-2 py-3 border"
                           >
                             <Link
-                              to={`/goods/findById/${row.original.goodsId}`}
+                              to={`/goods/findById/${row.original.batchId}`}
                             >
                               {cell.column.id === "stockUpdateAt" ? (
                                 cell.value.replace("T", " ")
@@ -339,11 +391,11 @@ function InventoriesList() {
                       })}
 
                       <td className="px-4 py-2 border">
-                        {editingRow === row.original.goodsId ? (
+                        {editingRow === row.original.batchId ? (
                           <button
                             className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-700"
                             onClick={() =>
-                              handleUpdateStock(row.original.goodsId)
+                              handleUpdateStock(row.original.batchId)
                             }
                           >
                             완료
@@ -353,7 +405,7 @@ function InventoriesList() {
                             className="px-2 py-1 text-white bg-blue-500 rounded hover:bg-blue-700"
                             onClick={() =>
                               handleEditStock(
-                                row.original.goodsId,
+                                row.original.batchId,
                                 row.original.stockQuantity
                               )
                             }
@@ -379,6 +431,66 @@ function InventoriesList() {
               </tfoot>
             </table>
           </div>
+
+          {isModalOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="text-xl font-bold mb-4 text-center bg-white p-10 rounded">
+                <h2 className="text-xl font-bold mb-4 text-center">
+                  상품 입고
+                </h2>
+
+                <select
+                  value={selectedGoods}
+                  className="w-full p-2 border rounded mb-4"
+                  onChange={(e) => setSelectedGoods(e.target.value)}
+                >
+                  <option value=""> 상품을 선택하세요 </option>
+                  {[
+                    ...new Map(
+                      inventoryList.map((item) => [item.goodsName, item])
+                    )
+                      .values()
+                      .map((item) => (
+                        <option key={item.goodsId} value={item.goodsId}>
+                          {item.goodsName}
+                        </option>
+                      )),
+                  ]}
+                </select>
+
+                <label className="block mb-2">입고 수량</label>
+                <input
+                  type="number"
+                  value={addStockAmount}
+                  className="w-full p-2 border rounded mb-4"
+                  onChange={(e) => setAddStockAmount(e.target.value)}
+                ></input>
+
+                <label className="block mb-2">유통기한</label>
+                <input
+                  type="datetime-local"
+                  value={expirationDate}
+                  className="w-full p-2 border rounded mb-4"
+                  onChange={(e) => setExpirationDate(e.target.value)}
+                ></input>
+
+                <div className="flex justify-between mt-4">
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+                  >
+                    취소
+                  </button>
+                  <button
+                    onClick={handleConfirmAddStock}
+                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
+                  >
+                    입고하기
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>

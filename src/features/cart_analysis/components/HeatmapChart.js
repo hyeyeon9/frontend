@@ -5,8 +5,6 @@ function HeatmapChart({ data }) {
     return <p>데이터가 존재하지 않습니다.</p>;
   }
 
-
-
   // 1️⃣ 세로축(A), 가로축(B) 데이터 추출
   const itemA = [...new Set(data.map((d) => d.itemset_a))]; // 세로축
   const itemB = [...new Set(data.map((d) => d.itemset_b))]; // 가로축
@@ -21,7 +19,6 @@ function HeatmapChart({ data }) {
       return { x: b, y: match ? match.confidence : 0 }; // 없으면 0
     }),
   }));
-
 
   return (
     <div style={{ width: "800px", height: "450px", margin: "0 auto" }}>
@@ -50,7 +47,6 @@ function HeatmapChart({ data }) {
           maxValue: 1,
         }}
         emptyColor="#555555"
-       
         legends={[
           {
             anchor: "bottom",
