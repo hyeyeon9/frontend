@@ -1,6 +1,26 @@
 import { useRef, useState } from "react";
 import { fetchFileUpload } from "../api/HttpService";
 
+const categories = [
+  { id: 1, first_name: "식품", second_name: "즉석식품" },
+  { id: 2, first_name: "식품", second_name: "라면 & 면류" },
+  { id: 3, first_name: "식품", second_name: "베이커리 & 샌드위치" },
+  { id: 4, first_name: "식품", second_name: "냉장/냉동식품" },
+  { id: 5, first_name: "식품", second_name: "과자 & 스낵" },
+  { id: 6, first_name: "식품", second_name: "아이스크림 & 디저트" },
+  { id: 7, first_name: "음료", second_name: "커피 & 차" },
+  { id: 8, first_name: "음료", second_name: "탄산음료" },
+  { id: 9, first_name: "음료", second_name: "주스 & 건강음료" },
+  { id: 10, first_name: "음료", second_name: "유제품 & 두유" },
+  { id: 11, first_name: "음료", second_name: "주류" },
+  { id: 12, first_name: "생활용품", second_name: "위생용품" },
+  { id: 13, first_name: "생활용품", second_name: "욕실용품" },
+  { id: 14, first_name: "생활용품", second_name: "뷰티 & 화장품" },
+  { id: 15, first_name: "생활용품", second_name: "의약 & 건강" },
+  { id: 16, first_name: "디지털 & 문구", second_name: "전자기기 & 액세서리" },
+  { id: 17, first_name: "디지털 & 문구", second_name: "문구류" },
+];
+
 function AddGoods() {
   const [goodsId, setGoodsId] = useState("");
   const [goodsName, setGoodsName] = useState("");
@@ -15,9 +35,9 @@ function AddGoods() {
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const uniqueFirstNames = [...new Set(categories.map((c) => c.first_name))];
-  const filteredSecondNames = categories.filter((c) => c.first_name === selectedFirstName);
-
-
+  const filteredSecondNames = categories.filter(
+    (c) => c.first_name === selectedFirstName
+  );
 
   const subCategories = [
     { sub_category_id: 1, category_id: 1, sub_category_name: "삼각김밥" },
@@ -87,9 +107,8 @@ function AddGoods() {
     { sub_category_id: 65, category_id: 17, sub_category_name: "노트" },
     { sub_category_id: 66, category_id: 17, sub_category_name: "포스트잇" },
     { sub_category_id: 67, category_id: 17, sub_category_name: "테이프" },
-    { sub_category_id: 68, category_id: 17, sub_category_name: "스티커" }
-];
-
+    { sub_category_id: 68, category_id: 17, sub_category_name: "스티커" },
+  ];
 
   // 이미지 선택 핸들러
   const handleFileChange = (e) => {
@@ -106,23 +125,22 @@ function AddGoods() {
     setSelectedSecondName(selectedName);
 
     const matchedCategory = categories.find(
-      (c) => c.first_name === selectedFirstName && c.second_name === selectedName
+      (c) =>
+        c.first_name === selectedFirstName && c.second_name === selectedName
     );
     setCategoryId(matchedCategory ? matchedCategory.id : "");
-   
   };
 
   const filteredSubCategories = subCategories.filter(
     (sub) => sub.category_id === Number(categoryId) // 선택된 대분류(category_id)에 해당하는 중분류 필터링
   );
-  
 
   // 상품 등록 요청
   async function handleSubmit(e) {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("category_id", categoryId);  // ✅ category_id는 반드시 필요
+    formData.append("category_id", categoryId); // ✅ category_id는 반드시 필요
     formData.append("sub_category_id", subCategoryId);
     formData.append("goods_name", goodsName);
     formData.append("goods_price", goodsPrice);
@@ -133,26 +151,31 @@ function AddGoods() {
     // 📌 데이터 확인 (콘솔 출력) 11
     console.log("📌 전송할 FormData:");
     for (let pair of formData.entries()) {
-        console.log(`${pair[0]}: ${pair[1]}`);
+      console.log(`${pair[0]}: ${pair[1]}`);
     }
 
     try {
-        let response = await fetchFileUpload(formData);
-        console.log("✅ 응답:", response);
+      let response = await fetchFileUpload(formData);
+      console.log("✅ 응답:", response);
     } catch (err) {
-        console.error("🚨 상품 등록 중 에러:", err);
-        if (err.response && err.response.data) {
-            console.log("📌 서버 응답:", err.response.data);
-        }
+      console.error("🚨 상품 등록 중 에러:", err);
+      if (err.response && err.response.data) {
+        console.log("📌 서버 응답:", err.response.data);
+      }
     }
-}
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-200 p-6">
       <div className="w-full max-w-lg bg-gray-50 p-8 rounded-xl shadow-xl">
-        <h1 className="text-2xl font-bold text-center text-indigo-800 mb-6">상품 등록</h1>
-        <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
-
+        <h1 className="text-2xl font-bold text-center text-indigo-800 mb-6">
+          상품 등록
+        </h1>
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+          encType="multipart/form-data"
+        >
           {/* 상품명 */}
           <div>
             <label className="block font-semibold text-gray-700">상품명</label>
@@ -166,12 +189,13 @@ function AddGoods() {
             />
           </div>
 
-  
           {/* 대분류 & 중분류 (가로 정렬) */}
           <div className="flex space-x-4">
             {/* 대분류 */}
             <div className="w-1/2">
-              <label className="block font-semibold text-gray-700">대분류</label>
+              <label className="block font-semibold text-gray-700">
+                대분류
+              </label>
               <select
                 className="w-full p-2 border border-gray-700 rounded-lg focus:ring focus:ring-indigo-300"
                 value={selectedFirstName}
@@ -191,7 +215,9 @@ function AddGoods() {
 
             {/* 중분류 */}
             <div className="w-1/2">
-              <label className="block font-semibold text-gray-700">중분류</label>
+              <label className="block font-semibold text-gray-700">
+                중분류
+              </label>
               <select
                 className="w-full p-2 border border-gray-700 rounded-lg focus:ring focus:ring-indigo-300"
                 value={selectedSecondName}
@@ -208,30 +234,31 @@ function AddGoods() {
             </div>
 
             {/* 소분류 */}
-<div className="w-1/2">
-  <label className="block font-semibold text-gray-700">소분류</label>
-  <select
-    className="w-full p-2 border border-gray-700 rounded-lg focus:ring focus:ring-indigo-300"
-    value={subCategoryId}
-    onChange={(e) => setSubCategoryId(e.target.value)}
-    disabled={!categoryId} // 대분류를 먼저 선택해야 소분류 활성화
-  >
-    <option value="">소분류 선택</option>
-    {filteredSubCategories.map((sub) => (
-      <option key={sub.sub_category_id} value={sub.sub_category_id}>
-        {sub.sub_category_name}
-      </option>
-    ))}
-  </select>
-
-</div>
-
+            <div className="w-1/2">
+              <label className="block font-semibold text-gray-700">
+                소분류
+              </label>
+              <select
+                className="w-full p-2 border border-gray-700 rounded-lg focus:ring focus:ring-indigo-300"
+                value={subCategoryId}
+                onChange={(e) => setSubCategoryId(e.target.value)}
+                disabled={!categoryId} // 대분류를 먼저 선택해야 소분류 활성화
+              >
+                <option value="">소분류 선택</option>
+                {filteredSubCategories.map((sub) => (
+                  <option key={sub.sub_category_id} value={sub.sub_category_id}>
+                    {sub.sub_category_name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          
           {/* 상품 가격 */}
           <div>
-            <label className="block font-semibold text-gray-700">상품 가격</label>
+            <label className="block font-semibold text-gray-700">
+              상품 가격
+            </label>
             <input
               type="number"
               value={goodsPrice} // useState로 관리
@@ -243,7 +270,9 @@ function AddGoods() {
           </div>
           {/* 상품 설명 */}
           <div>
-            <label className="block font-semibold text-gray-700">상품 설명</label>
+            <label className="block font-semibold text-gray-700">
+              상품 설명
+            </label>
             <textarea
               value={goodsDescription} // useState로 관리
               onChange={(e) => setGoodsDescription(e.target.value)} // 값 변경 핸들러
@@ -255,7 +284,9 @@ function AddGoods() {
 
           {/* 재고 수량 */}
           <div>
-            <label className="block font-semibold text-gray-700">재고 수량</label>
+            <label className="block font-semibold text-gray-700">
+              재고 수량
+            </label>
             <input
               type="number"
               value={goodsStock} // useState로 관리
@@ -268,7 +299,9 @@ function AddGoods() {
 
           {/* 상품 이미지 */}
           <div>
-            <label className="block font-semibold text-gray-700">상품 이미지</label>
+            <label className="block font-semibold text-gray-700">
+              상품 이미지
+            </label>
             <input
               type="file"
               className="w-full p-2 border border-gray-700 rounded-lg"
@@ -277,20 +310,25 @@ function AddGoods() {
               onChange={handleFileChange}
             />
           </div>
-         
+
           {/* 미리보기 이미지 */}
           {previewUrl && (
             <div className="mt-4 text-center">
-              <h2 className="text-lg font-semibold text-gray-700 mb-2">미리보기</h2>
+              <h2 className="text-lg font-semibold text-gray-700 mb-2">
+                미리보기
+              </h2>
               <img
                 src={previewUrl}
                 alt="상품 이미지 미리보기"
                 className="w-[200px] h-[200px] object-cover border border-gray-300 rounded-lg shadow-md mx-auto"
               />
             </div>
-          )}    
+          )}
 
-          <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all">
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all"
+          >
             상품 등록
           </button>
         </form>

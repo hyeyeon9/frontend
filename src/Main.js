@@ -30,10 +30,10 @@ const router = createBrowserRouter([
         path: "/",
         element: <DashBoard />,
       },
-        {
-          path: "app/member/login", // 상대 경로로 변경
-          element: <Login />, // 로그인 페이지 컴포넌트를 추가
-        },
+      {
+        path: "app/member/login", // 상대 경로로 변경
+        element: <Login />, // 로그인 페이지 컴포넌트를 추가
+      },
       {
         // 매출 조회
         path: "/statistics",
@@ -89,3 +89,4 @@ const router = createBrowserRouter([
 
 export default function Main() {
   return <RouterProvider router={router} />;
+}
