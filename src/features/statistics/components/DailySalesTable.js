@@ -46,18 +46,16 @@ export default function DailySalesTable({ date }) {
         <thead className="bg-gray-50">
           <tr>
             <th className="">판매시각</th>
-            <th className="">대분류</th>
-            <th className="">소분류</th>
             <th className="">총판매액</th>
+            <th className="">총판매량</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {salesData.map((item) => (
             <tr>
               <td>{item.salesHour}</td>
-              <td>{item.categoryId}</td>
-              <td>{item.subCategoryId}</td>
               <td>{item.dailyPrice}</td>
+              <td>{item.dailyAmount}</td>
             </tr>
           ))}
         </tbody>
