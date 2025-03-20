@@ -25,6 +25,9 @@ export const login = async (memberId, memberPasswd) => {
 };
 
 export const logout = async () => {
-  await fetch(`${API_BASE_URL}/logout`, { method: "POST", credentials: "include" });
+  await fetch(`${API_BASE_URL}/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
   localStorage.removeItem("user");
 };
