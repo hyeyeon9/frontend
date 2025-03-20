@@ -151,7 +151,7 @@ function AddGoods() {
     formData.append("goods_stock", goodsStock);
     if (goodsImage) formData.append("goods_image", goodsImage); // ✅ 이미지가 있으면 추가
 
-    // 📌 데이터 확인 (콘솔 출력)
+    // 📌 데이터 확인 (콘솔 출력) 11
     console.log("📌 전송할 FormData:");
     for (let pair of formData.entries()) {
         console.log(`${pair[0]}: ${pair[1]}`);
