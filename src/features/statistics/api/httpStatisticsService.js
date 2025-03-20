@@ -29,19 +29,19 @@ export async function fetchGetYearlySales(year) {
   return response;
 }
 
-// 일 단위의 시간대별, 카테고리별 매출 데이터
+// 일간 시간대별, 카테고리별 매출 데이터
 export async function fetchGetDailyCategory(date) {
   const response = await instance.get(`/salesDaily/${date}`);
   return response;
 }
 
-// 월 단위의 시간대별, 카테고리별 매출 데이터
+// 월간 일일, 카테고리별 매출 데이터
 export async function fetchGetMontlyCategory(month) {
   const response = await instance.get(`/salesMonthly/${month}`);
   return response;
 }
 
-// 연 단위의 시간대별, 카테고리별 매출 데이터
+// 연간 월별, 카테고리별 매출 데이터
 export async function fetchGetYearlyCategory(year) {
   const response = await instance.get(`/salesYearly/${year}`);
   return response;
