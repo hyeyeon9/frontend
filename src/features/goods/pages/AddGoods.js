@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { fetchFileUpload } from "../api/HttpService";
 
-
 const categories = [
   { id: 1, first_name: "식품", second_name: "즉석식품" },
   { id: 2, first_name: "식품", second_name: "라면 & 면류" },
@@ -167,13 +166,6 @@ function AddGoods() {
         }
     }
 }
-
-
-
-
-
-
-  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-200 p-6">

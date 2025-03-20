@@ -6,8 +6,9 @@ import DashBoard from "./pages/DashBoard";
 import Association from "./features/cart_analysis/pages/Association";
 
 import InventoriesList from "./features/inventory/pages/InventoriesList";
-
 import AddGoods from "./features/goods/pages/AddGoods";
+
+
 import GoodsList from "./features/goods/pages/GoodsList";
 import GoodsByCategory from "./features/goods/pages/GoodsByCategory";
 import GoodsBySubCategory from "./features/goods/pages/GoodsBySubCategory";

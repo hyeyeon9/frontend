@@ -30,7 +30,7 @@ function AssociationTable({ data, filteringText }) {
     useTable({ columns, data: filteredData }, useSortBy); // useSortBy: 정렬, useFilters: 필터링
 
   return (
-    <div className="w-[1000px] max-h-[calc(100vh-300px)] overflow-auto">
+    <div className="w-[800px] max-h-[calc(100vh-300px)] overflow-auto ">
       <table
         {...getTableProps()}
         border="1"
