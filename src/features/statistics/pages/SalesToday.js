@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { fetchGetHourlySales } from "../api/HttpStatisticsService";
 import DiffChart from "../components/DiffChart";
-import { fetchGetDailySales } from "../api/HttpStatisticsService";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -21,11 +21,11 @@ export default function SalesToday() {
         setLoading(true);
 
         // 오늘 날짜의 데이터
-        const todayResponse = await fetchGetDailySales(today);
+        const todayResponse = await fetchGetHourlySales(today);
         setTodayData(todayResponse.data);
 
         // 어제 날짜의 데이터
-        const yesResponse = await fetchGetDailySales(yesterdayStr);
+        const yesResponse = await fetchGetHourlySales(yesterdayStr);
         setYesterdayData(yesResponse.data);
 
         setLoading(false);
