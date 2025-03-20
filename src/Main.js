@@ -6,9 +6,8 @@ import DashBoard from "./pages/DashBoard";
 import Association from "./features/cart_analysis/pages/Association";
 
 import InventoriesList from "./features/inventory/pages/InventoriesList";
+
 import AddGoods from "./features/goods/pages/AddGoods";
-
-
 import GoodsList from "./features/goods/pages/GoodsList";
 import GoodsByCategory from "./features/goods/pages/GoodsByCategory";
 import GoodsBySubCategory from "./features/goods/pages/GoodsBySubCategory";
@@ -31,6 +30,10 @@ const router = createBrowserRouter([
         path: "/",
         element: <DashBoard />,
       },
+        {
+          path: "app/member/login", // 상대 경로로 변경
+          element: <Login />, // 로그인 페이지 컴포넌트를 추가
+        },
       {
         // 매출 조회
         path: "/statistics",
@@ -86,4 +89,3 @@ const router = createBrowserRouter([
 
 export default function Main() {
   return <RouterProvider router={router} />;
-}
