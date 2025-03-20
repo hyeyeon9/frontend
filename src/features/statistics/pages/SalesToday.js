@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DiffChart from "../components/DiffChart";
+import { fetchGetDailySales } from "../api/HttpStatisticsService";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -15,7 +16,7 @@ export default function SalesToday() {
 
   // 데이터를 받아서 상태에 저장
   useEffect(() => {
-    const fetchGetDailySales = async () => {
+    const fetchGetSales = async () => {
       try {
         setLoading(true);
 
@@ -34,7 +35,7 @@ export default function SalesToday() {
       }
     };
 
-    fetchGetDailySales();
+    fetchGetSales();
   }, []);
 
   if (loading) {

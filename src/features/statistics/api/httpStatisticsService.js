@@ -23,6 +23,12 @@ export async function fetchGetMonthlySales(month) {
   return response;
 }
 
+// 연간 판매액과 판매량 데이터
+export async function fetchGetYearlySales(year) {
+  const response = await instance.get(`/salesMonthlyTotal/${year}`);
+  return response;
+}
+
 // 일 단위의 시간대별, 카테고리별 매출 데이터
 export async function fetchGetDailyCategory(date) {
   const response = await instance.get(`/salesDaily/${date}`);
