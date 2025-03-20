@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { fetchTodaySales } from "../api/httpStatisticsService";
 import DiffChart from "../components/DiffChart";
 
 import { fetchGetSales } from "../api/httpStatisticsService";
-
 
 const today = new Date().toISOString().split("T")[0];
 
