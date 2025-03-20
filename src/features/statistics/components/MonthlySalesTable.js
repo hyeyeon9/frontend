@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSortBy, useTable } from "react-table";
-import { fetchGetDailySales } from "../api/HttpStatisticsService";
+import { fetchGetMonthlySales } from "../api/HttpStatisticsService";
 
-export default function DailySalesTable({ date }) {
+export default function MonthlySalesTable({ date }) {
   const [salesData, setSalesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  console.log(date);
 
   // API를 호출하고 판매 데이터를 가져옴
   const fetchSalesData = useCallback(async () => {
@@ -14,7 +16,7 @@ export default function DailySalesTable({ date }) {
       setError(null);
 
       // 해당하는 날짜의 데이터 가져오기
-      const response = await fetchGetDailySales(date);
+      const response = await fetchGetMonthlySales(date);
       setSalesData(response.data);
     } catch (error) {
       console.error("데이터를 불러오는 중 오류가 발생했습니다: ", error);
@@ -33,7 +35,7 @@ export default function DailySalesTable({ date }) {
   // react table 렌더링
   const columns = useMemo(
     () => [
-      { Header: "판매시간", accessor: "salesHour" },
+      { Header: "판매일자", accessor: "salesDate" },
       { Header: "판매횟수", accessor: "dailyAmount" },
       { Header: "총판매액", accessor: "dailyPrice" },
     ],

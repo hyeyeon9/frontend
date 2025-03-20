@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Calendar from "react-calendar";
 import { useLocation, useNavigate } from "react-router-dom";
 import DailySalesTable from "../components/DailySalesTable";
+import MonthlySalesTable from "../components/MonthlySalesTable";
 
 export default function Statistics() {
   const [viewMode, setViewMode] = useState("daily"); // "daily", "monthly", "yearly"
@@ -84,8 +85,6 @@ export default function Statistics() {
         value={selectedDate}
       />
 
-      <p className="text-xl text-center">판매 데이터 들어갈 곳</p>
-
       {/* 매출 데이터 렌더링 */}
       {viewMode === "daily" && (
         <div>
@@ -97,12 +96,15 @@ export default function Statistics() {
       )}
       {viewMode === "monthly" && (
         <div>
-          <p className="text-xl text-center">월간 판매 데이터</p>
+          <p className="text-xl text-center">
+            {formattedDateString.substring(0, 7)}월의 판매 데이터
+            <MonthlySalesTable date={formattedDateString.substring(0, 7)} />
+          </p>
         </div>
       )}
       {viewMode === "yearly" && (
         <div>
-          <p className="text-xl text-center">연간 판매 데이터</p>
+          <p className="text-xl text-center">{}년의 판매 데이터</p>
         </div>
       )}
     </div>
