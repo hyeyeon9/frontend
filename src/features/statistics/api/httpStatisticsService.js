@@ -12,19 +12,19 @@ const instance = axios.create({
 });
 
 // 일간 시간대별 매출 데이터
-export async function fetchGetDailySales(date) {
+export async function fetchGetHourlySales(date) {
   const response = await instance.get(`/salesHourlyTotal/${date}`);
   return response;
 }
 
-// 월간 판매액과 판매량 데이터
-export async function fetchGetMonthlySales(month) {
+// 월간 일일 판매액과 판매량 데이터
+export async function fetchGetDailySales(month) {
   const response = await instance.get(`/salesDailyTotal/${month}`);
   return response;
 }
 
-// 연간 판매액과 판매량 데이터
-export async function fetchGetYearlySales(year) {
+// 연간 월별 판매액과 판매량 데이터
+export async function fetchGetMonthlySales(year) {
   const response = await instance.get(`/salesMonthlyTotal/${year}`);
   return response;
 }
@@ -36,7 +36,7 @@ export async function fetchGetDailyCategory(date) {
 }
 
 // 월간 일일, 카테고리별 매출 데이터
-export async function fetchGetMontlyCategory(month) {
+export async function fetchGetMonthlyCategory(month) {
   const response = await instance.get(`/salesMonthly/${month}`);
   return response;
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSortBy, useTable } from "react-table";
-import { fetchGetDailySales } from "../api/HttpStatisticsService";
+import { fetchGetHourlySales } from "../api/HttpStatisticsService";
 
 export default function DailySalesTable({ date }) {
   const [salesData, setSalesData] = useState([]);
@@ -14,7 +14,7 @@ export default function DailySalesTable({ date }) {
       setError(null);
 
       // 해당하는 날짜의 데이터 가져오기
-      const response = await fetchGetDailySales(date);
+      const response = await fetchGetHourlySales(date);
       setSalesData(response.data);
     } catch (error) {
       console.error("데이터를 불러오는 중 오류가 발생했습니다: ", error);

@@ -87,7 +87,7 @@ export default function Statistics() {
       />
 
       {/* 매출 데이터 렌더링 */}
-      {viewMode === "daily" && (
+      {viewMode === "daily" && formattedDateString && (
         <div>
           <p className="text-xl text-center">
             {formattedDateString}일의 판매 데이터
@@ -95,20 +95,20 @@ export default function Statistics() {
           <DailySalesTable date={formattedDateString} />
         </div>
       )}
-      {viewMode === "monthly" && (
+      {viewMode === "monthly" && formattedDateString && (
         <div>
           <p className="text-xl text-center">
             {formattedDateString.substring(0, 7)}월의 판매 데이터
-            <MonthlySalesTable date={formattedDateString.substring(0, 7)} />
+            <MonthlySalesTable month={formattedDateString.substring(0, 7)} />
           </p>
         </div>
       )}
-      {viewMode === "yearly" && (
+      {viewMode === "yearly" && formattedDateString && (
         <div>
           <p className="text-xl text-center">
             {formattedDateString.substring(0, 4)}년의 판매 데이터
           </p>
-          <YearlySalesTable date={formattedDateString.substring(0, 4)} />
+          <YearlySalesTable year={formattedDateString.substring(0, 4)} />
         </div>
       )}
     </div>

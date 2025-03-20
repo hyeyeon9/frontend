@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSortBy, useTable } from "react-table";
-import { fetchGetYearlySales } from "../api/HttpStatisticsService";
+import { fetchGetMonthlySales } from "../api/HttpStatisticsService";
 
-export default function YearlySalesTable({ date }) {
+export default function YearlySalesTable({ year }) {
   const [salesData, setSalesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  console.log(date);
+  console.log("year: ", year);
 
   // API를 호출하고 판매 데이터를 가져옴
   const fetchSalesData = useCallback(async () => {
@@ -16,7 +16,7 @@ export default function YearlySalesTable({ date }) {
       setError(null);
 
       // 해당하는 날짜의 데이터 가져오기
-      const response = await fetchGetYearlySales(date);
+      const response = await fetchGetMonthlySales(year);
       setSalesData(response.data);
     } catch (error) {
       console.error("데이터를 불러오는 중 오류가 발생했습니다: ", error);
@@ -25,7 +25,7 @@ export default function YearlySalesTable({ date }) {
       // 로딩 종료
       setLoading(false);
     }
-  }, [date]); // date가 변경될 때마다 함수 재생성
+  }, [year]); // date가 변경될 때마다 함수 재생성
 
   // 컴포넌트가 마운트되거나 date가 변경될 때 판매 데이터 호출
   useEffect(() => {
