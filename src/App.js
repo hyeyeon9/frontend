@@ -5,9 +5,9 @@ import Main from "./Main";
 function App() {
   return (
     <TimeProvider>
-    <div className="content">
-      <Main />
-    </div>
+      <div className="content">
+        <Main />
+      </div>
     </TimeProvider>
   );
 }
