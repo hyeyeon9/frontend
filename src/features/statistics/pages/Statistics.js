@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Calendar from "react-calendar";
 import { useLocation, useNavigate } from "react-router-dom";
 import DailySalesTable from "../components/DailySalesTable";
-import MonthlySalesTable from "../components/YearlySalesTable";
+import MonthlySalesTable from "../components/MonthlySalesTable";
 import YearlySalesTable from "../components/YearlySalesTable";
 
 export default function Statistics() {
