@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchGoodsList } from "../api/HttpService";
+import { fetchGoodsList } from "../api/HttpGoodsService";
 import { Link } from "react-router-dom";
 import MenuNavigation from "../components/MenuNavigation";
 

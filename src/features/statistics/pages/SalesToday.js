@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
+import { fetchGetHourlySales } from "../api/HttpStatisticsService";
 import DiffChart from "../components/DiffChart";
-
-import { fetchGetSales } from "../api/httpStatisticsService";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -17,16 +16,16 @@ export default function SalesToday() {
 
   // 데이터를 받아서 상태에 저장
   useEffect(() => {
-    const fetchSalesData = async () => {
+    const fetchGetSales = async () => {
       try {
         setLoading(true);
 
         // 오늘 날짜의 데이터
-        const todayResponse = await fetchGetSales(today);
+        const todayResponse = await fetchGetHourlySales(today);
         setTodayData(todayResponse.data);
 
         // 어제 날짜의 데이터
-        const yesResponse = await fetchGetSales(yesterdayStr);
+        const yesResponse = await fetchGetHourlySales(yesterdayStr);
         setYesterdayData(yesResponse.data);
 
         setLoading(false);
@@ -36,7 +35,7 @@ export default function SalesToday() {
       }
     };
 
-    fetchSalesData();
+    fetchGetSales();
   }, []);
 
   if (loading) {
