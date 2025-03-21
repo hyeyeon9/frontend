@@ -29,6 +29,8 @@ function Association() {
   const { date, time } = useTime();
   const timePeriod = getTimePeriod(time);
 
+  const [period, setPeriod] = useState("all");
+
   const topRules = rules
     .sort((a, b) => b.confidence - a.confidence)
     .slice(0, 3);
@@ -39,7 +41,8 @@ function Association() {
 
     async function getAssociationRules() {
       try {
-        const data = await fetchAllAssociationRules();
+        const data = await fetchAllAssociationRules(period);
+        console.log("data", data);
         setRules(data);
       } catch (error) {
         setError(error.message);
@@ -48,7 +51,7 @@ function Association() {
       }
     }
     getAssociationRules();
-  }, []);
+  }, [period]);
 
   // 시간대별 연관관계
   useEffect(() => {
@@ -83,7 +86,7 @@ function Association() {
     .sort((a, b) => b.confidence - a.confidence)
     .slice(0, 1);
 
-  console.log("topTimeRules", topTimeRules);
+  //console.log("topTimeRules", topTimeRules);
 
   return (
     <div className="w-full flex-col mb-3">
@@ -178,6 +181,12 @@ function Association() {
         />
 
         <div className="flex justify-center">
+          <select onChange={(e) => setPeriod(e.target.value)} value={period}>
+            <option value="all">전체</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+          </select>
+
           <AssociationTable data={filteredRules} filteringText={searchText} />
         </div>
       </div>

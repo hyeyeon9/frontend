@@ -1,8 +1,14 @@
 import axios from "axios";
 
 // 5. 장바구니 분석 (findAll)
-export async function fetchAllAssociationRules() {
-  const response = await axios.get("http://localhost:8090/app/association");
+export async function fetchAllAssociationRules(period) {
+  console.log("period", period);
+  const url =
+    period === "all"
+      ? "http://localhost:8090/app/association"
+      : `http://localhost:8090/app/association?period=${period}`;
+
+  const response = await axios.get(url);
 
   if (response.status !== 200) {
     console.log("예외발생");
