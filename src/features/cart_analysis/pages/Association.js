@@ -29,6 +29,8 @@ function Association() {
   const { date, time } = useTime();
   const timePeriod = getTimePeriod(time);
 
+  const [period, setPeriod] = useState("all");
+
   const topRules = rules
     .sort((a, b) => b.confidence - a.confidence)
     .slice(0, 3);
@@ -39,7 +41,8 @@ function Association() {
 
     async function getAssociationRules() {
       try {
-        const data = await fetchAllAssociationRules();
+        const data = await fetchAllAssociationRules(period);
+        console.log("data", data);
         setRules(data);
       } catch (error) {
         setError(error.message);
@@ -48,7 +51,7 @@ function Association() {
       }
     }
     getAssociationRules();
-  }, []);
+  }, [period]);
 
   // 시간대별 연관관계
   useEffect(() => {
@@ -83,8 +86,7 @@ function Association() {
     .sort((a, b) => b.confidence - a.confidence)
     .slice(0, 1);
 
-  console.log("topTimeRules", topTimeRules);
-
+  //console.log("topTimeRules", topTimeRules);
 
   return (
     <div className="w-full flex-col mb-3">
@@ -134,7 +136,7 @@ function Association() {
             ) : (
               ""
             )}
-            
+
             {topTimeRules.length > 0 ? (
               topTimeRules.map((item, index) => {
                 const { itemset_a, itemset_b, confidence } = item;
@@ -144,18 +146,15 @@ function Association() {
 
                 if (timePeriod === "아침") {
                   recommendationMesg = `출근길에 많이 찾는 ${itemset_a}, ${itemset_b}!  재고 확인 후 빠르게 채워주세요. 🍙🥪`;
-                } 
-                else if (timePeriod === "점심") {
+                } else if (timePeriod === "점심") {
                   recommendationMesg = `바쁜 점심시간! ${itemset_a}를 구매하는 손님들이 
                   ${confidencePercent}% 확률로 ${itemset_b}도 함께 구매합니다.  추천 진열을 고려해보세요! 🍽
                   `;
-                } 
-                else if (timePeriod === "한가한 오후") {
+                } else if (timePeriod === "한가한 오후") {
                   recommendationMesg = `
                   ${itemset_a}와 ${itemset_b}가 인기 메뉴예요! 
                   추가 진열을 확인하고 고객들에게 추천해 보세요! 🌆`;
-                } 
-                else if (timePeriod === "저녁") {
+                } else if (timePeriod === "저녁") {
                   recommendationMesg = `
                   퇴근 후 간편한 저녁식사! ${itemset_a}와 ${itemset_b}도 인기가 많아요.
                   추가 진열을 확인하세요! 🌆`;
@@ -182,6 +181,12 @@ function Association() {
         />
 
         <div className="flex justify-center">
+          <select onChange={(e) => setPeriod(e.target.value)} value={period}>
+            <option value="all">전체</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+          </select>
+
           <AssociationTable data={filteredRules} filteringText={searchText} />
         </div>
       </div>
