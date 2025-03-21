@@ -54,9 +54,10 @@ function InventoriesList() {
   const columns = useMemo(
     () => [
       { Header: "입고코드", accessor: "batchId" },
-      { Header: "재고 수정일", accessor: "stockUpdateAt" },
       { Header: "상품코드", accessor: "goodsId" },
       { Header: "상품명", accessor: "goodsName" },
+      { Header: "유통기한", accessor: "expirationDate" },
+
       { Header: "재고 수량", accessor: "stockQuantity" },
       { Header: "재고 상태", accessor: "stockStatus" },
     ],
@@ -372,7 +373,13 @@ function InventoriesList() {
                             >
                               {cell.column.id === "stockUpdateAt" ? (
                                 cell.value.replace("T", " ")
-                              ) : cell.column.id === "stockStatus" ? (
+                              ) : cell.column.id === "expirationDate" ? (
+                                cell.value.replace("T", " ").slice(0,16))
+                              //  : cell.column.id= "stockQuantity" ? (
+                              //   cell.value.toString().concat("개")
+                              // )
+                              
+                              : cell.column.id === "stockStatus" ? (
                                 <span
                                   className={
                                     row.original.stockStatus === "재고부족"
@@ -432,6 +439,8 @@ function InventoriesList() {
             </table>
           </div>
 
+
+          {/* 상품 입고 모달창 */}
           {isModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
               <div className="text-xl font-bold mb-4 text-center bg-white p-10 rounded">
