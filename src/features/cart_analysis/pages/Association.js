@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   fetchAllAssociationRules,
   fetchAllAssociationTimeRules,
-} from "../api/HttpService";
+} from "../api/HttpCartAnalysisService";
 import AssociationTable from "../components/AssociationTable";
 import HeatmapChart from "../components/HeatmapChart";
 import { useTime } from "../../../contexts/TimeContext";
@@ -85,7 +85,6 @@ function Association() {
 
   console.log("topTimeRules", topTimeRules);
 
-
   return (
     <div className="w-full flex-col mb-3">
       <div className="flex justify-center gap-5">
@@ -134,7 +133,7 @@ function Association() {
             ) : (
               ""
             )}
-            
+
             {topTimeRules.length > 0 ? (
               topTimeRules.map((item, index) => {
                 const { itemset_a, itemset_b, confidence } = item;
@@ -144,18 +143,15 @@ function Association() {
 
                 if (timePeriod === "아침") {
                   recommendationMesg = `출근길에 많이 찾는 ${itemset_a}, ${itemset_b}!  재고 확인 후 빠르게 채워주세요. 🍙🥪`;
-                } 
-                else if (timePeriod === "점심") {
+                } else if (timePeriod === "점심") {
                   recommendationMesg = `바쁜 점심시간! ${itemset_a}를 구매하는 손님들이 
                   ${confidencePercent}% 확률로 ${itemset_b}도 함께 구매합니다.  추천 진열을 고려해보세요! 🍽
                   `;
-                } 
-                else if (timePeriod === "한가한 오후") {
+                } else if (timePeriod === "한가한 오후") {
                   recommendationMesg = `
                   ${itemset_a}와 ${itemset_b}가 인기 메뉴예요! 
                   추가 진열을 확인하고 고객들에게 추천해 보세요! 🌆`;
-                } 
-                else if (timePeriod === "저녁") {
+                } else if (timePeriod === "저녁") {
                   recommendationMesg = `
                   퇴근 후 간편한 저녁식사! ${itemset_a}와 ${itemset_b}도 인기가 많아요.
                   추가 진열을 확인하세요! 🌆`;
