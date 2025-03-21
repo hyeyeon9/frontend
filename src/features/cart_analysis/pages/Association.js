@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   fetchAllAssociationRules,
   fetchAllAssociationTimeRules,
-} from "../api/HttpService";
+} from "../api/HttpCartAnalysisService";
 import AssociationTable from "../components/AssociationTable";
 import HeatmapChart from "../components/HeatmapChart";
 import { useTime } from "../../../contexts/TimeContext";
