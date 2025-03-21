@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import MenuNavigation from './../components/MenuNavigation';
-import { fetchGoodsDetail } from "../api/HttpService";
+import MenuNavigation from "./../components/MenuNavigation";
+import { fetchGoodsDetail } from "../api/HttpGoodsService";
 
 function GoodsDetail() {
   const { id } = useParams();
@@ -39,7 +39,6 @@ function GoodsDetail() {
           상품 가격 : {goods.goods_price} <br></br>
           상품 설명 : {goods.goods_description} <br></br>
           상품 등록일 : {goods.goods_created_at} <br></br>
-        
           상품 재고 : {goods.goods_stock}
         </div>
       )}

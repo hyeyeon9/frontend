@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchGetHourlySales } from "../api/HttpStatisticsService";
 import DiffChart from "../components/DiffChart";
-import { fetchGetSales } from "../api/httpStatisticsService";
+
 const today = new Date().toISOString().split("T")[0];
 
 // 어제 날짜

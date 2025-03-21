@@ -24,13 +24,12 @@ export async function fetchInventoryById(batchId) {
     console.log("에러");
     throw new Error("fetchUserList 예외발생");
   }
-  
+
   return response.data;
 }
 
 // 3. 재고 수정하기 (전채)
 export async function updateStockById(goodsId, newStock) {
-
   const response = await axios.put(
     `http://localhost:8090/app/inventory/updateStock/${goodsId}?newStock=${newStock}`
   );
@@ -39,14 +38,12 @@ export async function updateStockById(goodsId, newStock) {
     console.log("에러");
     throw new Error("updateStockById 예외발생");
   }
-  
+
   return response.data;
 }
 
-
 // 3. 재고 수정하기 (배치단위)
 export async function updateStockByBatchId(batchId, newStock) {
-
   const response = await axios.put(
     `http://localhost:8090/app/inventory/update/${batchId}/${newStock}`
   );
@@ -55,7 +52,7 @@ export async function updateStockByBatchId(batchId, newStock) {
     console.log("에러");
     throw new Error("updateStockById 예외발생");
   }
-  
+
   return response.data;
 }
 
@@ -63,14 +60,13 @@ export async function updateStockByBatchId(batchId, newStock) {
 export async function addStock(goodsId, addStock, expirationDate) {
   const response = await axios.post(
     `http://localhost:8090/app/inventory/addStock?goodsId=${goodsId}&addStock=${addStock}&expirationDate=${expirationDate}`
-  )
+  );
   console.log("response", response);
 
   if (response.status !== 200) {
     console.log("에러");
     throw new Error("updateStockById 예외발생");
   }
-  
-  return response.data;
 
+  return response.data;
 }

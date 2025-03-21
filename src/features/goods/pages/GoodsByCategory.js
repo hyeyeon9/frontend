@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { fetchGoodsByCategory } from "../api/HttpService";
+import { fetchGoodsByCategory } from "../api/HttpGoodsService";
 import { Link, useParams } from "react-router-dom";
-import MenuNavigation from './../components/MenuNavigation';
+import MenuNavigation from "./../components/MenuNavigation";
 
 function GoodsByCategory() {
   const [goodsList, setGoodsList] = useState([]);
@@ -9,7 +9,7 @@ function GoodsByCategory() {
   const [loading, setLoading] = useState(true);
 
   const { firstname } = useParams(); // url의 파리미터 값 받아오기
-  
+
   console.log("firstName", firstname);
 
   const [category, setCategory] = useState("");
@@ -25,7 +25,7 @@ function GoodsByCategory() {
     } else if (firstname === "digital") {
       setCategory("디지털 & 문구");
     }
-    console.log("카테고리 : ", category)
+    console.log("카테고리 : ", category);
   }, [firstname]);
 
   // 대분류 상품 연결하기
@@ -51,7 +51,7 @@ function GoodsByCategory() {
   return (
     <>
       <div className="container p-3">
-      <MenuNavigation />
+        <MenuNavigation />
         {loading && <h1>로딩중 ...</h1>}
         {error && <p>{error}</p>}
         {!loading && !error && (

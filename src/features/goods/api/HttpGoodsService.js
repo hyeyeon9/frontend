@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 // 상품 저장 (파일 포함)
 export const saveGoods = async (formData) => {
   console.log("formData1:", formData)
@@ -38,11 +37,6 @@ export async function fetchFileUpload(formData) {
          console.log("resData:" , resData)
     return resData;
 }
-
-
-
-
-
 
 // 1. 전체 상품 목록 가져오기
 export async function fetchGoodsList() {

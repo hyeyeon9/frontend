@@ -1,24 +1,22 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import RootLayout from "./pages/RootLayout";
 import DashBoard from "./pages/DashBoard";
+import RootLayout from "./pages/RootLayout";
 
 import Association from "./features/cart_analysis/pages/Association";
 
 import InventoriesList from "./features/inventory/pages/InventoriesList";
+
 import AddGoods from "./features/goods/pages/AddGoods";
-
-
-import GoodsList from "./features/goods/pages/GoodsList";
+import GoodsDetail from "./features/goods/pages/GoodDetail";
 import GoodsByCategory from "./features/goods/pages/GoodsByCategory";
 import GoodsBySubCategory from "./features/goods/pages/GoodsBySubCategory";
-import GoodsDetail from "./features/goods/pages/GoodDetail";
+import GoodsList from "./features/goods/pages/GoodsList";
 import GoodsManagement from "./features/goods/pages/GoodsManagement";
 
 import Login from "./features/member/components/Login";
 
 import Statistics from "./features/statistics/pages/Statistics";
-import SalesToday from "./features/statistics/pages/SalesToday";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +28,10 @@ const router = createBrowserRouter([
         // 메인 화면
         path: "/",
         element: <DashBoard />,
+      },
+      {
+        path: "app/member/login", // 상대 경로로 변경
+        element: <Login />, // 로그인 페이지 컴포넌트를 추가
       },
       {
         // 매출 조회
