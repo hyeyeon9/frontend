@@ -1,17 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { useFilters, useSortBy, useTable } from "react-table";
+import {
+  fetchGoodsByCategory,
+  fetchGoodsBySubCategory,
+} from "../../goods/api/HttpGoodsService";
 import {
   addStock,
   fetchInventoryById,
   fetchInventoryList,
   updateStockByBatchId,
-  updateStockById,
-} from "../api/HttpService";
-import { useFilters, useSortBy, useTable } from "react-table";
-import { Link } from "react-router-dom";
-import {
-  fetchGoodsByCategory,
-  fetchGoodsBySubCategory,
-} from "../../goods/api/HttpGoodsService";
+} from "../api/HttpInventoryService";
 
 function InventoriesList() {
   const [inventoryList, setInventoryList] = useState([]);
