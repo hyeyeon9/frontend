@@ -5,12 +5,13 @@ export default function SubCategoryModal({
   isOpen,
   subCategoryData,
   closeModal,
+  dataKeys = { amountKey: "monthlyAmount", priceKey: "monthlyPrice" },
 }) {
   const columns = useMemo(
     () => [
       { Header: "소분류", accessor: "subCategoryId" },
-      { Header: "판매횟수", accessor: "monthlyAmount" },
-      { Header: "총판매액", accessor: "monthlyPrice" },
+      { Header: "판매횟수", accessor: dataKeys.amountKey },
+      { Header: "총판매액", accessor: dataKeys.priceKey },
     ],
     []
   );

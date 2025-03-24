@@ -130,6 +130,7 @@ export default function MonthlyCategoryTable({ month }) {
       <SubCategoryModal
         isOpen={isModalOpen}
         subCategoryData={subCategoryData}
+        dataKeys={{ amountKey: "monthlyAmount", priceKey: "monthlyPrice" }}
         closeModal={() => setIsModalOpen(false)}
       />
     </div>
