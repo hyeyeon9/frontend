@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { fetchGoodsBySubCategory } from "../api/HttpService";
+import { fetchGoodsBySubCategory } from "../api/HttpGoodsService";
 import { Link, useParams } from "react-router-dom";
-import MenuNavigation from './../components/MenuNavigation';
+import MenuNavigation from "./../components/MenuNavigation";
 
 function GoodsBySubCategory() {
   const [goodsList, setGoodsList] = useState([]);
@@ -9,7 +9,7 @@ function GoodsBySubCategory() {
   const [loading, setLoading] = useState(true);
 
   const { firstname, secondname } = useParams(); // URL에서 파라미터 값 받아오기
-  
+
   console.log("파라미터 값 :", firstname, secondname);
 
   const [category, setCategory] = useState("");
@@ -35,27 +35,22 @@ function GoodsBySubCategory() {
     } else if (secondname === "icecreamDessert") {
       setCategory("식품");
       setSubCategory("아이스크림 & 디저트");
-    } 
-    
-    else if (secondname === "coffeeTea") {
+    } else if (secondname === "coffeeTea") {
       setCategory("음료");
       setSubCategory("커피 & 차");
     } else if (secondname === "carbonatedDrinks") {
       setCategory("음료");
       setSubCategory("탄산음료");
-    }else if (secondname === "juiceHealth") {
+    } else if (secondname === "juiceHealth") {
       setCategory("음료");
       setSubCategory("주스 & 건강음료");
-    } 
-    else if (secondname === "dairySoymilk") {
+    } else if (secondname === "dairySoymilk") {
       setCategory("음료");
       setSubCategory("유제품 & 두유");
     } else if (secondname === "alcohol") {
       setCategory("음료");
       setSubCategory("주류");
-    } 
-    
-    else if (secondname === "hygieneProducts") {
+    } else if (secondname === "hygieneProducts") {
       setCategory("생활용품");
       setSubCategory("위생용품");
     } else if (secondname === "bathroomSupplies") {
@@ -67,16 +62,13 @@ function GoodsBySubCategory() {
     } else if (secondname === "medicineHealth") {
       setCategory("생활용품");
       setSubCategory("의약 & 건강");
-    }
-
-    else if (secondname === "electronicsAccessories") {
+    } else if (secondname === "electronicsAccessories") {
       setCategory("디지털 & 문구");
       setSubCategory("전자기기 & 액세서리");
     } else if (secondname === "stationery") {
       setCategory("디지털 & 문구");
       setSubCategory("문구류");
     }
-
   }, [secondname]);
 
   // 소분류 상품 등록 연결하기
@@ -99,7 +91,7 @@ function GoodsBySubCategory() {
   return (
     <>
       <div className="container p-3">
-      <MenuNavigation />
+        <MenuNavigation />
         {loading && <h1>로딩중 ..</h1>}
         {error && <p>{error}</p>}
         {!loading && !error && (
@@ -114,7 +106,6 @@ function GoodsBySubCategory() {
                     상품 가격 : {item.goods_price} <br></br>
                     상품 설명 : {item.goods_description} <br></br>
                     상품 등록일 : {item.goods_created_at} <br></br>
-                 
                     상품 재고 : {item.goods_stock}
                   </div>
                 </Link>
