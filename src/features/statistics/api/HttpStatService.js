@@ -29,20 +29,30 @@ export async function fetchGetMonthlySales(year) {
   return response;
 }
 
-// 일간 시간대별, 카테고리별 매출 데이터
+// 일간 카테고리 대분류별 매출 데이터
 export async function fetchGetDailyCategory(date) {
-  const response = await instance.get(`/salesDaily/${date}`);
+  const response = await instance.get(`/salesDailyCategory/${date}`);
   return response;
 }
 
-// 월간 일일, 카테고리별 매출 데이터
+// 일간 카테고리 소분류별 매출 데이터
+export async function fetchGetDailySubCategory(date, category) {
+  const response = await instance.get(
+    `/salesDailyCategory/${date}/${category}`
+  );
+  return response;
+}
+
+// 월간 카테고리 대분류별 매출 데이터
 export async function fetchGetMonthlyCategory(month) {
-  const response = await instance.get(`/salesMonthly/${month}`);
+  const response = await instance.get(`/salesMonthlyCategory/${month}`);
   return response;
 }
 
-// 연간 월별, 카테고리별 매출 데이터
-export async function fetchGetYearlyCategory(year) {
-  const response = await instance.get(`/salesYearly/${year}`);
+// 월간 카테고리 소분류별 매출 데이터
+export async function fetchGetMonthlySubCategory(month, category) {
+  const response = await instance.get(
+    `/salesMonthlyCategory/${month}/${category}`
+  );
   return response;
 }
