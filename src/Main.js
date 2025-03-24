@@ -17,6 +17,7 @@ import GoodsManagement from "./features/goods/pages/GoodsManagement";
 import Login from "./features/member/components/Login";
 
 import Statistics from "./features/statistics/pages/Statistics";
+import DispoalList from "./features/disposal/pages/DisposalPage";
 
 const router = createBrowserRouter([
   {
@@ -78,9 +79,13 @@ const router = createBrowserRouter([
         path: "/goods/manage/add",
         element: <AddGoods />,
       },
-      {
+      { // 로그인 페이지
         path: "app/member/login",
         element: <Login />,
+      },
+      { // 폐기 관리 페이지
+        path: "/disposal",
+        element: <DispoalList />,
       },
     ],
   },
