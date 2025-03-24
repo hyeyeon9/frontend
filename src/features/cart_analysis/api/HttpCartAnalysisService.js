@@ -1,12 +1,20 @@
 import axios from "axios";
 
 // 5. 장바구니 분석 (findAll)
-export async function fetchAllAssociationRules(period) {
-  console.log("period", period);
-  const url =
-    period === "all"
-      ? "http://localhost:8090/app/association"
-      : `http://localhost:8090/app/association?period=${period}`;
+export async function fetchAllAssociationRules(period, month) {
+  //console.log("period", period); // 전체, 2024, 2025
+  //console.log("month", month);  // 전체, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12
+
+  let url = "http://localhost:8090/app/association";
+
+  if(period !== "all" && month !== "all") {
+    url += `?period=${period}&month=${month}`
+  }else if(period !== "all"){
+    url += `?period=${period}`
+  }else if(month !== "all"){
+    url += `?month=${month}`
+  }
+
 
   const response = await axios.get(url);
 

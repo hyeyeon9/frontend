@@ -11,6 +11,7 @@ import {
   fetchInventoryList,
   updateStockByBatchId,
 } from "../api/HttpInventoryService";
+import { FormatDate } from "../../disposal/components/FormatDate";
 
 function InventoriesList() {
   const [inventoryList, setInventoryList] = useState([]);
@@ -33,7 +34,7 @@ function InventoriesList() {
   const [addStockAmount, setAddStockAmount] = useState(""); // 입고 수량
   const [expirationDate, setExpirationDate] = useState(""); // 유통기한
 
-  // 전체 재고현황 불러오는 메서드
+  // 전체 재고현황 불러오는 메서드 (리스트 변경될 때마다 가져오기)
   useEffect(() => {
     async function getInventoryList() {
       try {
@@ -370,10 +371,8 @@ function InventoriesList() {
                             <Link
                               to={`/goods/findById/${row.original.batchId}`}
                             >
-                              {cell.column.id === "stockUpdateAt" ? (
-                                cell.value.replace("T", " ")
-                              ) : cell.column.id === "expirationDate" ? (
-                                cell.value.replace("T", " ").slice(0,16))
+                              { cell.column.id === "expirationDate" ? (
+                                FormatDate(cell.value))
                               //  : cell.column.id= "stockQuantity" ? (
                               //   cell.value.toString().concat("개")
                               // )
