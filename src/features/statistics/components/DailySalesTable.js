@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSortBy, useTable } from "react-table";
-import { fetchGetHourlySales } from "../api/HttpStatisticsService";
+import { fetchGetHourlySales } from "../api/HttpStatService";
 
 export default function DailySalesTable({ date }) {
   const [salesData, setSalesData] = useState([]);

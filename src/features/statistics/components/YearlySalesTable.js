@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSortBy, useTable } from "react-table";
-import { fetchGetMonthlySales } from "../api/HttpStatisticsService";
+import { fetchGetMonthlySales } from "../api/HttpStatService";
 
 export default function YearlySalesTable({ year }) {
   const [salesData, setSalesData] = useState([]);
