@@ -4,6 +4,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import DailySalesTable from "../components/DailySalesTable";
 import MonthlySalesTable from "../components/MonthlySalesTable";
 import YearlySalesTable from "../components/YearlySalesTable";
+import DailyCategoryTable from "../components/DailyCategoryTable";
+import MonthlyCategoryTable from "../components/MonthlyCategoryTable";
+import YearlyCategoryTable from "../components/YearlyCategoryTable";
 
 export default function Statistics() {
   const navigate = useNavigate();
@@ -64,7 +67,7 @@ export default function Statistics() {
     navigate(`/statistics?${query.toString()}`);
   }, [selectedDate, navigate, search]);
 
-  // 뭐더라
+  // 모드 또는 날짜가 변경되면 URL을 업데이트함
   useEffect(() => {
     if (filterMode === "date") {
       const params = new URLSearchParams(search);
@@ -122,8 +125,8 @@ export default function Statistics() {
         <div>
           <p className="text-xl text-center">
             {formattedDateString.substring(0, 7)}월의 일일 판매 데이터
-            <MonthlySalesTable month={formattedDateString.substring(0, 7)} />
           </p>
+          <MonthlySalesTable month={formattedDateString.substring(0, 7)} />
         </div>
       )}
       {filterMode === "date" && timeMode === "yearly" && (
@@ -139,22 +142,25 @@ export default function Statistics() {
       {filterMode === "category" && timeMode === "daily" && (
         <div>
           <p className="text-xl text-center">
-            {formattedDateString} 일의 카테고리별 판매 데이터
+            {formattedDateString}일의 카테고리별 판매 데이터
           </p>
+          <DailyCategoryTable date={formattedDateString} />
         </div>
       )}
       {filterMode === "category" && timeMode === "monthly" && (
         <div>
           <p className="text-xl text-center">
-            {formattedDateString.substring(0, 7)} 월의 카테고리별 판매 데이터
+            {formattedDateString.substring(0, 7)}월의 카테고리별 판매 데이터
           </p>
+          <MonthlyCategoryTable month={formattedDateString.substring(0, 7)} />
         </div>
       )}
       {filterMode === "category" && timeMode === "yearly" && (
         <div>
           <p className="text-xl text-center">
-            {formattedDateString.substring(0, 4)} 년의 카테고리별 판매 데이터
+            {formattedDateString.substring(0, 4)}년의 카테고리별 판매 데이터
           </p>
+          <YearlyCategoryTable year={formattedDateString.substring(0, 4)} />
         </div>
       )}
     </div>
