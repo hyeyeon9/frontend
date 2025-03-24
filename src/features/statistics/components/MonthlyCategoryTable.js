@@ -1,11 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSortBy, useTable } from "react-table";
-import { fetchGetMonthlyCategory } from "../api/HttpStatService";
+import {
+  fetchGetMonthlyCategory,
+  fetchGetMonthlySubCategory,
+} from "../api/HttpStatService";
+import SubCategoryModal from "./SubCategoryModal";
 
 export default function MonthlyCategoryTable({ month }) {
   const [salesData, setSalesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // 소분류 데이터와 모달의 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [subCategoryData, setSubCategoryData] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   // API를 호출하고 판매 데이터를 가져옴
   const fetchSalesData = useCallback(async () => {
@@ -24,6 +33,23 @@ export default function MonthlyCategoryTable({ month }) {
       setLoading(false);
     }
   }, [month]); // date가 변경될 때마다 함수 재생성
+
+  // 대분류 클릭 시 소분류 데이터 호출
+  const fetchSubCategoryData = async (categoryId) => {
+    try {
+      const response = await fetchGetMonthlySubCategory(month, categoryId);
+      setSubCategoryData(response.data);
+    } catch (error) {
+      console.error("소분류 데이터를 불러오는 중 오류가 발생했습니다.", error);
+    }
+  };
+
+  // 대분류 클릭 시 소분류 모달 열기
+  const handleCategoryClick = (categoryId) => {
+    setSelectedCategory(categoryId);
+    fetchSubCategoryData(categoryId);
+    setIsModalOpen(true);
+  };
 
   // 컴포넌트가 마운트되거나 date가 변경될 때 판매 데이터 호출
   useEffect(() => {
@@ -84,7 +110,11 @@ export default function MonthlyCategoryTable({ month }) {
           {rows.map((row) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()} className="hover:bg-gray-100">
+              <tr
+                {...row.getRowProps()}
+                className="hover:bg-gray-100"
+                onClick={() => handleCategoryClick(row.original.categoryId)} // 클릭하면 소분류 모달 오픈
+              >
                 {row.cells.map((cell) => (
                   <td {...cell.getCellProps()} className="px-2 py-3 border">
                     {cell.render("Cell")}
@@ -95,6 +125,13 @@ export default function MonthlyCategoryTable({ month }) {
           })}
         </tbody>
       </table>
+
+      {/* 소분류 모달 컴포넌트 */}
+      <SubCategoryModal
+        isOpen={isModalOpen}
+        subCategoryData={subCategoryData}
+        closeModal={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
