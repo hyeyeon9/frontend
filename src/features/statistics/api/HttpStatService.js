@@ -56,3 +56,17 @@ export async function fetchGetMonthlySubCategory(month, category) {
   );
   return response;
 }
+
+// 연간 카테고리 대분류별 매출 데이터
+export async function fetchGetYearlyCategory(year) {
+  const response = await instance.get(`/salesYearlyCategory/${year}`);
+  return response;
+}
+
+// 연간 카테고리 소분류별 매출 데이터
+export async function fetchGetYearlySubCategory(year, category) {
+  const response = await instance.get(
+    `/salesYearlyCategory/${year}/${category}`
+  );
+  return response;
+}
