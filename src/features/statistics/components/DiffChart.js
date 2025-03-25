@@ -1,6 +1,6 @@
 import { ResponsiveLine } from "@nivo/line";
 
-export default function DiffChart({ todayData, targetDateData }) {
+export default function DiffChart({ todayData, targetDateData, date1, date2 }) {
   // 데이터 변환
   const chartData = (todayData, targetDateData) => {
     // data가 배열인지 체크
@@ -20,7 +20,7 @@ export default function DiffChart({ todayData, targetDateData }) {
 
     return [
       {
-        id: "오늘",
+        id: `${date1}`,
         color: "hsl(308, 70%, 50%)",
         data: todayData.map((item) => ({
           x: item.salesHour.toString(),
@@ -28,7 +28,7 @@ export default function DiffChart({ todayData, targetDateData }) {
         })),
       },
       {
-        id: "어제",
+        id: `${date2}`,
         color: "hsl(308, 70%, 50%)",
         data: targetDateData.map((item) => ({
           x: item.salesHour.toString(),
@@ -41,7 +41,6 @@ export default function DiffChart({ todayData, targetDateData }) {
   return (
     <div>
       <div style={{ height: 400 }}>
-        chart
         <ResponsiveLine
           data={chartData(todayData, targetDateData)} // 데이터 배열을 전달
           margin={{ top: 50, right: 110, bottom: 50, left: 70 }}
