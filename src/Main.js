@@ -20,6 +20,7 @@ import DispoalList from "./features/disposal/pages/DisposalPage";
 
 import SalesComparison from "./features/statistics/pages/SalesComparison";
 import Statistics from "./features/statistics/pages/Statistics";
+import Signup from "./features/member/components/Signup";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,11 @@ const router = createBrowserRouter([
         // 로그인
         path: "app/member/login", // 상대 경로로 변경
         element: <Login />, // 로그인 페이지 컴포넌트를 추가
+      },
+      {
+        // 회원가입
+        path: "app/member/signup",
+        element: <Signup />,
       },
       {
         // 매출 조회
