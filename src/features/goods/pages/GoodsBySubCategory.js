@@ -8,73 +8,39 @@ function GoodsBySubCategory() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const { firstname, secondname } = useParams(); // URL에서 파라미터 값 받아오기
-
-  console.log("파라미터 값 :", firstname, secondname);
-
+  const { firstname, secondname } = useParams();
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
 
-  console.log("서브카테고리", subCategory);
   useEffect(() => {
-    if (secondname === "instantMeal") {
-      setCategory("식품");
-      setSubCategory("즉석식품");
-    } else if (secondname === "noodles") {
-      setCategory("식품");
-      setSubCategory("라면 & 면류");
-    } else if (secondname === "bakerySandwich") {
-      setCategory("식품");
-      setSubCategory("베이커리 & 샌드위치");
-    } else if (secondname === "refrigeratedFrozen") {
-      setCategory("식품");
-      setSubCategory("냉장/냉동식품");
-    } else if (secondname === "snacks") {
-      setCategory("식품");
-      setSubCategory("과자 & 스낵");
-    } else if (secondname === "icecreamDessert") {
-      setCategory("식품");
-      setSubCategory("아이스크림 & 디저트");
-    } else if (secondname === "coffeeTea") {
-      setCategory("음료");
-      setSubCategory("커피 & 차");
-    } else if (secondname === "carbonatedDrinks") {
-      setCategory("음료");
-      setSubCategory("탄산음료");
-    } else if (secondname === "juiceHealth") {
-      setCategory("음료");
-      setSubCategory("주스 & 건강음료");
-    } else if (secondname === "dairySoymilk") {
-      setCategory("음료");
-      setSubCategory("유제품 & 두유");
-    } else if (secondname === "alcohol") {
-      setCategory("음료");
-      setSubCategory("주류");
-    } else if (secondname === "hygieneProducts") {
-      setCategory("생활용품");
-      setSubCategory("위생용품");
-    } else if (secondname === "bathroomSupplies") {
-      setCategory("생활용품");
-      setSubCategory("욕실용품");
-    } else if (secondname === "beautyCosmetics") {
-      setCategory("생활용품");
-      setSubCategory("뷰티 & 화장품");
-    } else if (secondname === "medicineHealth") {
-      setCategory("생활용품");
-      setSubCategory("의약 & 건강");
-    } else if (secondname === "electronicsAccessories") {
-      setCategory("디지털 & 문구");
-      setSubCategory("전자기기 & 액세서리");
-    } else if (secondname === "stationery") {
-      setCategory("디지털 & 문구");
-      setSubCategory("문구류");
+    const map = {
+      instantMeal: ["식품", "즉석식품"],
+      noodles: ["식품", "라면 & 면류"],
+      bakerySandwich: ["식품", "베이커리 & 샌드위치"],
+      refrigeratedFrozen: ["식품", "냉장/냉동식품"],
+      snacks: ["식품", "과자 & 스낵"],
+      icecreamDessert: ["식품", "아이스크림 & 디저트"],
+      coffeeTea: ["음료", "커피 & 차"],
+      carbonatedDrinks: ["음료", "탄산음료"],
+      juiceHealth: ["음료", "주스 & 건강음료"],
+      dairySoymilk: ["음료", "유제품 & 두유"],
+      alcohol: ["음료", "주류"],
+      hygieneProducts: ["생활용품", "위생용품"],
+      bathroomSupplies: ["생활용품", "욕실용품"],
+      beautyCosmetics: ["생활용품", "뷰티 & 화장품"],
+      medicineHealth: ["생활용품", "의약 & 건강"],
+      electronicsAccessories: ["디지털 & 문구", "전자기기 & 액세서리"],
+      stationery: ["디지털 & 문구", "문구류"],
+    };
+    if (map[secondname]) {
+      const [cat, subcat] = map[secondname];
+      setCategory(cat);
+      setSubCategory(subcat);
     }
   }, [secondname]);
 
-  // 소분류 상품 등록 연결하기
   useEffect(() => {
     if (!subCategory) return;
-
     async function getGoodsListBySecondCategory() {
       try {
         const data = await fetchGoodsBySubCategory(category, subCategory);
@@ -90,29 +56,66 @@ function GoodsBySubCategory() {
 
   return (
     <>
-      <div className="container p-3">
-        <MenuNavigation />
-        {loading && <h1>로딩중 ..</h1>}
-        {error && <p>{error}</p>}
-        {!loading && !error && (
-          <div className="row g-2">
-            {goodsList.map((item) => (
-              <div className="col-md-3 mb-4 col-sm-6" key={item.goods_id}>
-                <Link to={`/goods/findById/${item.goods_id}`}>
-                  <div className="card p-3">
-                    카테고리 아이디 :{item.category_id} <br></br>
-                    상품 이미지:{item.goods_image} <br></br>
-                    상품 이름 : {item.goods_name} <br></br>
-                    상품 가격 : {item.goods_price} <br></br>
-                    상품 설명 : {item.goods_description} <br></br>
-                    상품 등록일 : {item.goods_created_at} <br></br>
-                    상품 재고 : {item.goods_stock}
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
+      <MenuNavigation />
+      <div className="p-6 bg-gray-100 min-h-screen">
+        <div className="max-w-7xl mx-auto bg-white p-6 rounded-xl shadow-md">
+          <h2 className="text-2xl font-bold text-indigo-700 mb-4">
+            📂 '{category} - {subCategory}' 상품 목록
+          </h2>
+
+          {loading && <p className="text-gray-500">로딩 중입니다...</p>}
+          {error && <p className="text-red-500">{error}</p>}
+
+          {!loading && !error && (
+            <div className="overflow-x-auto">
+              <table className="w-full table-auto border-collapse">
+                <thead>
+                  <tr className="bg-gray-200 text-gray-700 text-sm">
+                    <th className="px-4 py-2">ID</th>
+                    <th className="px-4 py-2">이미지</th>
+                    <th className="px-4 py-2">상품명</th>
+                    <th className="px-4 py-2">가격</th>
+                    <th className="px-4 py-2">등록일</th>
+                    <th className="px-4 py-2">재고</th>
+                    <th className="px-4 py-2">상세</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {goodsList.map((item) => (
+                    <tr key={item.goods_id} className="text-center border-b hover:bg-gray-50">
+                      <td className="px-4 py-2">{item.goods_id}</td>
+                      <td className="px-4 py-2">
+                        <img
+                          src={item.goods_image}
+                          alt={item.goods_name}
+                          className="w-16 h-16 object-cover rounded shadow"
+                        />
+                      </td>
+                      <td className="px-4 py-2 font-semibold text-gray-800">
+                        {item.goods_name}
+                      </td>
+                      <td className="px-4 py-2 text-indigo-600 font-medium">
+                        {Number(item.goods_price).toLocaleString()}원
+                      </td>
+                      <td className="px-4 py-2 text-sm text-gray-500">
+                        {item.goods_created_at}
+                      </td>
+                      <td className="px-4 py-2">{item.goods_stock}개</td>
+                      <td className="px-4 py-2">
+                        <Link
+                          to={`/goods/findById/${item.goods_id}`}
+                          className="text-blue-500 hover:underline text-sm"
+                        >
+                          보기
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

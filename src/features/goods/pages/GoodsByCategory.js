@@ -7,37 +7,27 @@ function GoodsByCategory() {
   const [goodsList, setGoodsList] = useState([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const { firstname } = useParams(); // url의 파리미터 값 받아오기
-
-  console.log("firstName", firstname);
+  const { firstname } = useParams();
 
   const [category, setCategory] = useState("");
 
-  // 대분류 상품 이름을 영어 => 한글 로 변경
   useEffect(() => {
-    if (firstname === "food") {
-      setCategory("식품");
-    } else if (firstname === "drink") {
-      setCategory("음료");
-    } else if (firstname === "household") {
-      setCategory("생활용품");
-    } else if (firstname === "digital") {
-      setCategory("디지털 & 문구");
+    const map = {
+      food: "식품",
+      drink: "음료",
+      household: "생활용품",
+      digital: "디지털 & 문구",
+    };
+    if (map[firstname]) {
+      setCategory(map[firstname]);
     }
-    console.log("카테고리 : ", category);
   }, [firstname]);
 
-  // 대분류 상품 연결하기
   useEffect(() => {
     if (!category) return;
-
     async function getGoodsListByFirstCategory() {
       try {
         const data = await fetchGoodsByCategory(category);
-
-        console.log("data", data);
-
         setGoodsList(data);
       } catch (error) {
         setError(error.message);
@@ -50,29 +40,66 @@ function GoodsByCategory() {
 
   return (
     <>
-      <div className="container p-3">
-        <MenuNavigation />
-        {loading && <h1>로딩중 ...</h1>}
-        {error && <p>{error}</p>}
-        {!loading && !error && (
-          <div className="row g-2">
-            {goodsList.map((item) => (
-              <div key={item.goods_id} className="col-md-3 col-sm-6">
-                <Link to={`/goods/findById/${item.goods_id}`}>
-                  <div className="card p-3">
-                    카테고리 아이디 :{item.category_id} <br></br>
-                    상품 이미지:{item.goods_image} <br></br>
-                    상품 이름 : {item.goods_name} <br></br>
-                    상품 가격 : {item.goods_price} <br></br>
-                    상품 설명 : {item.goods_description} <br></br>
-                    상품 등록일 : {item.goods_created_at} <br></br>
-                    상품 재고 : {item.goods_stock}
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
+      <MenuNavigation />
+      <div className="p-6 bg-gray-100 min-h-screen">
+        <div className="max-w-7xl mx-auto bg-white p-6 rounded-xl shadow-md">
+          <h2 className="text-2xl font-bold text-indigo-700 mb-4">
+            📁 '{category}' 상품 목록
+          </h2>
+
+          {loading && <p className="text-gray-500">로딩 중입니다...</p>}
+          {error && <p className="text-red-500">{error}</p>}
+
+          {!loading && !error && (
+            <div className="overflow-x-auto">
+              <table className="w-full table-auto border-collapse">
+                <thead>
+                  <tr className="bg-gray-200 text-gray-700 text-sm">
+                    <th className="px-4 py-2">ID</th>
+                    <th className="px-4 py-2">이미지</th>
+                    <th className="px-4 py-2">상품명</th>
+                    <th className="px-4 py-2">가격</th>
+                    <th className="px-4 py-2">등록일</th>
+                    <th className="px-4 py-2">재고</th>
+                    <th className="px-4 py-2">상세</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {goodsList.map((item) => (
+                    <tr key={item.goods_id} className="text-center border-b hover:bg-gray-50">
+                      <td className="px-4 py-2">{item.goods_id}</td>
+                      <td className="px-4 py-2">
+                        <img
+                          src={item.goods_image}
+                          alt={item.goods_name}
+                          className="w-16 h-16 object-cover rounded shadow"
+                        />
+                      </td>
+                      <td className="px-4 py-2 font-semibold text-gray-800">
+                        {item.goods_name}
+                      </td>
+                      <td className="px-4 py-2 text-indigo-600 font-medium">
+                        {Number(item.goods_price).toLocaleString()}원
+                      </td>
+                      <td className="px-4 py-2 text-sm text-gray-500">
+                        {item.goods_created_at}
+                      </td>
+                      <td className="px-4 py-2">{item.goods_stock}개</td>
+                      <td className="px-4 py-2">
+                        <Link
+                          to={`/goods/findById/${item.goods_id}`}
+                          className="text-blue-500 hover:underline text-sm"
+                        >
+                          보기
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
