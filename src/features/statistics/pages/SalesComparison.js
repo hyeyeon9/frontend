@@ -70,7 +70,6 @@ export default function SalesComparison() {
       {/* Date Picker Section */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         <Datepicker
-          inline
           language="ko-KR"
           labelTodayButton="오늘"
           labelClearButton="초기화"
@@ -81,7 +80,6 @@ export default function SalesComparison() {
           onChange={(e) => setDate1(e)}
         />
         <Datepicker
-          inline
           language="ko-KR"
           labelTodayButton="오늘"
           labelClearButton="초기화"
