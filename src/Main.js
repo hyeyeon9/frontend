@@ -16,8 +16,11 @@ import GoodsManagement from "./features/goods/pages/GoodsManagement";
 
 import Login from "./features/member/components/Login";
 
-import Statistics from "./features/statistics/pages/Statistics";
 import DispoalList from "./features/disposal/pages/DisposalPage";
+
+import SalesComparison from "./features/statistics/pages/SalesComparison";
+import Statistics from "./features/statistics/pages/Statistics";
+import Signup from "./features/member/components/Signup";
 
 const router = createBrowserRouter([
   {
@@ -31,13 +34,24 @@ const router = createBrowserRouter([
         element: <DashBoard />,
       },
       {
+        // 로그인
         path: "app/member/login", // 상대 경로로 변경
         element: <Login />, // 로그인 페이지 컴포넌트를 추가
+      },
+      {
+        // 회원가입
+        path: "app/member/signup",
+        element: <Signup />,
       },
       {
         // 매출 조회
         path: "/statistics",
         element: <Statistics />,
+      },
+      {
+        // 매출 비교
+        path: "/salesDiff",
+        element: <SalesComparison />,
       },
       {
         // 상품찾기
@@ -79,11 +93,13 @@ const router = createBrowserRouter([
         path: "/goods/manage/add",
         element: <AddGoods />,
       },
-      { // 로그인 페이지
+      {
+        // 로그인 페이지
         path: "app/member/login",
         element: <Login />,
       },
-      { // 폐기 관리 페이지
+      {
+        // 폐기 관리 페이지
         path: "/disposal",
         element: <DispoalList />,
       },
