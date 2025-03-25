@@ -24,7 +24,7 @@ export function useTime() {
 }
 
 // 날짜-시간 포매팅
-function getFormattedDateTime() {
+export function getFormattedDateTime() {
   const date = new Date();
 
   const year = date.getFullYear();

@@ -46,7 +46,12 @@ export default function SalesToday() {
   return (
     <div>
       <div>
-        <DiffChart todayData={todayData} yesterdayData={yesterdayData} />
+        <DiffChart
+          todayData={todayData}
+          targetDateData={yesterdayData}
+          date1={today}
+          date2={yesterdayStr}
+        />
       </div>
     </div>
   );
