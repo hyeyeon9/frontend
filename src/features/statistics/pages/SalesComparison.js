@@ -34,7 +34,7 @@ export default function SalesComparison() {
   useEffect(() => {
     setFormattedDate1(formatDateTo(date1));
     setFormattedDate2(formatDateTo(date2));
-  }, [date2, date2]);
+  }, [date1, date2]);
 
   // 데이터를 받아서 상태에 저장
   useEffect(() => {
@@ -66,9 +66,9 @@ export default function SalesComparison() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 p-4">
+    <div className="p-4">
       {/* Date Picker Section */}
-      <div className="">
+      <div className="grid grid-cols-2 gap-4 mb-4">
         <Datepicker
           inline
           language="ko-KR"
@@ -92,13 +92,22 @@ export default function SalesComparison() {
         />
       </div>
       {/* Chart Section */}
-      <div>
-        <DiffChart todayData={salesData1} targetDateData={salesData2} />
+      <div className="mb-4">
+        <DiffChart
+          todayData={salesData1}
+          targetDateData={salesData2}
+          date1={formattedDate1}
+          date2={formattedDate2}
+        />
       </div>
       {/* Table Sections */}
-      <div>
-        <DailySalesTable date={formattedDate1} />
-        <DailySalesTable date={formattedDate2} />
+      <div className="grid grid-cols-2 gap-4">
+        <div className="grid">
+          <DailySalesTable date={formattedDate1} />
+        </div>
+        <div className="grid">
+          <DailySalesTable date={formattedDate2} />
+        </div>
       </div>
     </div>
   );
