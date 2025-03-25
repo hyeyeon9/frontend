@@ -48,7 +48,7 @@ function InventoriesList() {
       }
     }
     getInventoryList();
-  }, []);
+  }, [newStock]);
 
   // 테이블 헤더
   const columns = useMemo(
@@ -214,7 +214,7 @@ function InventoriesList() {
         <div className="flex justify-center">
           <div className="w-[1000px] max-h-[calc(100vh-150px)] overflow-auto mt-8">
             <div className="flex justify-between">
-              <div className=" flex gap-5">
+              <div className="flex gap-5">
                 <select onChange={(e) => setCategory(e.target.value)}>
                   <option value="">대분류</option>
                   <option value="식품">식품</option>

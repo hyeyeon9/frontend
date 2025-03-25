@@ -50,7 +50,7 @@ export async function updateStockByBatchId(batchId, newStock) {
 
   if (response.status !== 200) {
     console.log("에러");
-    throw new Error("updateStockById 예외발생");
+    throw new Error("updateStockByBatchId 예외발생");
   }
 
   return response.data;
@@ -65,8 +65,24 @@ export async function addStock(goodsId, addStock, expirationDate) {
 
   if (response.status !== 200) {
     console.log("에러");
-    throw new Error("updateStockById 예외발생");
+    throw new Error("addStock 예외발생");
   }
 
   return response.data;
 }
+
+// 5. 유통기한 임박 상품 조회
+export async function fetchExpiringItems() {
+  const response = await axios.get(
+    `http://localhost:8090/app/inventory/expiring-soon`
+  );
+  console.log("response", response);
+
+  if (response.status !== 200) {
+    console.log("에러");
+    throw new Error("fetchExpiringItems 예외발생");
+  }
+
+  return response.data;
+}
+
