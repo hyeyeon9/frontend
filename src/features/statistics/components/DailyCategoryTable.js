@@ -80,7 +80,7 @@ export default function DailyCategoryTable({ date }) {
   }
 
   return (
-    <div className="w-[800px] max-h-[calc(100vh-300px)] overflow-auto">
+    <div className="">
       <table
         {...getTableProps()}
         border="1"
