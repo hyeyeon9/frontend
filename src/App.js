@@ -1,14 +1,17 @@
 import "./App.css";
 import { TimeProvider } from "./contexts/TimeContext";
+import { UserProvider } from "./features/member/UserContext";
 import Main from "./Main";
 
 function App() {
   return (
-    <TimeProvider>
-      <div className="content">
-        <Main />
-      </div>
-    </TimeProvider>
+    <UserProvider>
+      <TimeProvider>
+        <div className="content">
+          <Main />
+        </div>
+      </TimeProvider>
+    </UserProvider>
   );
 }
 

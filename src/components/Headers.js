@@ -2,6 +2,7 @@ import Time from "./Time";
 import Weather from "./Weather";
 import { Link } from "react-router-dom";
 import { useUser } from "../features/member/UserContext";
+import { Button } from "flowbite-react";
 
 export default function Headers() {
   const { user, setUser } = useUser();
@@ -22,30 +23,19 @@ export default function Headers() {
           </a>
           <div className="flex items-center lg:order-2">
             {!user ? (
-              <>
-                <Link
-                  to="/app/member/signup"
-                  className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-                >
-                  회원가입
-                </Link>
-                <Link
-                  to="/app/member/login"
-                  className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-                >
-                  로그인
-                </Link>
-              </>
+              <></>
             ) : (
               <>
-                <div>{user.memberId}</div>
+                <div className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">
+                  {user.memberId}
+                </div>
 
-                <button
+                <div
                   onClick={() => setUser(null)}
-                  style={{ marginLeft: "10px" }}
+                  className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
                 >
                   로그아웃
-                </button>
+                </div>
               </>
             )}
             {/* 날씨 + 날짜/시간 넣을 곳 */}
