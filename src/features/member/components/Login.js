@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../UserContext";
+import { Button, TextInput } from "flowbite-react";
 
-const Login = () => {
+export default function Login({ onLoginSuccess }) {
   const [memberId, setMemberId] = useState("");
   const [memberPasswd, setMemberPasswd] = useState("");
   const { setUser } = useUser();
@@ -28,10 +29,11 @@ const Login = () => {
       if (response.ok) {
         const responseData = await response.json();
         if (responseData.token) {
-          localStorage.setItem("token", responseData.token); // ✅ JWT 토큰 저장
-          setUser(responseData); // ✅ 사용자 정보 저장
+          localStorage.setItem("token", responseData.token); // JWT 토큰 저장
+          setUser(responseData); // 사용자 정보 저장
           alert("로그인 성공!");
-          navigate("/"); // ✅ 홈으로 이동
+          if (onLoginSuccess) onLoginSuccess(); // 로그인 성공 후 모달 닫기
+          navigate("/"); // 대시보드로 이동
         } else {
           alert(responseData.message || "로그인 실패!");
         }
@@ -51,26 +53,52 @@ const Login = () => {
 
   return (
     <div>
-      <h2>로그인</h2>
-      <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          placeholder="아이디"
-          value={memberId}
-          onChange={(e) => setMemberId(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="비밀번호"
-          value={memberPasswd}
-          onChange={(e) => setMemberPasswd(e.target.value)}
-          required
-        />
-        <button type="submit">로그인</button>
+      <form
+        onSubmit={handleLogin}
+        className="flex flex-col justify-center items-center h-full space-y-4"
+      >
+        <div className="flex items-center space-x-4">
+          <label
+            htmlFor="memberId"
+            className="text-lg text-gray-700 dark:text-gray-300 w-24"
+          >
+            아이디
+          </label>
+          <TextInput
+            id="memberId"
+            type="text"
+            placeholder="아이디"
+            value={memberId}
+            onChange={(e) => setMemberId(e.target.value)}
+            required
+            className="p-2 border rounded-md"
+          />
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <label
+            htmlFor="memberPasswd"
+            className="text-lg text-gray-700 dark:text-gray-300 w-24"
+          >
+            비밀번호
+          </label>
+          <TextInput
+            id="memberPasswd"
+            type="password"
+            placeholder="비밀번호"
+            value={memberPasswd}
+            onChange={(e) => setMemberPasswd(e.target.value)}
+            required
+            className="p-2 border rounded-md"
+          />
+        </div>
+        <Button
+          type="submit"
+          className="w-full py-2 mt-4 text-2xl bg-blue-400 text-white rounded-md hover:bg-blue-500"
+        >
+          로그인
+        </Button>
       </form>
     </div>
   );
-};
-
-export default Login;
+}
