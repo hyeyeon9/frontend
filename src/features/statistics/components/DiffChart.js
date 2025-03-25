@@ -1,20 +1,20 @@
 import { ResponsiveLine } from "@nivo/line";
 
-export default function DiffChart({ todayData, yesterdayData }) {
+export default function DiffChart({ todayData, targetDateData }) {
   // 데이터 변환
-  const chartData = (todayData, yesterdayData) => {
+  const chartData = (todayData, targetDateData) => {
     // data가 배열인지 체크
     if (!todayData || !Array.isArray(todayData)) {
       console.error("Invalid data format in DiffChart:", todayData);
       return { id: "today", color: "hsl(308, 70%, 50%)", todayData: [] };
     }
 
-    if (!yesterdayData || !Array.isArray(yesterdayData)) {
-      console.error("Invalid data format in DiffChart:", yesterdayData);
+    if (!targetDateData || !Array.isArray(targetDateData)) {
+      console.error("Invalid data format in DiffChart:", targetDateData);
       return {
-        id: "yesterday",
+        id: "targetDate",
         color: "hsl(308, 70%, 50%)",
-        yesterdayData: [],
+        targetDateData: [],
       };
     }
 
@@ -30,7 +30,7 @@ export default function DiffChart({ todayData, yesterdayData }) {
       {
         id: "어제",
         color: "hsl(308, 70%, 50%)",
-        data: yesterdayData.map((item) => ({
+        data: targetDateData.map((item) => ({
           x: item.salesHour.toString(),
           y: item.dailyPrice ?? 0,
         })),
@@ -43,7 +43,7 @@ export default function DiffChart({ todayData, yesterdayData }) {
       <div style={{ height: 400 }}>
         chart
         <ResponsiveLine
-          data={chartData(todayData, yesterdayData)} // 데이터 배열을 전달
+          data={chartData(todayData, targetDateData)} // 데이터 배열을 전달
           margin={{ top: 50, right: 110, bottom: 50, left: 70 }}
           xScale={{ type: "point" }}
           yScale={{
