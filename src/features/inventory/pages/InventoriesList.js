@@ -232,7 +232,7 @@ function InventoriesList() {
                       <option value="베이커리 & 샌드위치">
                         베이커리 & 샌드위치
                       </option>
-                      <option value="냉장/냉동식품">냉장/냉동식품</option>
+                      <option value="냉장 & 냉동식품">냉장 & 냉동식품</option>
                       <option value="과자 & 스낵">과자 & 스낵</option>
                       <option value="아이스크림 & 디저트">
                         아이스크림 & 디저트
