@@ -7,10 +7,12 @@ import {
   fetchDisposalByDate,
   fetchManualDisposal,
   fetchPendingDisposal,
+  fetchStats,
 } from "../api/HttpDisposalService";
 import { FormatDate, formatDate } from "../components/FormatDate";
+import DisposalPieChart from "./DisposalPieChart";
 
-function getToday() {
+export function getToday() {
   return new Date().toISOString().split("T")[0]; // "2025-03-24"
 }
 
@@ -24,6 +26,11 @@ function DispoalList() {
   const [showModal, setShowModal] = useState(false); // 모달 열림/닫힘 상태
   const [pendingList, setPendingList] = useState([]); // 폐기 예정 항목
   const [selectedBatches, setSelectedBatches] = useState([]); // 체크된 배치 ID
+
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // 도넛 그래프를 위한 통계 data
+  const [data, setData] = useState([]);
 
   // 폐기 테이블 불러오기 (새롭게 업데이트 될때마다 불러옴)
   useEffect(() => {
@@ -41,10 +48,54 @@ function DispoalList() {
     getDisposalList();
   }, [selectedDate, showModal]);
 
+  // 폐기 예정 아이템 개수를 가져오기 위해서
+  useEffect(() => {
+    async function loadPendingDisposal() {
+      try {
+        const pendingItems = await fetchPendingDisposal();
+        setPendingCount(pendingItems.length);
+        console.log(pendingCount);
+      } catch (error) {
+        console.error("폐기 예정 항목 가져오기 실패", error.message);
+      }
+    }
+    loadPendingDisposal();
+  }, [disposal]);
+
+  // 폐기 월별 통계를 위한 함수
+  useEffect(() => {
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+
+    console.log("시간");
+    console.log(now, month, year);
+
+    async function getStats() {
+      try {
+        const res = await fetchStats(month, year);
+        // 데이터 가공
+        const formatted = res.map((item) => ({
+          id: item.subCategoryName,
+          label: item.subCategoryName,
+          value: item.totalQuantity,
+        }));
+        
+        console.log("도넛 데이터:", formatted);
+        setData(formatted);
+
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+    getStats();
+  }, []);
+
   // 테이블 헤더
   const columns = useMemo(
     () => [
       { Header: "페기코드", accessor: "disposal_id" },
+      { Header: "입고코드", accessor: "batch_id" },
       { Header: "폐기상품", accessor: "goods_name" },
       { Header: "폐기시간", accessor: "disposed_at" },
       { Header: "폐기수량", accessor: "disposed_quantity" },
@@ -94,20 +145,36 @@ function DispoalList() {
   return (
     <>
       <div>
-        <div>
+        <div className="flex justify-between">
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
             className="border px-2 py-1 mb-3"
           />
+          {selectedDate === getToday() && (
+            <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 px-4 py-2 rounded mb-4">
+              📢 오늘 {disposal.length}개의 항목이 폐기되었습니다.
+            </div>
+          )}
+          <div className="flex gap-4">
+            <div>🔵 자동</div>
+            <div>🟠 수동</div>
 
-          <button
-            onClick={openDisposalModal}
-            className="px-2 py-1 text-white bg-blue-500 rounded hover:bg-blue-700"
-          >
-            폐기 처리
-          </button>
+            <div className="relative inline-block">
+              {pendingCount > 0 && (
+                <span className="absolute -top-2 right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                  {pendingCount}
+                </span>
+              )}
+              <button
+                onClick={openDisposalModal}
+                className="ml-8 mr-2 px-5 py-1 text-white bg-blue-500 rounded hover:bg-blue-700"
+              >
+                폐기 처리
+              </button>
+            </div>
+          </div>
         </div>
 
         <table
@@ -141,7 +208,13 @@ function DispoalList() {
                   {row.cells.map((cell) => {
                     return (
                       <td {...cell.getCellProps()} className="px-2 py-3 border">
-                        {cell.column.id === "disposed_at"
+                        {cell.column.id === "disposal_reason"
+                          ? cell.value === "유통기한 만료(수동)"
+                            ? "🟠 유통기한 만료"
+                            : cell.value === "유통기한 만료"
+                            ? "🔵 유통기한 만료"
+                            : cell.render("Cell")
+                          : cell.column.id === "disposed_at"
                           ? FormatDate(cell.value)
                           : cell.render("Cell")}
                       </td>
@@ -152,6 +225,10 @@ function DispoalList() {
             })}
           </tbody>
         </table>
+
+        <div>
+          <DisposalPieChart data={data} />
+        </div>
       </div>
 
       {showModal && (
