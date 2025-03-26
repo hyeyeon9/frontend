@@ -166,43 +166,46 @@ function AddGoods() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-200 p-6">
-      <div className="w-full max-w-lg bg-gray-50 p-8 rounded-xl shadow-xl">
-        <h1 className="text-2xl font-bold text-center text-indigo-800 mb-6">
-          상품 등록
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-indigo-100 to-gray-200 p-4">
+      <div className="w-full max-w-2xl bg-white p-10 rounded-2xl shadow-xl space-y-6">
+        <h1 className="text-3xl font-extrabold text-center text-indigo-700">
+          📦 상품 등록
         </h1>
+
         <form
           onSubmit={handleSubmit}
-          className="space-y-4"
+          className="space-y-6"
           encType="multipart/form-data"
         >
           {/* 상품명 */}
           <div>
-            <label className="block font-semibold text-gray-700">상품명</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              상품명
+            </label>
             <input
               type="text"
               value={goodsName}
               onChange={(e) => setGoodsName(e.target.value)}
-              className="w-full border border-gray-700 p-2 rounded-lg"
-              placeholder="상품명"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              placeholder="예: 따뜻한 삼각김밥"
               required
             />
           </div>
 
-          {/* 대분류 & 중분류 (가로 정렬) */}
-          <div className="flex space-x-4">
+          {/* 대/중/소 분류 */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* 대분류 */}
-            <div className="w-1/2">
-              <label className="block font-semibold text-gray-700">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 대분류
               </label>
               <select
-                className="w-full p-2 border border-gray-700 rounded-lg focus:ring focus:ring-indigo-300"
                 value={selectedFirstName}
                 onChange={(e) => {
                   setSelectedFirstName(e.target.value);
                   setSelectedSecondName("");
                 }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
               >
                 <option value="">대분류 선택</option>
                 {uniqueFirstNames.map((name) => (
@@ -214,15 +217,15 @@ function AddGoods() {
             </div>
 
             {/* 중분류 */}
-            <div className="w-1/2">
-              <label className="block font-semibold text-gray-700">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 중분류
               </label>
               <select
-                className="w-full p-2 border border-gray-700 rounded-lg focus:ring focus:ring-indigo-300"
                 value={selectedSecondName}
                 onChange={handleSecondNameChange}
                 disabled={!selectedFirstName}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 disabled:bg-gray-100"
               >
                 <option value="">중분류 선택</option>
                 {filteredSecondNames.map((category) => (
@@ -234,15 +237,15 @@ function AddGoods() {
             </div>
 
             {/* 소분류 */}
-            <div className="w-1/2">
-              <label className="block font-semibold text-gray-700">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 소분류
               </label>
               <select
-                className="w-full p-2 border border-gray-700 rounded-lg focus:ring focus:ring-indigo-300"
                 value={subCategoryId}
                 onChange={(e) => setSubCategoryId(e.target.value)}
-                disabled={!categoryId} // 대분류를 먼저 선택해야 소분류 활성화
+                disabled={!categoryId}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 disabled:bg-gray-100"
               >
                 <option value="">소분류 선택</option>
                 {filteredSubCategories.map((sub) => (
@@ -254,80 +257,80 @@ function AddGoods() {
             </div>
           </div>
 
-          {/* 상품 가격 */}
+          {/* 가격 */}
           <div>
-            <label className="block font-semibold text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               상품 가격
             </label>
             <input
               type="number"
-              value={goodsPrice} // useState로 관리
-              onChange={(e) => setGoodsPrice(e.target.value)} // 값 변경 핸들러
-              className="w-full border border-gray-700 p-2 rounded-lg focus:ring focus:ring-indigo-300"
-              placeholder="상품 가격"
+              value={goodsPrice}
+              onChange={(e) => setGoodsPrice(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
+              placeholder="예: 1200"
               required
             />
           </div>
-          {/* 상품 설명 */}
+
+          {/* 설명 */}
           <div>
-            <label className="block font-semibold text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               상품 설명
             </label>
             <textarea
-              value={goodsDescription} // useState로 관리
-              onChange={(e) => setGoodsDescription(e.target.value)} // 값 변경 핸들러
-              className="w-full border border-gray-700 p-2 rounded-lg focus:ring focus:ring-indigo-300"
-              placeholder="상품 설명"
+              value={goodsDescription}
+              onChange={(e) => setGoodsDescription(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
+              placeholder="상품에 대한 간단한 설명을 입력하세요"
               required
             />
           </div>
 
           {/* 재고 수량 */}
           <div>
-            <label className="block font-semibold text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               재고 수량
             </label>
             <input
               type="number"
-              value={goodsStock} // useState로 관리
-              onChange={(e) => setGoodsStock(e.target.value)} // 값 변경 핸들러
-              className="w-full border border-gray-700 p-2 rounded-lg focus:ring focus:ring-indigo-300"
-              placeholder="재고 수량"
+              value={goodsStock}
+              onChange={(e) => setGoodsStock(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
+              placeholder="예: 50"
               required
             />
           </div>
 
-          {/* 상품 이미지 */}
+          {/* 이미지 업로드 */}
           <div>
-            <label className="block font-semibold text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               상품 이미지
             </label>
             <input
               type="file"
-              className="w-full p-2 border border-gray-700 rounded-lg"
               accept="image/*"
-              required
               onChange={handleFileChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              required
             />
           </div>
 
-          {/* 미리보기 이미지 */}
+          {/* 미리보기 */}
           {previewUrl && (
-            <div className="mt-4 text-center">
-              <h2 className="text-lg font-semibold text-gray-700 mb-2">
-                미리보기
-              </h2>
+            <div className="text-center">
+              <p className="text-gray-600 mb-2 font-medium">미리보기</p>
               <img
                 src={previewUrl}
-                alt="상품 이미지 미리보기"
-                className="w-[200px] h-[200px] object-cover border border-gray-300 rounded-lg shadow-md mx-auto"
+                alt="미리보기"
+                className="w-[180px] h-[180px] object-cover mx-auto rounded-lg shadow"
               />
             </div>
           )}
 
+          {/* 등록 버튼 */}
           <button
             type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold py-2 rounded-lg transition-all duration-300"
           >
             상품 등록
           </button>

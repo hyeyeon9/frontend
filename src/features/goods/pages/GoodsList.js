@@ -12,7 +12,6 @@ function GoodsList() {
     async function getGoodsList() {
       try {
         const data = await fetchGoodsList();
-        console.log(data);
         setGoodsList(data);
       } catch (error) {
         setError(error.message);
@@ -23,38 +22,68 @@ function GoodsList() {
     getGoodsList();
   }, []);
 
-  function handleClickEvent() {}
-
   return (
-    <div className="container p-3">
+    <>
       <MenuNavigation />
-      {loading && <h1>로딩중 ..ddd.</h1>}
-      {error && <p>{error}</p>}
-      {!loading && !error && (
-        <div className="row g-2">
-          {goodsList.map((item) => (
-            <div className="col-md-3 mb-4 col-sm-6" key={item.goods_id}>
-              <Link
-                to={`/goods/findById/${item.goods_id}`}
-                onClick={() => {
-                  handleClickEvent();
-                }}
-              >
-                <div className="card p-3">
-                  카테고리 아이디 :{item.category_id} <br></br>
-                  상품 이미지:{item.goods_image} <br></br>
-                  상품 이름 : {item.goods_name} <br></br>
-                  상품 가격 : {item.goods_price} <br></br>
-                  상품 설명 : {item.goods_description} <br></br>
-                  상품 등록일 : {item.goods_created_at} <br></br>
-                  상품 재고 : {item.goods_stock}
-                </div>
-              </Link>
+      <div className="p-6 bg-gray-100 min-h-screen">
+        <div className="max-w-7xl mx-auto bg-white p-6 rounded-xl shadow-md">
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">📦 상품 목록</h1>
+
+          {loading && <p className="text-gray-600">로딩 중입니다...</p>}
+          {error && <p className="text-red-500">{error}</p>}
+
+          {!loading && !error && (
+            <div className="overflow-x-auto">
+              <table className="w-full table-auto border-collapse">
+                <thead>
+                  <tr className="bg-gray-200 text-gray-700 text-sm">
+                    <th className="px-4 py-2">ID</th>
+                    <th className="px-4 py-2">이미지</th>
+                    <th className="px-4 py-2">상품명</th>
+                    <th className="px-4 py-2">가격</th>
+                    <th className="px-4 py-2">카테고리</th>
+                    <th className="px-4 py-2">등록일</th>
+                    <th className="px-4 py-2">재고</th>
+                    <th className="px-4 py-2">상세보기</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {goodsList.map((item) => (
+                    <tr key={item.goods_id} className="text-center border-b hover:bg-gray-50">
+                      <td className="px-4 py-2">{item.goods_id}</td>
+                      <td className="px-4 py-2">
+                        <img
+                          src={item.goods_image}
+                          alt={item.goods_name}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      </td>
+                      <td className="px-4 py-2 font-medium text-gray-800">{item.goods_name}</td>
+                      <td className="px-4 py-2 text-indigo-600 font-semibold">
+                        {Number(item.goods_price).toLocaleString()}원
+                      </td>
+                      <td className="px-4 py-2">{item.category_id}</td>
+                      <td className="px-4 py-2 text-sm text-gray-500">
+                        {item.goods_created_at}
+                      </td>
+                      <td className="px-4 py-2">{item.goods_stock}개</td>
+                      <td className="px-4 py-2">
+                        <Link
+                          to={`/goods/findById/${item.goods_id}`}
+                          className="text-indigo-500 hover:underline text-sm"
+                        >
+                          보기
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 }
 
