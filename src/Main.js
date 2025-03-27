@@ -19,6 +19,7 @@ import DispoalList from "./features/disposal/pages/DisposalPage";
 import DashBoard from "./features/dashboard/pages/DashBoard";
 import ExpiringItemsPage from "./features/dashboard/pages/ExpiringItemsPage";
 import DisposalAnalyze from "./features/disposal/pages/DisposalAnalyze";
+import OrderingPage from "./features/ordering/pages/OrderingPage";
 
 import SalesComparison from "./features/statistics/pages/SalesComparison";
 import Statistics from "./features/statistics/pages/Statistics";
@@ -116,6 +117,11 @@ const router = createBrowserRouter([
         // 유통기한 임박 상품 페이지
         path: "/expiring-items",
         element: <ExpiringItemsPage />,
+      },
+      {
+        // 발주 관리 페이지
+        path: "/orders",
+        element: <OrderingPage />,
       },
     ],
   },
