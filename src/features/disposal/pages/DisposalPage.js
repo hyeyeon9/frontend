@@ -60,7 +60,7 @@ function DispoalList() {
   // 테이블 헤더
   const columns = useMemo(
     () => [
-      { Header: "페기코드", accessor: "disposal_id" },
+      { Header: "폐기코드", accessor: "disposal_id" },
       { Header: "입고코드", accessor: "batch_id" },
       { Header: "폐기상품", accessor: "goods_name" },
       { Header: "폐기시간", accessor: "disposed_at" },
