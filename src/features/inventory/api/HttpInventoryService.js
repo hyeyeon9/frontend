@@ -56,20 +56,7 @@ export async function updateStockByBatchId(batchId, newStock) {
   return response.data;
 }
 
-// 4. 상품 입고하기
-export async function addStock(goodsId, addStock, expirationDate) {
-  const response = await axios.post(
-    `http://localhost:8090/app/inventory/addStock?goodsId=${goodsId}&addStock=${addStock}&expirationDate=${expirationDate}`
-  );
-  console.log("response", response);
 
-  if (response.status !== 200) {
-    console.log("에러");
-    throw new Error("addStock 예외발생");
-  }
-
-  return response.data;
-}
 
 // 5. 유통기한 임박 상품 조회
 export async function fetchExpiringItems() {
