@@ -66,7 +66,10 @@ function GoodsByCategory() {
                 </thead>
                 <tbody>
                   {goodsList.map((item) => (
-                    <tr key={item.goods_id} className="text-center border-b hover:bg-gray-50">
+                    <tr
+                      key={item.goods_id}
+                      className="text-center border-b hover:bg-gray-50"
+                    >
                       <td className="px-4 py-2">{item.goods_id}</td>
                       <td className="px-4 py-2">
                         <img

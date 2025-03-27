@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import {
   fetchAllAssociationRules,
   fetchAllAssociationTimeRules,
+  fetchWeekSales,
 } from "../api/HttpCartAnalysisService";
 import AssociationTable from "../components/AssociationTable";
 import HeatmapChart from "../components/HeatmapChart";
 import { useTime } from "../../../contexts/TimeContext";
+import LineChart from "../components/LineChart ";
+import { categoryMap } from "../components/categoryMap";
 
 function getTimePeriod(time) {
   const hour = time.split(":")[0];
@@ -30,13 +33,15 @@ function Association() {
   const timePeriod = getTimePeriod(time);
 
   // 년별, 월별 연관관계 확인을 위한 상태
-  const [period, setPeriod] = useState("all");
-  const [month, setMonth] = useState("all");
+  const [period, setPeriod] = useState("2025");
+  const [month, setMonth] = useState("3");
 
   // 지지도, 신뢰도, 향상도 조절을 위한 상태
   const [minSupport, setMinSupport] = useState(0.04);
   const [minConfidence, setMinConfidence] = useState(0.3);
   const [minLift, setMinLift] = useState(1.0);
+
+  const [selectedTopRule, setSelectedTopRule] = useState(null);
 
   const topRules = rules
     .sort((a, b) => b.confidence - a.confidence)
@@ -93,18 +98,64 @@ function Association() {
 
   //console.log("topTimeRules", topTimeRules);
 
+  const [selectedChartData, setSelectedChartData] = useState([]);
+  const [selectedLabel, setSelectedLabel] = useState("");
+
+  async function handleTopRuleClick(item) {
+    const rawItems = `${item.itemset_a},${item.itemset_b}`
+      .split(",")
+      .map((v) => v.trim());
+
+    console.log(rawItems);
+
+    const targets = rawItems.filter((name) => categoryMap[name]);
+    console.log("target", targets);
+    if (targets.length === 0) return;
+
+    try {
+      const results = await Promise.all(
+        targets.map(async (name) => {
+          const { categoryId, subCategoryId } = categoryMap[name];
+          const data = await fetchWeekSales(categoryId, subCategoryId);
+          console.log(`${name} ▶`, data); // 확인용 로그
+          return {
+            id: name,
+
+            data: data.map((d) => ({
+              x: d.date,
+              y: d.totalSales,
+            })),
+          };
+        })
+      );
+
+      setSelectedChartData(results);
+      setSelectedLabel(rawItems.join(" + "));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
   return (
-    <div className="w-full flex-col mb-3">
-      <div className="flex justify-center gap-5">
-        <div>
-          <div className="flex-col gap-3">
-            <select onChange={(e) => setPeriod(e.target.value)} value={period}>
+    <>
+      <div className="w-full flex gap-6 px-8 items-start">
+        <div className="flex-1">
+          <div className="flex gap-4 mb-4">
+            <select
+              onChange={(e) => setPeriod(e.target.value)}
+              value={period}
+              className="p-2 border rounded bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
               <option value="all">전체</option>
               <option value="2024">2024</option>
               <option value="2025">2025</option>
             </select>
 
-            <select onChange={(e) => setMonth(e.target.value)} value={month}>
+            <select
+              onChange={(e) => setMonth(e.target.value)}
+              value={month}
+              className="p-2 border rounded bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
               <option value="all">전체</option>
               <option value="01">1</option>
               <option value="02">2</option>
@@ -120,138 +171,84 @@ function Association() {
               <option value="12">12</option>
             </select>
           </div>
-          <HeatmapChart data={filteredRules} />
-        </div>
-      </div>
-
-
-
-
-      <div className="flex ">
-        <div className="flex-col">
-          <input
-            type="text"
-            placeholder="상품을 입력하세요."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="w-[800px]  px-4 py-2 border mt-4 mb-3"
-          />
-          <div className="flex gap-2 mt-2">
-            <label>
+          <div className="flex gap-4 mt-4">
+            <label className="flex items-center gap-1">
               지지도 ≥
               <input
                 type="number"
-                step="0.01"
+                min="0.03"
+                max="0.2"
+                step="0.02"
                 value={minSupport}
                 onChange={(e) => setMinSupport(parseFloat(e.target.value))}
-                className="w-20 ml-1 border px-1"
+                className="w-20 border px-2 py-1 rounded"
               />
             </label>
 
-            <label>
+            <label className="flex items-center gap-1">
               신뢰도 ≥
               <input
                 type="number"
-                step="0.01"
+                min="0.3"
+                max="0.8"
+                step="0.1"
                 value={minConfidence}
                 onChange={(e) => setMinConfidence(parseFloat(e.target.value))}
-                className="w-20 ml-1 border px-1"
+                className="w-20 border px-2 py-1 rounded"
               />
             </label>
 
-            <label>
+            <label className="flex items-center gap-1">
               향상도 ≥
               <input
                 type="number"
-                step="0.1"
+                min="1"
+                max="3"
+                step="1"
                 value={minLift}
                 onChange={(e) => setMinLift(parseFloat(e.target.value))}
-                className="w-20 ml-1 border px-1"
+                className="w-20 border px-2 py-1 rounded"
               />
             </label>
           </div>
-
-          <AssociationTable data={filteredRules} filteringText={searchText} />
+          <HeatmapChart data={filteredRules} />
         </div>
 
-        <div className=" flex-col mt-4">
-          <div className="border flex-row w-72 mb-10 p-3 h-30">
-            <p className="pb-2">
+        <div className="w-[800px] flex flex-col gap-6">
+          <div className="border p-4 rounded shadow bg-white">
+            <p className="pb-2 font-semibold">
               🎯 점주님, 고객들이 자주 함께 구매하는 조합입니다!
             </p>
-            {topRules.map((item) => {
+            {topRules.map((item, idx) => {
               return (
-                <p>
-                  "{item.itemset_a}" + "{item.itemset_b}" : {item.confidence}
+                <p
+                  key={idx}
+                  onClick={() => handleTopRuleClick(item)}
+                  className="text-sm cursor-pointer hover:underline"
+                >
+                  <p>Top {idx + 1}</p>
+                  {item.itemset_a} + {item.itemset_b}{" "}
                 </p>
               );
             })}
           </div>
-
-          <div className="border flex-row w-72 p-3 h-30">
-            {timePeriod === "아침" ? (
-              <div>
-                <p className="pb-2">☀️ 아침 추천 (05:00~10:00)</p>
-                {/* <p>출근길 고객을 위한 아침 추천 상품을 준비하세요!</p> */}
-              </div>
-            ) : timePeriod === "점심" ? (
-              <div>
-                <p className="pb-2">🍙 점심 추천 (11:00~14:00)</p>
-                {/* <p>점심 피크 시간! 인기 상품 미리 준비하세요.</p> */}
-              </div>
-            ) : timePeriod === "한가한 오후" ? (
-              <div>
-                <p className="pb-2">😪 오후 추천 (15:00~17:00)</p>
-                {/* <p>가벼운 간식과 에너지를 채울 음료를 준비하세요!</p> */}
-              </div>
-            ) : timePeriod === "저녁" ? (
-              <div>
-                <p className="pb-2">🌆 저녁 추천 (18:00~22:00)</p>
-                {/* <p>퇴근 후 고객을 위한 상품을 미리 확보하세요!</p> */}
-              </div>
-            ) : timePeriod === "야식" ? (
-              <div>
-                <p className="pb-2">🌙 야식 추천 (23:00~05:00) </p>
-                {/* <p>야식 수요 급증! 인기 상품을 빠르게 채우세요.</p> */}
-              </div>
-            ) : (
-              ""
-            )}
-
-            {topTimeRules.length > 0 ? (
-              topTimeRules.map((item, index) => {
-                const { itemset_a, itemset_b, confidence } = item;
-                const confidencePercent = (confidence * 100).toFixed(1);
-
-                let recommendationMesg = "";
-
-                if (timePeriod === "아침") {
-                  recommendationMesg = `출근길에 많이 찾는 ${itemset_a}, ${itemset_b}!  재고 확인 후 빠르게 채워주세요. 🍙🥪`;
-                } else if (timePeriod === "점심") {
-                  recommendationMesg = `바쁜 점심시간! ${itemset_a}를 구매하는 손님들이 
-                    ${confidencePercent}% 확률로 ${itemset_b}도 함께 구매합니다.  추천 진열을 고려해보세요! 🍽
-                    `;
-                } else if (timePeriod === "한가한 오후") {
-                  recommendationMesg = `
-                    ${itemset_a}와 ${itemset_b}가 인기 메뉴예요! 
-                    추가 진열을 확인하고 고객들에게 추천해 보세요! 🌆`;
-                } else if (timePeriod === "저녁") {
-                  recommendationMesg = `
-                    퇴근 후 간편한 저녁식사! ${itemset_a}와 ${itemset_b}도 인기가 많아요.
-                    추가 진열을 확인하세요! 🌆`;
-                } else if (timePeriod === "야식") {
-                  recommendationMesg = `${itemset_a}를 구매하는 손님들이 ${confidencePercent}% 확률로 ${itemset_b}를 함께 구매합니다! 🛒`;
-                }
-
-                return <p key={index}>{recommendationMesg}</p>;
-              })
-            ) : (
-              <p></p>
-            )}
-          </div>
+          {selectedChartData.length > 0 && (
+            <LineChart chartData={selectedChartData} label={selectedLabel} />
+          )}
         </div>
       </div>
-    </div>
+
+      <div className="w-full px-8 mt-6">
+        <input
+          type="text"
+          placeholder="상품을 입력하세요."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          className=" w-[1000px]  px-4 py-2 border mt-4 mb-3"
+        />
+        <AssociationTable data={filteredRules} filteringText={searchText} />
+      </div>
+    </>
   );
 }
 

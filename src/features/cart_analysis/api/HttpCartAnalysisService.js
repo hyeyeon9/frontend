@@ -41,3 +41,17 @@ export async function fetchAllAssociationTimeRules() {
   console.log(response.data);
   return response.data;
 }
+
+export async function fetchWeekSales(categoryId,subCategoryId) {
+  const response = await axios.get(
+    `http://localhost:8090/app/statistics/sales/week?categoryId=${categoryId}&subCategoryId=${subCategoryId}`
+  );
+
+  if (response.status !== 200) {
+    console.log("예외발생");
+    throw new Error("fetchWeekSales 예외발생");
+  }
+
+  console.log(response.data);
+  return response.data;
+}

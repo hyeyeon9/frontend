@@ -122,7 +122,7 @@ export default function Sidebar() {
                     기간별 매출 조회
                   </Link>
                   <Link
-                    to="/"
+                    to="/salesDiff"
                     className="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900"
                   >
                     <div className="grid mr-4 place-items-center">
@@ -142,7 +142,7 @@ export default function Sidebar() {
                         ></path>
                       </svg>
                     </div>
-                    매출분석
+                    매출비교
                   </Link>
                   <Link
                     to="/"
@@ -275,7 +275,7 @@ export default function Sidebar() {
                     재고현황
                   </Link>
                   <Link
-                    to="/"
+                    to="/orders"
                     className="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900"
                   >
                     <div className="grid mr-4 place-items-center">
@@ -428,7 +428,7 @@ export default function Sidebar() {
                     </div>
                     상품등록
                   </Link>
-                  <Link
+                  {/* <Link
                     to="/goods/manage"
                     role="button"
                     className="flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900"
@@ -451,7 +451,7 @@ export default function Sidebar() {
                       </svg>
                     </div>
                     상품관리
-                  </Link>
+                  </Link> */}
                 </nav>
               </div>
             )}

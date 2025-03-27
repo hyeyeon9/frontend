@@ -5,7 +5,7 @@ const categories = [
   { id: 1, first_name: "식품", second_name: "즉석식품" },
   { id: 2, first_name: "식품", second_name: "라면 & 면류" },
   { id: 3, first_name: "식품", second_name: "베이커리 & 샌드위치" },
-  { id: 4, first_name: "식품", second_name: "냉장/냉동식품" },
+  { id: 4, first_name: "식품", second_name: "냉장 & 냉동식품" },
   { id: 5, first_name: "식품", second_name: "과자 & 스낵" },
   { id: 6, first_name: "식품", second_name: "아이스크림 & 디저트" },
   { id: 7, first_name: "음료", second_name: "커피 & 차" },
@@ -166,174 +166,184 @@ function AddGoods() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-indigo-100 to-gray-200 p-4">
-      <div className="w-full max-w-2xl bg-white p-10 rounded-2xl shadow-xl space-y-6">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+      <div className="w-full max-w-4xl bg-white p-10 rounded-2xl shadow-xl space-y-6">
         <h1 className="text-3xl font-extrabold text-center text-indigo-700">
           📦 상품 등록
         </h1>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-6"
+          className="flex flex-col md:flex-row gap-8"
           encType="multipart/form-data"
         >
-          {/* 상품명 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              상품명
-            </label>
-            <input
-              type="text"
-              value={goodsName}
-              onChange={(e) => setGoodsName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              placeholder="예: 따뜻한 삼각김밥"
-              required
-            />
-          </div>
-
-          {/* 대/중/소 분류 */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* 대분류 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                대분류
-              </label>
-              <select
-                value={selectedFirstName}
-                onChange={(e) => {
-                  setSelectedFirstName(e.target.value);
-                  setSelectedSecondName("");
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
-              >
-                <option value="">대분류 선택</option>
-                {uniqueFirstNames.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </select>
+          {/* 왼쪽: 이미지 미리보기 */}
+          <div className="w-full md:w-1/2 flex-col justify-center items-start pt-10">
+            <div className="w-[350px] h-[350px] flex justify-center border border-gray-300 rounded-lg shadow">
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  alt="미리보기"
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                  미리보기
+                </div>
+              )}
             </div>
-
-            {/* 중분류 */}
-            <div>
+            {/* 이미지 업로드 */}
+            <div className="mt-10">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                중분류
+                상품 이미지
               </label>
-              <select
-                value={selectedSecondName}
-                onChange={handleSecondNameChange}
-                disabled={!selectedFirstName}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 disabled:bg-gray-100"
-              >
-                <option value="">중분류 선택</option>
-                {filteredSecondNames.map((category) => (
-                  <option key={category.id} value={category.second_name}>
-                    {category.second_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* 소분류 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                소분류
-              </label>
-              <select
-                value={subCategoryId}
-                onChange={(e) => setSubCategoryId(e.target.value)}
-                disabled={!categoryId}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 disabled:bg-gray-100"
-              >
-                <option value="">소분류 선택</option>
-                {filteredSubCategories.map((sub) => (
-                  <option key={sub.sub_category_id} value={sub.sub_category_id}>
-                    {sub.sub_category_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* 가격 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              상품 가격
-            </label>
-            <input
-              type="number"
-              value={goodsPrice}
-              onChange={(e) => setGoodsPrice(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
-              placeholder="예: 1200"
-              required
-            />
-          </div>
-
-          {/* 설명 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              상품 설명
-            </label>
-            <textarea
-              value={goodsDescription}
-              onChange={(e) => setGoodsDescription(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
-              placeholder="상품에 대한 간단한 설명을 입력하세요"
-              required
-            />
-          </div>
-
-          {/* 재고 수량 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              재고 수량
-            </label>
-            <input
-              type="number"
-              value={goodsStock}
-              onChange={(e) => setGoodsStock(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
-              placeholder="예: 50"
-              required
-            />
-          </div>
-
-          {/* 이미지 업로드 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              상품 이미지
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              required
-            />
-          </div>
-
-          {/* 미리보기 */}
-          {previewUrl && (
-            <div className="text-center">
-              <p className="text-gray-600 mb-2 font-medium">미리보기</p>
-              <img
-                src={previewUrl}
-                alt="미리보기"
-                className="w-[180px] h-[180px] object-cover mx-auto rounded-lg shadow"
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                required
               />
             </div>
-          )}
+          </div>
 
-          {/* 등록 버튼 */}
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold py-2 rounded-lg transition-all duration-300"
-          >
-            상품 등록
-          </button>
+          {/* 오른쪽: 입력 필드 전체 */}
+          <div className="w-full md:w-1/2 space-y-4">
+            {/* 상품명 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                상품명
+              </label>
+              <input
+                type="text"
+                value={goodsName}
+                onChange={(e) => setGoodsName(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                placeholder="예: 따뜻한 삼각김밥"
+                required
+              />
+            </div>
+
+            {/* 대/중/소 분류 */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* 대분류 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  대분류
+                </label>
+                <select
+                  value={selectedFirstName}
+                  onChange={(e) => {
+                    setSelectedFirstName(e.target.value);
+                    setSelectedSecondName("");
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
+                >
+                  <option value="">대분류 선택</option>
+                  {uniqueFirstNames.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 중분류 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  중분류
+                </label>
+                <select
+                  value={selectedSecondName}
+                  onChange={handleSecondNameChange}
+                  disabled={!selectedFirstName}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 disabled:bg-gray-100"
+                >
+                  <option value="">중분류 선택</option>
+                  {filteredSecondNames.map((category) => (
+                    <option key={category.id} value={category.second_name}>
+                      {category.second_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 소분류 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  소분류
+                </label>
+                <select
+                  value={subCategoryId}
+                  onChange={(e) => setSubCategoryId(e.target.value)}
+                  disabled={!categoryId}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 disabled:bg-gray-100"
+                >
+                  <option value="">소분류 선택</option>
+                  {filteredSubCategories.map((sub) => (
+                    <option
+                      key={sub.sub_category_id}
+                      value={sub.sub_category_id}
+                    >
+                      {sub.sub_category_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* 가격 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                상품 가격
+              </label>
+              <input
+                type="number"
+                value={goodsPrice}
+                onChange={(e) => setGoodsPrice(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
+                placeholder="예: 1200"
+                required
+              />
+            </div>
+
+            {/* 설명 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                상품 설명
+              </label>
+              <textarea
+                value={goodsDescription}
+                onChange={(e) => setGoodsDescription(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
+                placeholder="상품에 대한 간단한 설명을 입력하세요"
+                required
+              />
+            </div>
+
+            {/* 재고 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                재고 수량
+              </label>
+              <input
+                type="number"
+                value={goodsStock}
+                onChange={(e) => setGoodsStock(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400"
+                placeholder="예: 30"
+                required
+              />
+            </div>
+
+            {/* 등록 버튼 */}
+            <button
+              type="submit"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold py-2 rounded-lg transition-all duration-300"
+            >
+              상품 등록
+            </button>
+          </div>
         </form>
       </div>
     </div>

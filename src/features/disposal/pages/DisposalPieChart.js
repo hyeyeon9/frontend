@@ -2,10 +2,10 @@ import { ResponsivePie } from "@nivo/pie";
 
 const DisposalPieChart = ({ data }) => {
   return (
-    <div style={{ height: "400px" }}>
+    <div style={{ height: "500px", width: "100%" }}>
       <ResponsivePie
         data={data}
-        margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+        margin={{ top: 40, right: 80, bottom: 80, left: 150 }}
         innerRadius={0.5}
         padAngle={0.7}
         cornerRadius={3}
@@ -15,6 +15,7 @@ const DisposalPieChart = ({ data }) => {
           from: "color",
           modifiers: [["darker", 0.2]],
         }}
+
         arcLinkLabelsSkipAngle={10}
         arcLinkLabelsTextColor="#333"
         arcLinkLabelsThickness={2}
@@ -26,13 +27,13 @@ const DisposalPieChart = ({ data }) => {
         }}
         legends={[
           {
-            anchor: "bottom",
-            direction: "row",
+            anchor: "left",
+            direction: "column",
             justify: false,
-            translateX: 0,
-            translateY: 56,
-            itemsSpacing: 0,
-            itemWidth: 100,
+            translateX:-120,
+            translateY: 20,
+            itemsSpacing: 15,
+            itemWidth: 80,
             itemHeight: 18,
             itemTextColor: "#999",
             itemDirection: "left-to-right",
