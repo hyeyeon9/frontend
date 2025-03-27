@@ -94,3 +94,17 @@ export async function fetchStats(month, year) {
   // console.log(response.data);
   return response.data;
 }
+
+export async function fetchDisposalRate(subNames, month, year) {
+  const response = await axios.get(
+    `http://localhost:8090/app/disposal/rate?subNames=${subNames}&month=${month}&year=${year}`
+  );
+
+  console.log("비율 ", response.data);
+  if (response.status !== 200) {
+    console.log("예외발생");
+    throw new Error("fetchDisposalRate 예외발생");
+  }
+
+  return response.data;
+}

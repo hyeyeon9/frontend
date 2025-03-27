@@ -139,7 +139,7 @@ function InventoriesList() {
 
           const goodsIds = goodsList.map((item) => item.goods_id);
           const filteredList = inventoryList.filter((item) =>
-            goodsIds.includes(item.goodsId)
+            goodsIds.includes(item.goodsId) && item.stockQuantity > 0
           );
           setFilteredInventory(filteredList);
         } catch (error) {
@@ -169,7 +169,7 @@ function InventoriesList() {
       }
       getGoodsListByFirstCategory();
     } else {
-      setFilteredInventory(inventoryList);
+      setFilteredInventory(inventoryList.filter((item) => item.stockQuantity > 0));
     }
   }, [category, subCategory, inventoryList]);
 
@@ -232,7 +232,7 @@ function InventoriesList() {
                       <option value="베이커리 & 샌드위치">
                         베이커리 & 샌드위치
                       </option>
-                      <option value="냉장/냉동식품">냉장/냉동식품</option>
+                      <option value="냉장 & 냉동식품">냉장 & 냉동식품</option>
                       <option value="과자 & 스낵">과자 & 스낵</option>
                       <option value="아이스크림 & 디저트">
                         아이스크림 & 디저트
@@ -369,7 +369,7 @@ function InventoriesList() {
                             className="px-2 py-3 border"
                           >
                             <Link
-                              to={`/goods/findById/${row.original.batchId}`}
+                              to={`/goods/findById/${row.original.goodsId}`}
                             >
                               { cell.column.id === "expirationDate" ? (
                                 FormatDate(cell.value))

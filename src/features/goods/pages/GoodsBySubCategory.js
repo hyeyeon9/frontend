@@ -17,7 +17,7 @@ function GoodsBySubCategory() {
       instantMeal: ["식품", "즉석식품"],
       noodles: ["식품", "라면 & 면류"],
       bakerySandwich: ["식품", "베이커리 & 샌드위치"],
-      refrigeratedFrozen: ["식품", "냉장/냉동식품"],
+      refrigeratedFrozen: ["식품", "냉장 & 냉동식품"],
       snacks: ["식품", "과자 & 스낵"],
       icecreamDessert: ["식품", "아이스크림 & 디저트"],
       coffeeTea: ["음료", "커피 & 차"],

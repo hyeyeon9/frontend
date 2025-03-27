@@ -5,7 +5,7 @@ const categories = [
   { id: 1, first_name: "식품", second_name: "즉석식품" },
   { id: 2, first_name: "식품", second_name: "라면 & 면류" },
   { id: 3, first_name: "식품", second_name: "베이커리 & 샌드위치" },
-  { id: 4, first_name: "식품", second_name: "냉장/냉동식품" },
+  { id: 4, first_name: "식품", second_name: "냉장 & 냉동식품" },
   { id: 5, first_name: "식품", second_name: "과자 & 스낵" },
   { id: 6, first_name: "식품", second_name: "아이스크림 & 디저트" },
   { id: 7, first_name: "음료", second_name: "커피 & 차" },
