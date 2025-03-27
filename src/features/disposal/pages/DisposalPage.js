@@ -2,15 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 
 import { useSortBy, useTable } from "react-table";
 import {
-  fetchCheckDisposal,
-  fetchDisposal,
   fetchDisposalByDate,
   fetchManualDisposal,
   fetchPendingDisposal,
-  fetchStats,
 } from "../api/HttpDisposalService";
-import { FormatDate, formatDate } from "../components/FormatDate";
-import DisposalPieChart from "./DisposalPieChart";
+import { FormatDate } from "../components/FormatDate";
+
+import { Link } from "react-router-dom";
 
 export function getToday() {
   return new Date().toISOString().split("T")[0]; // "2025-03-24"
@@ -28,9 +26,6 @@ function DispoalList() {
   const [selectedBatches, setSelectedBatches] = useState([]); // 체크된 배치 ID
 
   const [pendingCount, setPendingCount] = useState(0);
-
-  // 도넛 그래프를 위한 통계 data
-  const [data, setData] = useState([]);
 
   // 폐기 테이블 불러오기 (새롭게 업데이트 될때마다 불러옴)
   useEffect(() => {
@@ -61,35 +56,6 @@ function DispoalList() {
     }
     loadPendingDisposal();
   }, [disposal]);
-
-  // 폐기 월별 통계를 위한 함수
-  useEffect(() => {
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const year = now.getFullYear();
-
-    console.log("시간");
-    console.log(now, month, year);
-
-    async function getStats() {
-      try {
-        const res = await fetchStats(month, year);
-        // 데이터 가공
-        const formatted = res.map((item) => ({
-          id: item.subCategoryName,
-          label: item.subCategoryName,
-          value: item.totalQuantity,
-        }));
-        
-        console.log("도넛 데이터:", formatted);
-        setData(formatted);
-
-      } catch (error) {
-        console.log(error.message);
-      }
-    }
-    getStats();
-  }, []);
 
   // 테이블 헤더
   const columns = useMemo(
@@ -145,6 +111,21 @@ function DispoalList() {
   return (
     <>
       <div>
+        <div className="flex gap-4 mb-6">
+          <Link
+            to="/disposal"
+            className="text-blue-600 hover:underline font-semibold"
+          >
+            📋 폐기 내역
+          </Link>
+          <Link
+            to="/disposal/analyze"
+            className="text-gray-600 hover:underline"
+          >
+            📊 폐기 통계
+          </Link>
+        </div>
+
         <div className="flex justify-between">
           <input
             type="date"
@@ -225,10 +206,6 @@ function DispoalList() {
             })}
           </tbody>
         </table>
-
-        <div>
-          <DisposalPieChart data={data} />
-        </div>
       </div>
 
       {showModal && (

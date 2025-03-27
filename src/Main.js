@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-
 import RootLayout from "./pages/RootLayout";
 
 import Association from "./features/cart_analysis/pages/Association";
@@ -19,6 +18,8 @@ import Login from "./features/member/components/Login";
 import DispoalList from "./features/disposal/pages/DisposalPage";
 import DashBoard from "./features/dashboard/pages/DashBoard";
 import ExpiringItemsPage from "./features/dashboard/pages/ExpiringItemsPage";
+import DisposalAnalyze from "./features/disposal/pages/DisposalAnalyze";
+import OrderingPage from "./features/ordering/pages/OrderingPage";
 
 import SalesComparison from "./features/statistics/pages/SalesComparison";
 import Statistics from "./features/statistics/pages/Statistics";
@@ -107,9 +108,20 @@ const router = createBrowserRouter([
         path: "/disposal",
         element: <DispoalList />,
       },
-      { // 유통기한 임박 상품 페이지
+      {
+        // 폐기 관리 페이지
+        path: "/disposal/analyze",
+        element: <DisposalAnalyze />,
+      },
+      {
+        // 유통기한 임박 상품 페이지
         path: "/expiring-items",
         element: <ExpiringItemsPage />,
+      },
+      {
+        // 발주 관리 페이지
+        path: "/orders",
+        element: <OrderingPage />,
       },
     ],
   },

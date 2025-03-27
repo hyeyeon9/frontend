@@ -22,7 +22,7 @@ function MenuNavigation() {
           name: "베이커리 & 샌드위치",
           path: "/categories/food/bakerySandwich",
         },
-        { name: "냉장/냉동식품", path: "/categories/food/refrigeratedFrozen" },
+        { name: "냉장 & 냉동식품", path: "/categories/food/refrigeratedFrozen" },
         { name: "과자 & 스낵", path: "/categories/food/snacks" },
         {
           name: "아이스크림 & 디저트",
@@ -62,7 +62,7 @@ function MenuNavigation() {
 
   return (
     <nav className="bg-gray-100 py-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center px-6">
+      <div className="max-w-screen-xl mx-auto flex justify-center items-center px-6">
         {/* 메인 카테고리 메뉴 */}
         <ul className="flex gap-8 text-lg font-semibold">
           <li>

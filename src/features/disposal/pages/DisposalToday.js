@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchDisposalByDate } from "../api/HttpDisposalService";
 import { getToday } from "./DisposalPage";
+import { Link } from "react-router-dom";
 
 function DisposalToday() {
   const [disposal, setDisposal] = useState([]);
@@ -28,7 +29,7 @@ function DisposalToday() {
         {disposal.length === 0 ? (
           <li className="text-gray-400">오늘은 폐기된 항목이 없습니다.</li>
         ) : (
-          disposal.map((item) => (
+          disposal.slice(0, 3).map((item) => (
             <li key={item.disposal_id}>
               <span className="font-medium text-black">{item.goods_name}</span>{" "}
               - {item.disposed_quantity}개 폐기됨
@@ -36,6 +37,16 @@ function DisposalToday() {
           ))
         )}
       </ul>
+      {disposal.length > 3 && (
+        <div className="mt-2 text-right">
+          <Link
+            to="/disposal"
+            className="text-blue-600 text-sm hover:underline"
+          >
+            전체 보기 →
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
