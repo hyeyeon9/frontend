@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import {
   fetchAllAssociationRules,
   fetchAllAssociationTimeRules,
+  fetchWeekSales,
 } from "../api/HttpCartAnalysisService";
 import AssociationTable from "../components/AssociationTable";
 import HeatmapChart from "../components/HeatmapChart";
 import { useTime } from "../../../contexts/TimeContext";
+import LineChart from "../components/LineChart ";
+import { categoryMap } from "../components/categoryMap";
 
 function getTimePeriod(time) {
   const hour = time.split(":")[0];
@@ -30,8 +33,8 @@ function Association() {
   const timePeriod = getTimePeriod(time);
 
   // 년별, 월별 연관관계 확인을 위한 상태
-  const [period, setPeriod] = useState("all");
-  const [month, setMonth] = useState("all");
+  const [period, setPeriod] = useState("2025");
+  const [month, setMonth] = useState("3");
 
   // 지지도, 신뢰도, 향상도 조절을 위한 상태
   const [minSupport, setMinSupport] = useState(0.04);
@@ -95,6 +98,44 @@ function Association() {
 
   //console.log("topTimeRules", topTimeRules);
 
+  const [selectedChartData, setSelectedChartData] = useState([]);
+  const [selectedLabel, setSelectedLabel] = useState("");
+
+  async function handleTopRuleClick(item) {
+    const rawItems = `${item.itemset_a},${item.itemset_b}`
+      .split(",")
+      .map((v) => v.trim());
+
+    console.log(rawItems);
+
+    const targets = rawItems.filter((name) => categoryMap[name]);
+    console.log("target", targets);
+    if (targets.length === 0) return;
+
+    try {
+      const results = await Promise.all(
+        targets.map(async (name) => {
+          const { categoryId, subCategoryId } = categoryMap[name];
+          const data = await fetchWeekSales(categoryId, subCategoryId);
+          console.log(`${name} ▶`, data); // 확인용 로그
+          return {
+            id: name,
+
+            data: data.map((d) => ({
+              x: d.date,
+              y: d.totalSales,
+            })),
+          };
+        })
+      );
+
+      setSelectedChartData(results);
+      setSelectedLabel(rawItems.join(" + "));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
   return (
     <>
       <div className="w-full flex gap-6 px-8 items-start">
@@ -137,7 +178,7 @@ function Association() {
                 type="number"
                 min="0.03"
                 max="0.2"
-                step="0.05"
+                step="0.02"
                 value={minSupport}
                 onChange={(e) => setMinSupport(parseFloat(e.target.value))}
                 className="w-20 border px-2 py-1 rounded"
@@ -173,7 +214,7 @@ function Association() {
           <HeatmapChart data={filteredRules} />
         </div>
 
-        <div className="w-[700px] flex flex-col gap-6">
+        <div className="w-[800px] flex flex-col gap-6">
           <div className="border p-4 rounded shadow bg-white">
             <p className="pb-2 font-semibold">
               🎯 점주님, 고객들이 자주 함께 구매하는 조합입니다!
@@ -182,7 +223,7 @@ function Association() {
               return (
                 <p
                   key={idx}
-                  onClick={() => setSelectedTopRule(item)}
+                  onClick={() => handleTopRuleClick(item)}
                   className="text-sm cursor-pointer hover:underline"
                 >
                   <p>Top {idx + 1}</p>
@@ -191,6 +232,9 @@ function Association() {
               );
             })}
           </div>
+          {selectedChartData.length > 0 && (
+            <LineChart chartData={selectedChartData} label={selectedLabel} />
+          )}
         </div>
       </div>
 

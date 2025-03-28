@@ -120,6 +120,23 @@ function InventoriesList() {
   const lowStockItems = inventoryList.filter(
     (item) => item.stockStatus === "재고부족"
   );
+  // 상품명 기준으로 재고 합치기
+  const groupedStock = {};
+
+  lowStockItems.forEach((item) => {
+    if (!groupedStock[item.goodsName]) {
+      groupedStock[item.goodsName] = 0;
+    }
+    groupedStock[item.goodsName] += item.stockQuantity;
+  });
+
+  // 기준치 이하만 필터링
+  const mergedLowStock = Object.entries(groupedStock)
+    .filter(([_, total]) => total < 5)
+    .map(([name, total]) => ({
+      goodsName: name,
+      totalStock: total,
+    }));
 
   // 대분류 상품 연결하기
   useEffect(() => {
@@ -226,11 +243,38 @@ function InventoriesList() {
                   )}
                 </select>
 
-                <select onChange={(e) => setFilterValue(e.target.value)}>
-                  <option value="">전체</option>
-                  <option value="정상">정상</option>
-                  <option value="재고부족">재고부족</option>
-                </select>
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onClick={() => setFilterValue("")}
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      filterValue === ""
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    전체
+                  </button>
+                  <button
+                    onClick={() => setFilterValue("정상")}
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      filterValue === "정상"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    정상
+                  </button>
+                  <button
+                    onClick={() => setFilterValue("재고부족")}
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      filterValue === "재고부족"
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    재고부족
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -244,15 +288,15 @@ function InventoriesList() {
               {isVisible && (
                 <div className="flex-col absolute right-4 mt-8 bg-white shadow-lg p-4 rounded border border-gray-300 w-80">
                   <p className="font-bold text-red-500">재고 부족 상품❗</p>
-                  {lowStockItems.length > 0 ? (
-                    lowStockItems.map((item) => (
+                  {mergedLowStock.length > 0 ? (
+                    mergedLowStock.map((item) => (
                       <div
-                        key={item.batchId}
+                        key={item.goodsName}
                         className="text-sm text-gray-700 mt-2"
                       >
                         {item.goodsName} :{" "}
-                        <span className="font-bold">{item.stockQuantity}</span>
-                        개 남음
+                        <span className="font-bold">{item.totalStock}</span>개
+                        남음
                       </div>
                     ))
                   ) : (
@@ -384,6 +428,7 @@ function InventoriesList() {
                     총합
                   </td>
                   <td className="px-2 py-3 border">{totalStock}</td>
+                  <td className="border"></td>
                   <td className="border"></td>
                   <td className="border"></td>
                 </tr>
