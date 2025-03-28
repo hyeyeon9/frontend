@@ -14,17 +14,18 @@ import GoodsList from "./features/goods/pages/GoodsList";
 
 import Login from "./features/member/components/Login";
 
-import DispoalList from "./features/disposal/pages/DisposalPage";
 import DashBoard from "./features/dashboard/pages/DashBoard";
 import ExpiringItemsPage from "./features/dashboard/pages/ExpiringItemsPage";
 import DisposalAnalyze from "./features/disposal/pages/DisposalAnalyze";
+import DispoalList from "./features/disposal/pages/DisposalPage";
 import OrderingPage from "./features/ordering/pages/OrderingPage";
+import SalesReport from "./features/sales_analysis/pages/SalesReport";
 
 import SalesComparison from "./features/statistics/pages/SalesComparison";
 import Statistics from "./features/statistics/pages/Statistics";
 import LoginPage from "./features/member/pages/LoginPage";
 import SignUpPage from "./features/member/pages/SignupPage";
-import GoodsUpdate from "./features/goods/pages/GoodsEdit";
+
 import GoodsEdit from "./features/goods/pages/GoodsEdit";
 
 const router = createBrowserRouter([
@@ -57,6 +58,11 @@ const router = createBrowserRouter([
         // 매출 비교
         path: "/salesDiff",
         element: <SalesComparison />,
+      },
+      {
+        // 매출 분석
+        path: "/salesReport",
+        element: <SalesReport />,
       },
       {
         // 상품찾기
