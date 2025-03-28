@@ -11,21 +11,22 @@ import GoodsDetail from "./features/goods/pages/GoodDetail";
 import GoodsByCategory from "./features/goods/pages/GoodsByCategory";
 import GoodsBySubCategory from "./features/goods/pages/GoodsBySubCategory";
 import GoodsList from "./features/goods/pages/GoodsList";
-import GoodsManagement from "./features/goods/pages/GoodsManagement";
 
 import Login from "./features/member/components/Login";
 
-import DispoalList from "./features/disposal/pages/DisposalPage";
 import DashBoard from "./features/dashboard/pages/DashBoard";
 import ExpiringItemsPage from "./features/dashboard/pages/ExpiringItemsPage";
 import DisposalAnalyze from "./features/disposal/pages/DisposalAnalyze";
+import DispoalList from "./features/disposal/pages/DisposalPage";
 import OrderingPage from "./features/ordering/pages/OrderingPage";
+import SalesReport from "./features/sales_analysis/pages/SalesReport";
 
 import SalesComparison from "./features/statistics/pages/SalesComparison";
 import Statistics from "./features/statistics/pages/Statistics";
-import Signup from "./features/member/components/Signup";
 import LoginPage from "./features/member/pages/LoginPage";
 import SignUpPage from "./features/member/pages/SignupPage";
+
+import GoodsEdit from "./features/goods/pages/GoodsEdit";
 
 const router = createBrowserRouter([
   {
@@ -59,6 +60,11 @@ const router = createBrowserRouter([
         element: <SalesComparison />,
       },
       {
+        // 매출 분석
+        path: "/salesReport",
+        element: <SalesReport />,
+      },
+      {
         // 상품찾기
         path: "/categories/findAll",
         element: <GoodsList />,
@@ -90,8 +96,8 @@ const router = createBrowserRouter([
       },
       {
         // 상품관리 페이지 (수정, 삭제)
-        path: "/goods/manage",
-        element: <GoodsManagement />,
+        path: "/goods/edit/:id",
+        element: <GoodsEdit />,
       },
       {
         // 상품등록 페이지 (등록, 수정, 삭제)

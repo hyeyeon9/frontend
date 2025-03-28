@@ -2,15 +2,6 @@ import { ResponsiveLine } from "@nivo/line";
 
 const LineChart = ({ chartData, label }) => {
   if (!chartData || chartData.length === 0) return null;
-  //   const formattedData = [
-  //     {
-  //       id: label,
-  //       data: chartData.map((d) => ({
-  //         x: d.date,
-  //         y: d.totalSales,
-  //       })),
-  //     },
-  //   ];
 
   return (
     <div className="w-full h-[300px] mt-4 bg-white p-4 rounded shadow">
