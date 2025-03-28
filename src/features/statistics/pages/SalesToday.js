@@ -5,13 +5,13 @@ import DiffChart from "../components/DiffChart";
 const today = new Date().toISOString().split("T")[0];
 
 // 어제 날짜
-const yesterdayStr = new Date(new Date(today) - 86400000)
+const comparison = new Date(new Date(today) - 86400000 * 7)
   .toISOString()
   .split("T")[0];
 
 export default function SalesToday() {
   const [todayData, setTodayData] = useState([]);
-  const [yesterdayData, setYesterdayData] = useState([]);
+  const [comparisonData, setComparisonData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // 데이터를 받아서 상태에 저장
@@ -25,8 +25,8 @@ export default function SalesToday() {
         setTodayData(todayResponse.data);
 
         // 어제 날짜의 데이터
-        const yesResponse = await fetchGetHourlySales(yesterdayStr);
-        setYesterdayData(yesResponse.data);
+        const comparisonResponse = await fetchGetHourlySales(comparison);
+        setComparisonData(comparisonResponse.data);
 
         setLoading(false);
       } catch (error) {
@@ -48,9 +48,9 @@ export default function SalesToday() {
       <div>
         <DiffChart
           todayData={todayData}
-          targetDateData={yesterdayData}
+          targetDateData={comparisonData}
           date1={today}
-          date2={yesterdayStr}
+          date2={comparison}
         />
       </div>
     </div>
