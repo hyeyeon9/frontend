@@ -21,7 +21,7 @@ function HeatmapChart({ data }) {
   }));
 
   return (
-    <div style={{ width: "1000px", height: "500px", margin: "0 auto" }}>
+    <div style={{ width: "800px", height: "500px", margin: "0 auto" }}>
       <ResponsiveHeatMap
         data={transformedData}
         margin={{ top: 60, right: 90, bottom: 60, left: 90 }}
