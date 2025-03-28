@@ -11,7 +11,6 @@ import GoodsDetail from "./features/goods/pages/GoodDetail";
 import GoodsByCategory from "./features/goods/pages/GoodsByCategory";
 import GoodsBySubCategory from "./features/goods/pages/GoodsBySubCategory";
 import GoodsList from "./features/goods/pages/GoodsList";
-import GoodsManagement from "./features/goods/pages/GoodsManagement";
 
 import Login from "./features/member/components/Login";
 
@@ -23,9 +22,10 @@ import OrderingPage from "./features/ordering/pages/OrderingPage";
 
 import SalesComparison from "./features/statistics/pages/SalesComparison";
 import Statistics from "./features/statistics/pages/Statistics";
-import Signup from "./features/member/components/Signup";
 import LoginPage from "./features/member/pages/LoginPage";
 import SignUpPage from "./features/member/pages/SignupPage";
+import GoodsUpdate from "./features/goods/pages/GoodsEdit";
+import GoodsEdit from "./features/goods/pages/GoodsEdit";
 
 const router = createBrowserRouter([
   {
@@ -90,8 +90,8 @@ const router = createBrowserRouter([
       },
       {
         // 상품관리 페이지 (수정, 삭제)
-        path: "/goods/manage",
-        element: <GoodsManagement />,
+        path: "/goods/edit/:id",
+        element: <GoodsEdit />,
       },
       {
         // 상품등록 페이지 (등록, 수정, 삭제)
