@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSortBy, useTable } from "react-table";
 import { fetchGetHourlySales } from "../api/HttpStatService";
+import { Spinner } from "flowbite-react";
 
 export default function DailySalesTable({ date }) {
   const [salesData, setSalesData] = useState([]);
@@ -30,12 +31,33 @@ export default function DailySalesTable({ date }) {
     fetchSalesData();
   }, [fetchSalesData]);
 
+  // 데이터 포맷팅을 위한 셀 렌더러
+  const formatCurrency = (value) => {
+    return value.toLocaleString() + "원";
+  };
+
+  const formatAmount = (value) => {
+    return value.toLocaleString();
+  };
+
   // react table 렌더링
   const columns = useMemo(
     () => [
-      { Header: "판매시간", accessor: "salesHour" },
-      { Header: "판매횟수", accessor: "dailyAmount" },
-      { Header: "총판매액", accessor: "dailyPrice" },
+      {
+        Header: "판매시간",
+        accessor: "salesHour",
+        Cell: ({ value }) => `${value}시`,
+      },
+      {
+        Header: "판매횟수",
+        accessor: "dailyAmount",
+        Cell: ({ value }) => formatAmount(value),
+      },
+      {
+        Header: "총판매액",
+        accessor: "dailyPrice",
+        Cell: ({ value }) => formatCurrency(value),
+      },
     ],
     []
   );
@@ -44,57 +66,131 @@ export default function DailySalesTable({ date }) {
     useTable({ columns, data: salesData }, useSortBy);
 
   if (loading) {
-    // 로딩 중 표시
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-40">
+        <Spinner size="xl" />
+      </div>
+    );
   }
 
   if (error) {
-    // 에러 메세지 표시
-    return <div>Error: {error.message}</div>;
+    return (
+      <div className="text-center text-red-500 py-8">
+        오류: {error.message || "데이터를 불러오는 중 문제가 발생했습니다"}
+      </div>
+    );
   }
 
-  return (
-    <div className="">
-      <table
-        {...getTableProps()}
-        border="1"
-        className="w-full border-collapse border border-gray-300 mt-3"
-      >
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((c) => (
-                // 정렬
-                <th
-                  {...c.getHeaderProps(c.getSortByToggleProps())}
-                  className="px-4 py-2 bg-gray-200"
-                >
-                  {/* 동적 렌더링 */}
-                  {c.render("Header")}
-                  <span>
-                    {c.isSorted ? (c.isSortedDesc ? " 🔽" : " 🔼") : ""}
-                  </span>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
+  if (salesData.length === 0) {
+    return (
+      <div className="text-center text-gray-500 py-8">데이터가 없습니다</div>
+    );
+  }
 
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()} className="hover:bg-gray-100">
-                {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()} className="px-2 py-3 border">
-                    {cell.render("Cell")}
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+  // 열 인덱스에 따라 정렬 클래스 반환하는 함수
+  const getAlignmentClass = (index) => {
+    if (index === 0 || index === 1) {
+      return "text-center"; // 1열, 2열은 중앙 정렬
+    } else {
+      return "text-right"; // 3열은 오른쪽 정렬
+    }
+  };
+
+  return (
+    <div className="overflow-x-auto">
+      <div className="border rounded-lg overflow-hidden">
+        <div className="max-h-[400px] overflow-y-auto">
+          <table
+            {...getTableProps()}
+            className="w-full table-fixed border-collapse text-sm"
+          >
+            <thead className="sticky top-0 z-10">
+              {headerGroups.map((headerGroup, idx) => (
+                <tr
+                  {...headerGroup.getHeaderGroupProps()}
+                  key={idx}
+                  className="bg-gray-50 border-b border-gray-200"
+                >
+                  {headerGroup.headers.map((column, colIdx) => (
+                    <th
+                      {...column.getHeaderProps(column.getSortByToggleProps())}
+                      key={colIdx}
+                      className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      style={{ width: colIdx === 0 ? "30%" : "35%" }}
+                    >
+                      <div className="flex items-center justify-center">
+                        {column.render("Header")}
+                        <span className="ml-1">
+                          {column.isSorted ? (
+                            column.isSortedDesc ? (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 9l-7 7-7-7"
+                                />
+                              </svg>
+                            ) : (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M5 15l7-7 7 7"
+                                />
+                              </svg>
+                            )
+                          ) : (
+                            ""
+                          )}
+                        </span>
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()} className="divide-y">
+              {rows.map((row, idx) => {
+                prepareRow(row);
+                return (
+                  <tr
+                    {...row.getRowProps()}
+                    key={idx}
+                    className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                  >
+                    {row.cells.map((cell, cellIdx) => (
+                      <td
+                        {...cell.getCellProps()}
+                        key={cellIdx}
+                        className={`px-4 py-2 whitespace-nowrap text-sm text-gray-700 ${getAlignmentClass(
+                          cellIdx
+                        )}`}
+                        style={{ width: cellIdx === 0 ? "30%" : "35%" }} // 헤더와 동일한 너비 지정
+                      >
+                        {cell.render("Cell")}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
