@@ -71,6 +71,8 @@ export async function fetchDeleteAlert(alertId) {
 
 // 해당하는 날짜와 시간대의 매출 기록 조회
 export async function fetchGetDailySalesByDateAndHour(salesDate, salesHour) {
-  const response = await instance.get(`/salesHourly/${salesDate}/${salesHour}`);
+  const response = await instance.get(
+    `/salesRecordHourly/${salesDate}/${salesHour}`
+  );
   return response;
 }
