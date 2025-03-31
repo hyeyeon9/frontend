@@ -1,0 +1,10 @@
+template: |
+  다음은 판매 데이터 일부입니다:
+
+  {context}
+
+  사용자의 질문:
+  {question}
+
+  위 판매 데이터를 기반으로, 한국어로 정확하고 간결하게 답변해주세요.
+input_variables: ["context", "question"]
