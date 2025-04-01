@@ -14,13 +14,25 @@ cd backend
 
 ### 2. 가상환경 생성 및 활성화
 #### ▶️ 가상환경 생성
+- 맥
 ```bash
 python3 -m venv .venv  
 ```
 
+- 윈도우
+```bash
+python -m venv .venv
+```
+
 #### ✅ 가상환경 활성화
+- 맥
 ```bash
 source .venv/bin/activate
+```
+
+- 윈도우
+```bash
+python -m venv .venv
 ```
 
 ### 3. 필요한 패키지 설치
@@ -41,6 +53,9 @@ uvicorn main:app --reload
 CTRL + C   # 서버 실행 중단
 deactivate # 가상환경 종료
 ```
+
+### 6. 사용한 ollama 모델
+ollama pull bge-m3
 
 ---
 ## 💻 프론트엔드 실행 방법
