@@ -30,6 +30,8 @@ import SmartChatBot from "./components/SmartChatBot";
 
 import ShopHome from "./features/shop/pages/ShopHome";
 
+import ShopHome from "./features/shop/pages/ShopHome";
+
 const router = createBrowserRouter([
   {
     // 관리자 페이지(기본)
@@ -131,6 +133,19 @@ const router = createBrowserRouter([
         // 챗봇 페이지
         path: "/chatBot",
         element: <SmartChatBot />,
+      },
+    ],
+  },
+  {
+    // 사용자 페이지
+    path: "/shop",
+    element: <UserLayout />,
+    children: [
+      {
+        // 메인 페이지
+        index: true,
+        path: "home",
+        element: <ShopHome />,
       },
     ],
   },
