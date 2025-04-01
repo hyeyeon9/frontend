@@ -29,6 +29,9 @@ import GoodsEdit from "./features/goods/pages/GoodsEdit";
 import SmartChatBot from "./components/SmartChatBot";
 
 import ShopHome from "./features/shop/pages/ShopHome";
+import CartPage from "./features/shop/pages/CartPage";
+import ProductsPage from "./features/shop/pages/ProductsPage";
+import ProductDetailPage from "./features/shop/pages/ProductDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -142,8 +145,23 @@ const router = createBrowserRouter([
       {
         // 메인 페이지
         index: true,
-        path: "home",
+        path: "",
         element: <ShopHome />,
+      },
+      {
+        // 상품 페이지
+        path: "products",
+        element: <ProductsPage />,
+      },
+      {
+        // 상품 상세보기 페이지
+        path: "products/:id",
+        element: <ProductDetailPage />,
+      },
+      {
+        // 장바구니 페이지
+        path: "cart",
+        element: <CartPage />,
       },
     ],
   },
