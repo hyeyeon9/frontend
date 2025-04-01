@@ -1,83 +1,88 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { fetchGoodsList } from "../api/HttpGoodsService"
-import { Link } from "react-router-dom"
-import MenuNavigation from "../components/MenuNavigation"
-import { FormatDate } from "../../disposal/components/FormatDate"
+import { useEffect, useState } from "react";
+import { fetchGoodsList } from "../api/HttpGoodsService";
+import { Link } from "react-router-dom";
+import MenuNavigation from "../components/MenuNavigation";
+import { FormatDate } from "../../disposal/components/FormatDate";
 
 function GoodsList() {
-  const [goodsList, setGoodsList] = useState([])
-  const [error, setError] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [goodsList, setGoodsList] = useState([]);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const [query, setQuery] = useState("")
-  const [filteredList, setFilteredList] = useState([])
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "ascending" })
-  const [viewMode, setViewMode] = useState("table") // 'table' or 'grid'
+  const [query, setQuery] = useState("");
+  const [filteredList, setFilteredList] = useState([]);
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "ascending",
+  });
+  const [viewMode, setViewMode] = useState("table"); // 'table' or 'grid'
 
   useEffect(() => {
     async function getGoodsList() {
       try {
-        const data = await fetchGoodsList()
-        setGoodsList(data)
-        setFilteredList(data) // 초기엔 전체 목록
+        const data = await fetchGoodsList();
+        setGoodsList(data);
+        setFilteredList(data); // 초기엔 전체 목록
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    getGoodsList()
-  }, [])
+    getGoodsList();
+  }, []);
 
   function handleQuery(e) {
-    const value = e.target.value
-    setQuery(value)
+    const value = e.target.value;
+    setQuery(value);
 
-    const filtered = goodsList.filter((item) => item.goods_name.toLowerCase().includes(value.toLowerCase()))
+    const filtered = goodsList.filter((item) =>
+      item.goods_name.toLowerCase().includes(value.toLowerCase())
+    );
 
-    setFilteredList(filtered)
+    setFilteredList(filtered);
   }
 
   // 정렬 기능
   const requestSort = (key) => {
-    let direction = "ascending"
+    let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending"
+      direction = "descending";
     }
-    setSortConfig({ key, direction })
-  }
+    setSortConfig({ key, direction });
+  };
 
   // 정렬된 목록 가져오기
   const getSortedItems = () => {
-    if (!sortConfig.key) return filteredList
+    if (!sortConfig.key) return filteredList;
 
     return [...filteredList].sort((a, b) => {
       if (a[sortConfig.key] < b[sortConfig.key]) {
-        return sortConfig.direction === "ascending" ? -1 : 1
+        return sortConfig.direction === "ascending" ? -1 : 1;
       }
       if (a[sortConfig.key] > b[sortConfig.key]) {
-        return sortConfig.direction === "ascending" ? 1 : -1
+        return sortConfig.direction === "ascending" ? 1 : -1;
       }
-      return 0
-    })
-  }
+      return 0;
+    });
+  };
 
   // 재고 상태에 따른 스타일 및 텍스트
   const getStockStatus = (stock) => {
     if (stock <= 0) {
-      return { color: "bg-red-100 text-red-800", text: "품절" }
+      return { color: "bg-red-100 text-red-800", text: "품절" };
     } else if (stock < 5) {
-      return { color: "bg-orange-100 text-orange-800", text: "부족" }
+      return { color: "bg-orange-100 text-orange-800", text: "부족" };
     } else if (stock < 20) {
-      return { color: "bg-yellow-100 text-yellow-800", text: "적정" }
+      return { color: "bg-yellow-100 text-yellow-800", text: "적정" };
     } else {
-      return { color: "bg-green-100 text-green-800", text: "충분" }
+      return { color: "bg-green-100 text-green-800", text: "충분" };
     }
-  }
+  };
 
-  const sortedItems = getSortedItems()
+  const sortedItems = getSortedItems();
 
   return (
     <>
@@ -103,13 +108,19 @@ function GoodsList() {
                   />
                 </svg>
                 상품 목록
-                <span className="ml-3 text-sm font-normal text-gray-500">{filteredList.length}개의 상품</span>
+                <span className="ml-3 text-sm font-normal text-gray-500">
+                  {filteredList.length}개의 상품
+                </span>
               </h1>
 
               <div className="flex items-center mt-4 md:mt-0 space-x-3">
                 <button
                   onClick={() => setViewMode("table")}
-                  className={`p-2 rounded-md ${viewMode === "table" ? "bg-indigo-100 text-indigo-700" : "bg-gray-100 text-gray-600"}`}
+                  className={`p-2 rounded-md ${
+                    viewMode === "table"
+                      ? "bg-indigo-100 text-indigo-700"
+                      : "bg-gray-100 text-gray-600"
+                  }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +139,11 @@ function GoodsList() {
                 </button>
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-md ${viewMode === "grid" ? "bg-indigo-100 text-indigo-700" : "bg-gray-100 text-gray-600"}`}
+                  className={`p-2 rounded-md ${
+                    viewMode === "grid"
+                      ? "bg-indigo-100 text-indigo-700"
+                      : "bg-gray-100 text-gray-600"
+                  }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +171,12 @@ function GoodsList() {
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
                   </svg>
                   상품 추가
                 </Link>
@@ -190,8 +210,8 @@ function GoodsList() {
               {query && (
                 <button
                   onClick={() => {
-                    setQuery("")
-                    setFilteredList(goodsList)
+                    setQuery("");
+                    setFilteredList(goodsList);
                   }}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                 >
@@ -202,7 +222,12 @@ function GoodsList() {
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               )}
@@ -213,7 +238,9 @@ function GoodsList() {
           {loading && (
             <div className="bg-white p-8 rounded-xl shadow-md flex justify-center items-center">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-              <span className="ml-3 text-gray-600">상품 목록을 불러오는 중...</span>
+              <span className="ml-3 text-gray-600">
+                상품 목록을 불러오는 중...
+              </span>
             </div>
           )}
 
@@ -243,12 +270,21 @@ function GoodsList() {
                           {sortConfig.key === "goods_id" && (
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
-                              className={`h-4 w-4 ml-1 ${sortConfig.direction === "ascending" ? "" : "transform rotate-180"}`}
+                              className={`h-4 w-4 ml-1 ${
+                                sortConfig.direction === "ascending"
+                                  ? ""
+                                  : "transform rotate-180"
+                              }`}
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
                             >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 15l7-7 7 7"
+                              />
                             </svg>
                           )}
                         </div>
@@ -263,12 +299,21 @@ function GoodsList() {
                           {sortConfig.key === "goods_name" && (
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
-                              className={`h-4 w-4 ml-1 ${sortConfig.direction === "ascending" ? "" : "transform rotate-180"}`}
+                              className={`h-4 w-4 ml-1 ${
+                                sortConfig.direction === "ascending"
+                                  ? ""
+                                  : "transform rotate-180"
+                              }`}
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
                             >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 15l7-7 7 7"
+                              />
                             </svg>
                           )}
                         </div>
@@ -282,12 +327,21 @@ function GoodsList() {
                           {sortConfig.key === "goods_price" && (
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
-                              className={`h-4 w-4 ml-1 ${sortConfig.direction === "ascending" ? "" : "transform rotate-180"}`}
+                              className={`h-4 w-4 ml-1 ${
+                                sortConfig.direction === "ascending"
+                                  ? ""
+                                  : "transform rotate-180"
+                              }`}
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
                             >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 15l7-7 7 7"
+                              />
                             </svg>
                           )}
                         </div>
@@ -301,12 +355,21 @@ function GoodsList() {
                           {sortConfig.key === "goods_created_at" && (
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
-                              className={`h-4 w-4 ml-1 ${sortConfig.direction === "ascending" ? "" : "transform rotate-180"}`}
+                              className={`h-4 w-4 ml-1 ${
+                                sortConfig.direction === "ascending"
+                                  ? ""
+                                  : "transform rotate-180"
+                              }`}
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
                             >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 15l7-7 7 7"
+                              />
                             </svg>
                           )}
                         </div>
@@ -320,12 +383,21 @@ function GoodsList() {
                           {sortConfig.key === "goods_stock" && (
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
-                              className={`h-4 w-4 ml-1 ${sortConfig.direction === "ascending" ? "" : "transform rotate-180"}`}
+                              className={`h-4 w-4 ml-1 ${
+                                sortConfig.direction === "ascending"
+                                  ? ""
+                                  : "transform rotate-180"
+                              }`}
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
                             >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 15l7-7 7 7"
+                              />
                             </svg>
                           )}
                         </div>
@@ -336,20 +408,31 @@ function GoodsList() {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {sortedItems.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="px-6 py-10 text-center text-gray-500">
+                        <td
+                          colSpan={7}
+                          className="px-6 py-10 text-center text-gray-500"
+                        >
                           검색 결과가 없습니다
                         </td>
                       </tr>
                     ) : (
                       sortedItems.map((item) => {
-                        const stockStatus = getStockStatus(item.goods_stock)
+                        const stockStatus = getStockStatus(item.goods_stock);
                         return (
-                          <tr key={item.goods_id} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.goods_id}</td>
+                          <tr
+                            key={item.goods_id}
+                            className="hover:bg-gray-50 transition-colors"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {item.goods_id}
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="relative group">
                                 <img
-                                  src={item.goods_image || "/placeholder.svg"}
+                                  src={
+                                    `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${item.goods_image}` ||
+                                    "/placeholder.svg"
+                                  }
                                   alt={item.goods_name}
                                   className="w-16 h-16 object-cover rounded-md border border-gray-200 group-hover:border-indigo-300 transition-colors"
                                 />
@@ -361,8 +444,12 @@ function GoodsList() {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">{item.goods_name}</div>
-                              <div className="text-xs text-gray-500">카테고리 ID: {item.category_id}</div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {item.goods_name}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                카테고리 ID: {item.category_id}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-semibold text-indigo-600">
@@ -370,7 +457,11 @@ function GoodsList() {
                               </div>
                               {item.discountRate && (
                                 <div className="text-xs text-red-500">
-                                  {Math.floor(item.goods_price * (1 - item.discountRate / 100)).toLocaleString()}원
+                                  {Math.floor(
+                                    item.goods_price *
+                                      (1 - item.discountRate / 100)
+                                  ).toLocaleString()}
+                                  원
                                 </div>
                               )}
                             </td>
@@ -384,7 +475,9 @@ function GoodsList() {
                                 >
                                   {stockStatus.text}
                                 </span>
-                                <span className="ml-2 text-sm text-gray-600">{item.goods_stock}개</span>
+                                <span className="ml-2 text-sm text-gray-600">
+                                  {item.goods_stock}개
+                                </span>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -404,7 +497,7 @@ function GoodsList() {
                               </div>
                             </td>
                           </tr>
-                        )
+                        );
                       })
                     )}
                   </tbody>
@@ -422,7 +515,7 @@ function GoodsList() {
                 </div>
               ) : (
                 sortedItems.map((item) => {
-                  const stockStatus = getStockStatus(item.goods_stock)
+                  const stockStatus = getStockStatus(item.goods_stock);
                   return (
                     <div
                       key={item.goods_id}
@@ -430,7 +523,10 @@ function GoodsList() {
                     >
                       <div className="relative">
                         <img
-                          src={item.goods_image || "/placeholder.svg"}
+                          src={
+                            `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${item.goods_image}` ||
+                            "/placeholder.svg"
+                          }
                           alt={item.goods_name}
                           className="w-full h-48 object-cover"
                         />
@@ -446,7 +542,9 @@ function GoodsList() {
                         </div>
                       </div>
                       <div className="p-4">
-                        <h3 className="text-sm font-medium text-gray-900 truncate">{item.goods_name}</h3>
+                        <h3 className="text-sm font-medium text-gray-900 truncate">
+                          {item.goods_name}
+                        </h3>
                         <div className="mt-1 flex justify-between items-center">
                           <div>
                             <div className="text-lg font-semibold text-indigo-600">
@@ -454,11 +552,17 @@ function GoodsList() {
                             </div>
                             {item.discountRate && (
                               <div className="text-xs text-red-500">
-                                {Math.floor(item.goods_price * (1 - item.discountRate / 100)).toLocaleString()}원
+                                {Math.floor(
+                                  item.goods_price *
+                                    (1 - item.discountRate / 100)
+                                ).toLocaleString()}
+                                원
                               </div>
                             )}
                           </div>
-                          <div className="text-xs text-gray-500">재고: {item.goods_stock}개</div>
+                          <div className="text-xs text-gray-500">
+                            재고: {item.goods_stock}개
+                          </div>
                         </div>
                         <div className="mt-4 flex space-x-2">
                           <Link
@@ -476,7 +580,7 @@ function GoodsList() {
                         </div>
                       </div>
                     </div>
-                  )
+                  );
                 })
               )}
             </div>
@@ -484,8 +588,7 @@ function GoodsList() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default GoodsList
-
+export default GoodsList;
