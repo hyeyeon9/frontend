@@ -72,6 +72,7 @@ export default function DiffChart({ todayData, targetDateData, date1, date2 }) {
             legendOffset: -60,
             legendPosition: "middle",
             truncateTickAt: 0,
+            format: ">-0,~r",
           }}
           colors={{ scheme: "category10" }}
           lineWidth={3}
