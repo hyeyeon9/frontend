@@ -1,4 +1,4 @@
-
+"use client"
 
 import { useEffect, useState } from "react"
 import { fetchAllAssociationRules, fetchAllAssociationTimeRules, fetchWeekSales } from "../api/HttpCartAnalysisService"
@@ -20,6 +20,11 @@ import {
   ShoppingCart,
   Target,
   X,
+  Coffee,
+  Sunrise,
+  Sunset,
+  Moon,
+  Sun,
 } from "lucide-react"
 
 function getTimePeriod(time) {
@@ -30,6 +35,22 @@ function getTimePeriod(time) {
   if (hour >= 15 && hour < 18) return "한가한 오후"
   if (hour >= 18 && hour < 23) return "저녁"
   if (hour >= 23 || hour < 5) return "저녁"
+}
+
+// 시간대별 아이콘 매핑
+function getTimePeriodIcon(timePeriod) {
+  switch (timePeriod) {
+    case "아침":
+      return <Sunrise className="h-6 w-6 text-orange-500" />
+    case "점심":
+      return <Sun className="h-6 w-6 text-yellow-500" />
+    case "한가한 오후":
+      return <Coffee className="h-6 w-6 text-blue-500" />
+    case "저녁":
+      return <Sunset className="h-6 w-6 text-indigo-500" />
+    default:
+      return <Moon className="h-6 w-6 text-purple-500" />
+  }
 }
 
 function Association() {
@@ -75,35 +96,47 @@ function Association() {
   }, [period, month])
 
   // 시간대별 연관관계
-  // useEffect(() => {
-  //   if (!timeRules) return
+  useEffect(() => {
+    if (!timeRules) return
 
-  //   async function getAssociationTimeRules() {
-  //     try {
-  //       const data = await fetchAllAssociationTimeRules()
-  //       setTimeRules(data)
-  //     } catch (error) {
-  //       setError(error.message)
-  //     }
-  //   }
-  //   getAssociationTimeRules()
-  // }, [timePeriod])
+    async function getAssociationTimeRules() {
+      try {
+        const data = await fetchAllAssociationTimeRules()
+        console.log("시간대별 연관관계", data)
+        const timeRules = data
+          .filter((item) => item.time_period === timePeriod)
+          .sort((a, b) => b.confidence - a.confidence)
+          .slice(0, 1)
+
+        setTimeRules(timeRules)
+
+        console.log("탑", timeRules)
+      } catch (error) {
+        setError(error.message)
+      }
+    }
+    getAssociationTimeRules()
+  }, [timePeriod])
 
   // 전체 연관관계 필터링
   const filteredRules = rules.filter(
     (rule) => rule.support >= minSupport && rule.confidence >= minConfidence && rule.lift >= minLift,
   )
 
-  const topTimeRules = timeRules
-    .filter((item) => item.time_period === timePeriod)
-    .sort((a, b) => b.confidence - a.confidence)
-    .slice(0, 1)
-
   const [selectedChartData, setSelectedChartData] = useState([])
   const [selectedLabel, setSelectedLabel] = useState("")
+  const [expandedRuleIndex, setExpandedRuleIndex] = useState(null)
 
-  async function handleTopRuleClick(item) {
+  async function handleTopRuleClick(item, index) {
+    // 이미 선택된 항목을 다시 클릭하면 닫기
+    if (expandedRuleIndex === index) {
+      setExpandedRuleIndex(null)
+      return
+    }
+
     setSelectedTopRule(item)
+    setExpandedRuleIndex(index)
+
     const rawItems = `${item.itemset_a},${item.itemset_b}`.split(",").map((v) => v.trim())
 
     const targets = rawItems.filter((name) => categoryMap[name])
@@ -346,31 +379,62 @@ function Association() {
 
           {/* 오른쪽: 추천 및 차트 */}
           <div className="space-y-6">
-            {/* 현재 시간대 정보 */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-indigo-600" />
-                  현재 시간대
+            {/* 현재 시간대 정보 - 개선된 UI */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-r from-indigo-500 to-blue-600 p-4 text-white">
+                <h2 className="text-lg font-semibold flex items-center">
+                  <Clock className="h-5 w-5 mr-2" />
+                  현재 시간대 분석
                 </h2>
-                <div className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
-                  {timePeriod}
+                <div className="flex items-center text-sm mt-1 opacity-80">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  <span>{date}</span>
+                  <span className="mx-2">•</span>
+                  <Clock className="h-4 w-4 mr-1" />
+                  <span>{time}</span>
                 </div>
               </div>
 
-              <div className="text-sm text-gray-600">
-                <div className="flex items-center mb-2">
-                  <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                  <span>{date}</span>
-                </div>
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-2 text-gray-400" />
-                  <span>{time}</span>
+              <div className="p-4 flex items-center">
+                <div className="bg-indigo-100 p-3 rounded-full mr-4">{getTimePeriodIcon(timePeriod)}</div>
+                <div className="flex-1">
+                  <div className="flex items-center">
+                    <h3 className="text-lg font-bold text-gray-800">{timePeriod}</h3>
+                    <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
+                      현재
+                    </span>
+                  </div>
+
+                  {timeRules.length > 0 ? (
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500 mb-1">시간대별 추천 조합:</p>
+                      <div className="flex items-center mt-1">
+                        {timeRules.map((item, idx) => (
+                          <div key={idx} className="flex items-center bg-gray-100 rounded-lg p-2">
+                            <div className="flex flex-col items-center mr-3 bg-white p-2 rounded-md shadow-sm">
+                              <span className="text-xs text-gray-500">추천 1</span>
+                              <span className="font-medium text-indigo-600">{item.itemset_a}</span>
+                            </div>
+                            <div className="flex items-center text-gray-400 mx-1">+</div>
+                            <div className="flex flex-col items-center bg-white p-2 rounded-md shadow-sm">
+                              <span className="text-xs text-gray-500">추천 2</span>
+                              <span className="font-medium text-indigo-600">{item.itemset_b}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-3 text-xs text-gray-500 flex items-center">
+                        <Info className="h-3 w-3 mr-1" />이 시간대에 가장 많이 함께 구매되는 상품입니다
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 mt-1">이 시간대의 추천 상품이 없습니다.</p>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* 추천 상품 조합 */}
+            {/* 추천 상품 조합 - 개선된 UI */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h2 className="text-lg font-semibold text-gray-800 flex items-center mb-4">
                 <Target className="h-5 w-5 mr-2 text-indigo-600" />
@@ -382,32 +446,46 @@ function Association() {
               ) : (
                 <div className="space-y-3">
                   {topRules.map((item, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => handleTopRuleClick(item)}
-                      className={`p-4 rounded-lg border transition-colors cursor-pointer ${
-                        selectedTopRule === item
-                          ? "border-indigo-300 bg-indigo-50"
-                          : "border-gray-200 hover:border-indigo-200 hover:bg-indigo-50/50"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center">
-                          <div className="bg-indigo-100 text-indigo-700 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mr-2">
-                            {idx + 1}
+                    <div key={idx} className="transition-all duration-300">
+                      <div
+                        onClick={() => handleTopRuleClick(item, idx)}
+                        className={`p-4 rounded-lg border transition-colors cursor-pointer ${
+                          expandedRuleIndex === idx
+                            ? "border-indigo-300 bg-indigo-50"
+                            : "border-gray-200 hover:border-indigo-200 hover:bg-indigo-50/50"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center">
+                            <div className="bg-indigo-100 text-indigo-700 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mr-2">
+                              {idx + 1}
+                            </div>
+                            <h3 className="font-medium text-gray-800">추천 조합</h3>
                           </div>
-                          <h3 className="font-medium text-gray-800">추천 조합</h3>
+                          <div className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                            신뢰도: {(item.confidence * 100).toFixed(1)}%
+                          </div>
                         </div>
-                        <div className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                          신뢰도: {(item.confidence * 100).toFixed(1)}%
+
+                        <div className="flex items-center text-gray-700">
+                          <span className="font-medium">{item.itemset_a}</span>
+                          <ChevronDown
+                            className={`h-4 w-4 mx-2 transform text-gray-400 transition-transform ${expandedRuleIndex === idx ? "rotate-180" : "rotate-270"}`}
+                          />
+                          <span className="font-medium">{item.itemset_b}</span>
                         </div>
                       </div>
 
-                      <div className="flex items-center text-gray-700">
-                        <span className="font-medium">{item.itemset_a}</span>
-                        <ChevronDown className="h-4 w-4 mx-2 transform rotate-270 text-gray-400" />
-                        <span className="font-medium">{item.itemset_b}</span>
-                      </div>
+                      {/* 판매 추이 차트 - 선택된 항목 아래에 표시 */}
+                      {expandedRuleIndex === idx && selectedChartData.length > 0 && (
+                        <div className="mt-2 p-4 bg-white border border-indigo-100 rounded-lg shadow-sm animate-fadeIn">
+                          <h3 className="text-sm font-medium text-gray-700 flex items-center mb-3">
+                            <LineChartIcon className="h-4 w-4 mr-1 text-indigo-500" />
+                            판매 추이
+                          </h3>
+                          <LineChart chartData={selectedChartData} label={selectedLabel} />
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -424,20 +502,20 @@ function Association() {
                 </p>
               </div>
             </div>
-
-            {/* 판매 추이 차트 */}
-            {selectedChartData.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center mb-4">
-                  <LineChartIcon className="h-5 w-5 mr-2 text-indigo-600" />
-                  판매 추이
-                </h2>
-                <LineChart chartData={selectedChartData} label={selectedLabel} />
-              </div>
-            )}
           </div>
         </div>
       </div>
+
+      {/* 애니메이션을 위한 CSS */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+      `}</style>
     </div>
   )
 }
