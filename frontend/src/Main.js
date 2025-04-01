@@ -27,7 +27,7 @@ import LoginPage from "./features/member/pages/LoginPage";
 import SignUpPage from "./features/member/pages/SignupPage";
 
 import GoodsEdit from "./features/goods/pages/GoodsEdit";
-import ChatBot from "./components/ChatBot";
+import SmartChatBot from "./components/SmartChatBot";
 
 const router = createBrowserRouter([
   {
@@ -133,7 +133,7 @@ const router = createBrowserRouter([
       {
         // 챗봇 페이지
         path: "/chatBot",
-        element: <ChatBot />,
+        element: <SmartChatBot />,
       },
     ],
   },
