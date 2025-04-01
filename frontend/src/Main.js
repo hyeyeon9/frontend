@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import RootLayout from "./pages/RootLayout";
+import UserLayout from "./pages/UserLayout";
 
 import Association from "./features/cart_analysis/pages/Association";
 
@@ -11,8 +12,6 @@ import GoodsDetail from "./features/goods/pages/GoodDetail";
 import GoodsByCategory from "./features/goods/pages/GoodsByCategory";
 import GoodsBySubCategory from "./features/goods/pages/GoodsBySubCategory";
 import GoodsList from "./features/goods/pages/GoodsList";
-
-import Login from "./features/member/components/Login";
 
 import DashBoard from "./features/dashboard/pages/DashBoard";
 import ExpiringItemsPage from "./features/dashboard/pages/ExpiringItemsPage";
@@ -29,14 +28,17 @@ import SignUpPage from "./features/member/pages/SignupPage";
 import GoodsEdit from "./features/goods/pages/GoodsEdit";
 import SmartChatBot from "./components/SmartChatBot";
 
+import ShopHome from "./features/shop/pages/ShopHome";
+
 const router = createBrowserRouter([
   {
+    // 관리자 페이지(기본)
     path: "/",
     element: <RootLayout />,
-    id: "root",
     children: [
       {
         // 메인 화면
+        index: true,
         path: "/",
         element: <DashBoard />,
       },
@@ -106,11 +108,6 @@ const router = createBrowserRouter([
         element: <AddGoods />,
       },
       {
-        // 로그인 페이지
-        path: "app/member/login",
-        element: <Login />,
-      },
-      {
         // 폐기 관리 페이지
         path: "/disposal",
         element: <DispoalList />,
@@ -134,6 +131,19 @@ const router = createBrowserRouter([
         // 챗봇 페이지
         path: "/chatBot",
         element: <SmartChatBot />,
+      },
+    ],
+  },
+  {
+    // 사용자 페이지
+    path: "/shop",
+    element: <UserLayout />,
+    children: [
+      {
+        // 메인 페이지
+        index: true,
+        path: "home",
+        element: <ShopHome />,
       },
     ],
   },
