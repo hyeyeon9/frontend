@@ -42,6 +42,7 @@ export async function fetchAllAssociationTimeRules() {
   return response.data;
 }
 
+// 
 export async function fetchWeekSales(categoryId,subCategoryId) {
   const response = await axios.get(
     `http://localhost:8090/app/statistics/sales/week?categoryId=${categoryId}&subCategoryId=${subCategoryId}`

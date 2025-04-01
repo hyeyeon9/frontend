@@ -130,6 +130,7 @@ const router = createBrowserRouter([
         path: "/orders",
         element: <OrderingPage />,
       },
+
       {
         // 챗봇 페이지
         path: "/chatBot",
