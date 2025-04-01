@@ -1,95 +1,129 @@
-
-import { useEffect, useState } from "react"
-import { requestOrder } from "../api/HttpOrderingService"
-import { fetchInventoryList } from "../../inventory/api/HttpInventoryService"
-import { fetchGoodsByCategory, fetchGoodsBySubCategory, fetchGoodsList } from "../../goods/api/HttpGoodsService"
-import { AlertCircle, CheckCircle, Filter, Info, Package, Search, ShoppingCart, Trash2, X } from "lucide-react"
+import { useEffect, useState } from "react";
+import { fetchOrders, requestOrder } from "../api/HttpOrderingService";
+import { fetchInventoryList } from "../../inventory/api/HttpInventoryService";
+import {
+  fetchGoodsByCategory,
+  fetchGoodsBySubCategory,
+  fetchGoodsList,
+} from "../../goods/api/HttpGoodsService";
+import {
+  AlertCircle,
+  CheckCircle,
+  Filter,
+  Info,
+  Package,
+  Search,
+  ShoppingCart,
+  Trash2,
+  X,
+} from "lucide-react";
 
 function OrderingPage() {
-  const [inventoryList, setInventoryList] = useState([])
-  const [goodsList, setGoodsList] = useState([])
-  const [filteredInventory, setFilteredInventory] = useState([])
+  const [inventoryList, setInventoryList] = useState([]);
+  const [goodsList, setGoodsList] = useState([]);
+  const [filteredInventory, setFilteredInventory] = useState([]);
 
-  const [selectedItems, setSelectedItems] = useState({}) // 객체 Object
+  const [selectedItems, setSelectedItems] = useState({}); // 객체 Object
 
-  const [category, setCategory] = useState("")
-  const [subCategory, setSubCategory] = useState("")
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
 
-  const [sortOption, setSortOption] = useState("")
-  const [statusFilter, setStatusFilter] = useState("") // 상품 상태 필터 (정상.재고부족)
-  const [searchQuery, setSearchQuery] = useState("") // (상품 검색창)
+  const [sortOption, setSortOption] = useState("");
+  const [statusFilter, setStatusFilter] = useState(""); // 상품 상태 필터 (정상.재고부족)
+  const [searchQuery, setSearchQuery] = useState(""); // (상품 검색창)
 
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [processingOrder, setProcessingOrder] = useState(false)
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [processingOrder, setProcessingOrder] = useState(false);
+
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     async function getInventoryList() {
       try {
-        setLoading(true)
-        const data = await fetchInventoryList()
-        setInventoryList(data)
+        setLoading(true);
+        const data = await fetchInventoryList();
+        setInventoryList(data);
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    getInventoryList()
-  }, [])
+    getInventoryList();
+  }, []);
+
+  // 리스트 가져오기
+  useEffect(() => {
+    async function getOrdersList() {
+      try {
+        setLoading(true);
+        const data = await fetchOrders();
+        setOrders(data);
+        console.log("발주 리스트", data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getOrdersList();
+  }, []);
 
   // 발주 버튼을 누른경우
   async function handleConfirmAddStock() {
     // Object.entries : key - value 쌍으로
     const orders = Object.entries(selectedItems)
-      .filter(([goodsId, data]) => data.quantity && Number.parseInt(data.quantity) > 0)
+      .filter(
+        ([goodsId, data]) => data.quantity && Number.parseInt(data.quantity) > 0
+      )
       .map(([goodsId, data]) => ({
         goodsId: Number.parseInt(goodsId),
         quantity: Number.parseInt(data.quantity),
-      }))
+      }));
 
     if (orders.length === 0) {
-      alert("수량이 입력된 상품이 없습니다.")
-      return
+      alert("수량이 입력된 상품이 없습니다.");
+      return;
     }
 
-    setProcessingOrder(true)
+    setProcessingOrder(true);
     try {
       for (const order of orders) {
-        await requestOrder(order.goodsId, order.quantity)
+        await requestOrder(order.goodsId, order.quantity);
       }
 
-      alert("모든 발주가 등록되��습니다.")
-      setSelectedItems({}) // 초기화
+      alert("모든 발주가 등록되었습니다.");
+      setSelectedItems({}); // 초기화
     } catch (error) {
-      alert(`발주 처리 중 오류가 발생했습니다: ${error.message}`)
+      alert(`발주 처리 중 오류가 발생했습니다: ${error.message}`);
     } finally {
-      setProcessingOrder(false)
+      setProcessingOrder(false);
     }
   }
 
   useEffect(() => {
     async function getGoodsList() {
       try {
-        const data = await fetchGoodsList()
-        setGoodsList(data)
+        const data = await fetchGoodsList();
+        setGoodsList(data);
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       }
     }
-    getGoodsList()
-  }, [])
+    getGoodsList();
+  }, []);
 
   function handleSelectItem(goodsId) {
     setSelectedItems((prev) => {
-      const updated = { ...prev }
+      const updated = { ...prev };
       if (updated[goodsId]) {
-        delete updated[goodsId]
+        delete updated[goodsId];
       } else {
-        updated[goodsId] = { quantity: "" }
+        updated[goodsId] = { quantity: "" };
       }
-      return updated
-    })
+      return updated;
+    });
   }
 
   function handleQuantityChange(goodsId, quantity) {
@@ -99,98 +133,109 @@ function OrderingPage() {
         ...prev[goodsId],
         quantity,
       },
-    }))
+    }));
   }
 
   function handleSelectAll(e) {
-    const isChecked = e.target.checked
-    const newSelections = {}
+    const isChecked = e.target.checked;
+    const newSelections = {};
 
     if (isChecked) {
       filteredInventory.forEach((item) => {
-        newSelections[item.goods_id] = { quantity: "" }
-      })
+        newSelections[item.goods_id] = { quantity: "" };
+      });
     }
 
-    setSelectedItems(isChecked ? newSelections : {})
+    setSelectedItems(isChecked ? newSelections : {});
   }
 
   function handleCategoryChange(e) {
-    setCategory(e.target.value)
-    setSubCategory("") // 대분류 바뀌면 소분류 초기화
+    setCategory(e.target.value);
+    setSubCategory(""); // 대분류 바뀌면 소분류 초기화
   }
 
-  async function getFilteredInventory(inventoryList, category, subCategory, statusFilter, searchQuery, sortOption) {
-    let goodsList = []
+  async function getFilteredInventory(
+    inventoryList,
+    category,
+    subCategory,
+    statusFilter,
+    searchQuery,
+    sortOption
+  ) {
+    let goodsList = [];
 
     // 1. 카테고리에 따라 서버에서 goods 불러오기
     if (category && subCategory) {
-      goodsList = await fetchGoodsBySubCategory(category, subCategory)
+      goodsList = await fetchGoodsBySubCategory(category, subCategory);
     } else if (category) {
-      goodsList = await fetchGoodsByCategory(category)
+      goodsList = await fetchGoodsByCategory(category);
     } else {
-      goodsList = await fetchGoodsList()
+      goodsList = await fetchGoodsList();
     }
 
     // 2. 재고 병합 및 상태 재계산
-    const mergedMap = new Map()
+    const mergedMap = new Map();
 
     inventoryList.forEach((item) => {
-      const existing = mergedMap.get(item.goodsId)
+      const existing = mergedMap.get(item.goodsId);
       if (existing) {
-        const newStock = existing.stockQuantity + item.stockQuantity
+        const newStock = existing.stockQuantity + item.stockQuantity;
         mergedMap.set(item.goodsId, {
           ...existing,
           stockQuantity: newStock,
           stockStatus: newStock >= 5 ? "정상" : "재고부족",
-        })
+        });
       } else {
         mergedMap.set(item.goodsId, {
           ...item,
           stockStatus: item.stockQuantity >= 5 ? "정상" : "재고부족",
-        })
+        });
       }
-    })
+    });
 
-    let mergedList = Array.from(mergedMap.values())
+    let mergedList = Array.from(mergedMap.values());
 
     // 3. inventory + goods 병합
     mergedList = mergedList
       .filter((item) => goodsList.some((g) => g.goods_id === item.goodsId))
       .map((item) => {
-        const matched = goodsList.find((g) => g.goods_id === item.goodsId)
+        const matched = goodsList.find((g) => g.goods_id === item.goodsId);
         return {
           ...item,
           ...matched,
-        }
-      })
+        };
+      });
 
     // 4. 상태 필터링
     if (statusFilter) {
-      mergedList = mergedList.filter((item) => item.stockStatus === statusFilter)
+      mergedList = mergedList.filter(
+        (item) => item.stockStatus === statusFilter
+      );
     }
 
     // 5. 검색 필터링
     if (searchQuery.trim() !== "") {
-      mergedList = mergedList.filter((item) => item.goods_name?.toLowerCase().includes(searchQuery.toLowerCase()))
+      mergedList = mergedList.filter((item) =>
+        item.goods_name?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
 
     // 6. 정렬
     if (sortOption === "price_asc") {
-      mergedList.sort((a, b) => a.goods_price - b.goods_price)
+      mergedList.sort((a, b) => a.goods_price - b.goods_price);
     } else if (sortOption === "price_desc") {
-      mergedList.sort((a, b) => b.goods_price - a.goods_price)
+      mergedList.sort((a, b) => b.goods_price - a.goods_price);
     } else if (sortOption === "stock_asc") {
-      mergedList.sort((a, b) => a.stockQuantity - b.stockQuantity)
+      mergedList.sort((a, b) => a.stockQuantity - b.stockQuantity);
     } else if (sortOption === "stock_desc") {
-      mergedList.sort((a, b) => b.stockQuantity - a.stockQuantity)
+      mergedList.sort((a, b) => b.stockQuantity - a.stockQuantity);
     }
 
-    return mergedList
+    return mergedList;
   }
 
   useEffect(() => {
-    if (!inventoryList.length) return
+    if (!inventoryList.length) return;
 
     async function fetchAndFilter() {
       try {
@@ -200,24 +245,31 @@ function OrderingPage() {
           subCategory,
           statusFilter,
           searchQuery,
-          sortOption,
-        )
-        setFilteredInventory(result)
+          sortOption
+        );
+        setFilteredInventory(result);
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       }
     }
 
-    fetchAndFilter()
-  }, [inventoryList, category, subCategory, statusFilter, searchQuery, sortOption])
+    fetchAndFilter();
+  }, [
+    inventoryList,
+    category,
+    subCategory,
+    statusFilter,
+    searchQuery,
+    sortOption,
+  ]);
 
   // 선택된 상품 총 개수
-  const selectedCount = Object.keys(selectedItems).length
+  const selectedCount = Object.keys(selectedItems).length;
 
   // 선택된 상품 총 수량
   const totalQuantity = Object.values(selectedItems).reduce((sum, item) => {
-    return sum + (Number.parseInt(item.quantity) || 0)
-  }, 0)
+    return sum + (Number.parseInt(item.quantity) || 0);
+  }, 0);
 
   return (
     <div className="bg-gray-50 min-h-screen p-6">
@@ -280,10 +332,14 @@ function OrderingPage() {
                   <>
                     <option value="즉석식품">즉석식품</option>
                     <option value="라면 & 면류">라면 & 면류</option>
-                    <option value="베이커리 & 샌드위치">베이커리 & 샌드위치</option>
+                    <option value="베이커리 & 샌드위치">
+                      베이커리 & 샌드위치
+                    </option>
                     <option value="냉장 & 냉동식품">냉장 & 냉동식품</option>
                     <option value="과자 & 스낵">과자 & 스낵</option>
-                    <option value="아이스크림 & 디저트">아이스크림 & 디저트</option>
+                    <option value="아이스크림 & 디저트">
+                      아이스크림 & 디저트
+                    </option>
                   </>
                 ) : category === "음료" ? (
                   <>
@@ -302,7 +358,9 @@ function OrderingPage() {
                   </>
                 ) : category === "디지털 & 문구" ? (
                   <>
-                    <option value="전자기기 & 액세서리">전자기기 & 액세서리</option>
+                    <option value="전자기기 & 액세서리">
+                      전자기기 & 액세서리
+                    </option>
                     <option value="문구류">문구류</option>
                   </>
                 ) : null}
@@ -330,7 +388,9 @@ function OrderingPage() {
               <button
                 onClick={() => setStatusFilter("")}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  statusFilter === "" ? "bg-white text-indigo-700 shadow-sm" : "text-gray-600 hover:bg-gray-200"
+                  statusFilter === ""
+                    ? "bg-white text-indigo-700 shadow-sm"
+                    : "text-gray-600 hover:bg-gray-200"
                 }`}
               >
                 전체
@@ -338,7 +398,9 @@ function OrderingPage() {
               <button
                 onClick={() => setStatusFilter("정상")}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  statusFilter === "정상" ? "bg-white text-green-700 shadow-sm" : "text-gray-600 hover:bg-gray-200"
+                  statusFilter === "정상"
+                    ? "bg-white text-green-700 shadow-sm"
+                    : "text-gray-600 hover:bg-gray-200"
                 }`}
               >
                 정상
@@ -346,7 +408,9 @@ function OrderingPage() {
               <button
                 onClick={() => setStatusFilter("재고부족")}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  statusFilter === "재고부족" ? "bg-white text-red-700 shadow-sm" : "text-gray-600 hover:bg-gray-200"
+                  statusFilter === "재고부족"
+                    ? "bg-white text-red-700 shadow-sm"
+                    : "text-gray-600 hover:bg-gray-200"
                 }`}
               >
                 재고부족
@@ -382,7 +446,9 @@ function OrderingPage() {
                           type="checkbox"
                           checked={
                             filteredInventory.length > 0 &&
-                            filteredInventory.every((item) => selectedItems[item.goods_id])
+                            filteredInventory.every(
+                              (item) => selectedItems[item.goods_id]
+                            )
                           }
                           onChange={handleSelectAll}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
@@ -425,7 +491,9 @@ function OrderingPage() {
                             className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                           />
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.goods_id}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {item.goods_id}
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <img
                             src={item.goods_image || "/placeholder.svg"}
@@ -434,14 +502,18 @@ function OrderingPage() {
                           />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{item.goods_name}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {item.goods_name}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-semibold text-indigo-600">
                             {Number(item.goods_price).toLocaleString()}원
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.category_id}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {item.category_id}
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {item.stockStatus === "재고부족" ? (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
@@ -459,7 +531,12 @@ function OrderingPage() {
                           <input
                             type="number"
                             value={selectedItems[item.goods_id]?.quantity || ""}
-                            onChange={(e) => handleQuantityChange(item.goods_id, e.target.value)}
+                            onChange={(e) =>
+                              handleQuantityChange(
+                                item.goods_id,
+                                e.target.value
+                              )
+                            }
                             disabled={!selectedItems[item.goods_id]}
                             min="1"
                             className="w-20 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-center disabled:bg-gray-100 disabled:text-gray-400"
@@ -495,11 +572,13 @@ function OrderingPage() {
               ) : (
                 <ul className="space-y-3">
                   {Object.entries(selectedItems).map(([goodsId, data]) => {
-                    if (!data) return null
+                    if (!data) return null;
 
-                    const product = goodsList.find((g) => g.goods_id === Number.parseInt(goodsId))
+                    const product = goodsList.find(
+                      (g) => g.goods_id === Number.parseInt(goodsId)
+                    );
 
-                    if (!product) return null
+                    if (!product) return null;
 
                     return (
                       <li
@@ -513,9 +592,13 @@ function OrderingPage() {
                             className="w-10 h-10 object-cover rounded-md mr-3"
                           />
                           <div>
-                            <div className="font-medium text-gray-800 text-sm">{product.goods_name}</div>
+                            <div className="font-medium text-gray-800 text-sm">
+                              {product.goods_name}
+                            </div>
                             <div className="text-xs text-gray-500">
-                              {data.quantity ? `${data.quantity}개` : "수량 미지정"}
+                              {data.quantity
+                                ? `${data.quantity}개`
+                                : "수량 미지정"}
                             </div>
                           </div>
                         </div>
@@ -526,7 +609,7 @@ function OrderingPage() {
                           <X className="h-5 w-5" />
                         </button>
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               )}
@@ -535,7 +618,9 @@ function OrderingPage() {
             <div className="p-6 border-t border-gray-200 bg-gray-50">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-sm text-gray-600">총 발주 수량:</span>
-                <span className="font-bold text-indigo-700">{totalQuantity}개</span>
+                <span className="font-bold text-indigo-700">
+                  {totalQuantity}개
+                </span>
               </div>
 
               <div className="space-y-3">
@@ -552,12 +637,16 @@ function OrderingPage() {
                   onClick={handleConfirmAddStock}
                   disabled={
                     Object.keys(selectedItems).length === 0 ||
-                    !Object.values(selectedItems).some((item) => item.quantity) ||
+                    !Object.values(selectedItems).some(
+                      (item) => item.quantity
+                    ) ||
                     processingOrder
                   }
                   className={`w-full px-4 py-2 rounded-lg text-white flex items-center justify-center ${
                     Object.keys(selectedItems).length === 0 ||
-                    !Object.values(selectedItems).some((item) => item.quantity) ||
+                    !Object.values(selectedItems).some(
+                      (item) => item.quantity
+                    ) ||
                     processingOrder
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-indigo-600 hover:bg-indigo-700"
@@ -581,8 +670,7 @@ function OrderingPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default OrderingPage
-
+export default OrderingPage;
