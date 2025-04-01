@@ -96,7 +96,7 @@ export default function DiscountedProductsList({ onAddToCart }) {
                 <div className="relative">
                   <img
                     src={
-                      product.goods_image ||
+                      `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${product.goods_image}` ||
                       "/placeholder.svg?height=200&width=200"
                     }
                     alt={product.goods_name}

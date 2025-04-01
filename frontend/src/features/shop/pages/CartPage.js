@@ -83,7 +83,10 @@ export default function CartPage() {
                 <div className="flex flex-col sm:flex-row">
                   <div className="relative w-full sm:w-24 h-24">
                     <img
-                      src={item.image || "/placeholder.svg"}
+                      src={
+                        `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${item.image}` ||
+                        "/placeholder.svg"
+                      }
                       alt={item.name}
                       className="object-cover w-full h-full rounded-t-lg sm:rounded-l-lg sm:rounded-t-none"
                     />

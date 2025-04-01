@@ -1,40 +1,41 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import MenuNavigation from "./../components/MenuNavigation"
-import { fetchGoodsDetail } from "../api/HttpGoodsService"
-import { FormatDate } from "../../disposal/components/FormatDate"
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import MenuNavigation from "./../components/MenuNavigation";
+import { fetchGoodsDetail } from "../api/HttpGoodsService";
+import { FormatDate } from "../../disposal/components/FormatDate";
 
 function GoodsDetail() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const [goods, setGoods] = useState()
-  const [error, setError] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [goods, setGoods] = useState();
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const isDiscounting = goods && goods.discountRate !== null && goods.discountEndAt !== null
+  const isDiscounting =
+    goods && goods.discountRate !== null && goods.discountEndAt !== null;
 
   useEffect(() => {
     async function getGoodsDetail() {
       try {
-        const data = await fetchGoodsDetail(id)
-        setGoods(data)
-        console.log("상품", data)
+        const data = await fetchGoodsDetail(id);
+        setGoods(data);
+        console.log("상품", data);
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    getGoodsDetail()
-  }, [id])
+    getGoodsDetail();
+  }, [id]);
 
   // 할인된 가격 계산
   const calculateDiscountedPrice = () => {
-    if (!goods || !isDiscounting) return goods?.goods_price
-    return Math.floor(goods.goods_price * (1 - goods.discountRate / 100))
-  }
+    if (!goods || !isDiscounting) return goods?.goods_price;
+    return Math.floor(goods.goods_price * (1 - goods.discountRate / 100));
+  };
 
   return (
     <>
@@ -72,7 +73,12 @@ function GoodsDetail() {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
                 </svg>
                 뒤로 가기
               </button>
@@ -105,7 +111,10 @@ function GoodsDetail() {
                   <div className="relative group">
                     <div className="overflow-hidden rounded-xl shadow-lg">
                       <img
-                        src={goods.goods_image || "/placeholder.svg"}
+                        src={
+                          `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${goods.goods_image}` ||
+                          "/placeholder.svg"
+                        }
                         alt={goods.goods_name}
                         className="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105"
                       />
@@ -148,7 +157,9 @@ function GoodsDetail() {
                   <div className="bg-gray-50 rounded-xl p-6 shadow-sm">
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="text-gray-500 text-sm font-medium">판매가</h3>
+                        <h3 className="text-gray-500 text-sm font-medium">
+                          판매가
+                        </h3>
                         <div className="flex items-baseline mt-1">
                           {isDiscounting && (
                             <span className="text-lg line-through text-gray-400 mr-2">
@@ -156,11 +167,14 @@ function GoodsDetail() {
                             </span>
                           )}
                           <span className="text-3xl font-bold text-indigo-700">
-                            {(isDiscounting ? calculateDiscountedPrice() : goods.goods_price).toLocaleString()}원
+                            {(isDiscounting
+                              ? calculateDiscountedPrice()
+                              : goods.goods_price
+                            ).toLocaleString()}
+                            원
                           </span>
                         </div>
                       </div>
-
                     </div>
 
                     {/* 할인 정보 */}
@@ -184,12 +198,21 @@ function GoodsDetail() {
                           <span className="font-medium">할인 정보</span>
                         </div>
                         <div className="mt-1 text-sm text-amber-600">
-                          <span className="font-semibold">{goods.discountRate}% 할인</span>이
-                          <span className="font-semibold ml-1">{FormatDate(goods.discountEndAt)}</span> 까지 적용됩니다.
+                          <span className="font-semibold">
+                            {goods.discountRate}% 할인
+                          </span>
+                          이
+                          <span className="font-semibold ml-1">
+                            {FormatDate(goods.discountEndAt)}
+                          </span>{" "}
+                          까지 적용됩니다.
                         </div>
                         <div className="mt-1 text-sm text-amber-600">
                           <span className="font-semibold">
-                            {(goods.goods_price - calculateDiscountedPrice()).toLocaleString()}원
+                            {(
+                              goods.goods_price - calculateDiscountedPrice()
+                            ).toLocaleString()}
+                            원
                           </span>{" "}
                           절약 가능
                         </div>
@@ -201,7 +224,9 @@ function GoodsDetail() {
                 {/* 상품 정보 영역 */}
                 <div className="space-y-6">
                   <div>
-                    <h1 className="text-3xl font-bold text-gray-800">{goods.goods_name}</h1>
+                    <h1 className="text-3xl font-bold text-gray-800">
+                      {goods.goods_name}
+                    </h1>
                     <div className="flex flex-wrap gap-2 mt-3">
                       <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm">
                         카테고리 ID: {goods.category_id}
@@ -214,7 +239,9 @@ function GoodsDetail() {
 
                   {/* 상품 설명 */}
                   <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">상품 설명</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                      상품 설명
+                    </h3>
                     <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                       {goods.goods_description || "상품 설명이 없습니다."}
                     </p>
@@ -222,7 +249,9 @@ function GoodsDetail() {
 
                   {/* 재고 정보 */}
                   <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">재고 정보</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                      재고 정보
+                    </h3>
                     <div className="flex items-center">
                       <div className="w-full bg-gray-200 rounded-full h-4">
                         <div
@@ -230,26 +259,35 @@ function GoodsDetail() {
                             goods.goods_stock < 5
                               ? "bg-red-500"
                               : goods.goods_stock < 20
-                                ? "bg-yellow-500"
-                                : "bg-green-500"
+                              ? "bg-yellow-500"
+                              : "bg-green-500"
                           }`}
-                          style={{ width: `${Math.min(100, (goods.goods_stock / 50) * 100)}%` }}
+                          style={{
+                            width: `${Math.min(
+                              100,
+                              (goods.goods_stock / 50) * 100
+                            )}%`,
+                          }}
                         ></div>
                       </div>
-                      <span className="ml-4 font-medium">{goods.goods_stock}개</span>
+                      <span className="ml-4 font-medium">
+                        {goods.goods_stock}개
+                      </span>
                     </div>
                     <p className="mt-2 text-sm text-gray-600">
                       {goods.goods_stock < 5
                         ? "재고가 매우 부족합니다. 빠른 보충이 필요합니다."
                         : goods.goods_stock < 20
-                          ? "재고가 적절한 수준입니다."
-                          : "재고가 충분합니다."}
+                        ? "재고가 적절한 수준입니다."
+                        : "재고가 충분합니다."}
                     </p>
                   </div>
 
                   {/* 추가 정보 */}
                   <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">추가 정보</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                      추가 정보
+                    </h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-gray-500">상품 ID</p>
@@ -265,7 +303,11 @@ function GoodsDetail() {
                   {/* 관리 버튼 */}
                   <div className="flex space-x-3">
                     <button
-                      onClick={() => navigate(`/goods/edit/${id}`, { state: { isDiscounting } })}
+                      onClick={() =>
+                        navigate(`/goods/edit/${id}`, {
+                          state: { isDiscounting },
+                        })
+                      }
                       className="flex-1 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
                     >
                       <svg
@@ -284,7 +326,6 @@ function GoodsDetail() {
                       </svg>
                       상품 수정
                     </button>
-
                   </div>
                 </div>
               </div>
@@ -293,8 +334,7 @@ function GoodsDetail() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default GoodsDetail
-
+export default GoodsDetail;

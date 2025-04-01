@@ -141,7 +141,10 @@ export default function ProductDetailPage() {
         {/* Product Images */}
         <div className="bg-gray-100 rounded-lg overflow-hidden">
           <img
-            src={product.image || "/placeholder.svg"}
+            src={
+              `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${product.image}` ||
+              "/placeholder.svg"
+            }
             alt={product.name}
             className="w-full h-auto object-cover"
           />
@@ -154,7 +157,10 @@ export default function ProductDetailPage() {
                 className="w-20 h-20 border-2 border-gray-200 rounded cursor-pointer hover:border-blue-500"
               >
                 <img
-                  src={img || "/placeholder.svg"}
+                  src={
+                    `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${img}` ||
+                    "/placeholder.svg"
+                  }
                   alt={`${product.name} view ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -333,7 +339,10 @@ export default function ProductDetailPage() {
             >
               <div className="relative">
                 <img
-                  src={relatedProduct.image || "/placeholder.svg"}
+                  src={
+                    `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${relatedProduct.image}` ||
+                    "/placeholder.svg"
+                  }
                   alt={relatedProduct.name}
                   className="object-cover w-full h-32 rounded-t-lg"
                 />

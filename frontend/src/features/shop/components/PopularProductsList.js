@@ -56,7 +56,10 @@ export default function PopularProductsList({ products, onAddToCart }) {
             <Card className="h-full">
               <div className="relative">
                 <img
-                  src={product.image || "/placeholder.svg"}
+                  src={
+                    `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${product.image}` ||
+                    "/placeholder.svg"
+                  }
                   alt={product.name}
                   className="object-cover w-full h-40 rounded-t-lg"
                 />

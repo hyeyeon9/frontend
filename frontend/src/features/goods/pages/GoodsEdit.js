@@ -178,7 +178,10 @@ function GoodsEdit() {
                 <div className="md:w-1/3">
                   <div className="relative group">
                     <img
-                      src={goods.goods_image || "/placeholder.svg"}
+                      src={
+                        `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${goods.goods_image}` ||
+                        "/placeholder.svg"
+                      }
                       alt={goods.goods_name}
                       className="w-full h-64 object-cover rounded-lg shadow-md transition-transform group-hover:scale-105"
                     />
@@ -297,7 +300,7 @@ function GoodsEdit() {
                           </div>
                         </div>
 
-                        {discountRate > 0&& (
+                        {discountRate > 0 && (
                           <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700">
                               할인 기간

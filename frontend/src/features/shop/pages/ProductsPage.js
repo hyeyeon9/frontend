@@ -1,17 +1,7 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import {
-  Card,
-  Badge,
-  Button,
-  TextInput,
-  Pagination,
-  Tabs,
-  TabItem,
-} from "flowbite-react";
+import { Card, Badge, Button, TextInput, Pagination } from "flowbite-react";
 import { fetchGetPagedGoods } from "../api/HttpShopService";
 import categoryMapping from "../../../components/categoryMapping";
 
@@ -171,34 +161,29 @@ export default function ProductsPage() {
       </div>
 
       {/* 카테고리 탭 */}
-      <div className="mb-6">
-        <Tabs aria-label="메인 카테고리" variant="underline">
-          <TabItem
-            active={selectedMainCategory === "전체"}
-            title="전체"
-            onClick={() => handleMainCategorySelect("전체")}
-          />
-          {mainCategories.map((mainCategory) => (
-            <TabItem
-              key={mainCategory}
-              active={selectedMainCategory === mainCategory}
-              title={mainCategory}
-              onClick={() => handleMainCategorySelect(mainCategory)}
-            />
-          ))}
-        </Tabs>
+      <div className="flex flex-wrap gap-2 mb-6">
+        <Button
+          color={selectedMainCategory === "전체" ? "blue" : "light"}
+          size="md"
+          onClick={() => handleMainCategorySelect("전체")}
+        >
+          전체
+        </Button>
+        {mainCategories.map((mainCategory) => (
+          <Button
+            key={mainCategory}
+            color={selectedMainCategory === mainCategory ? "blue" : "light"}
+            size="md"
+            onClick={() => handleMainCategorySelect(mainCategory)}
+          >
+            {mainCategory}
+          </Button>
+        ))}
       </div>
 
       {/* 서브 카테고리 버튼 */}
       {selectedMainCategory !== "전체" && (
         <div className="flex flex-wrap gap-2 mb-6">
-          <Button
-            color={selectedCategory === "" ? "blue" : "light"}
-            size="sm"
-            onClick={() => setSelectedCategory("")}
-          >
-            전체 {selectedMainCategory}
-          </Button>
           {filteredSubCategories.map((category) => (
             <Button
               key={category.id}
@@ -233,11 +218,11 @@ export default function ProductsPage() {
                 <div className="relative">
                   <img
                     src={
-                      product.goods_image ||
+                      `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${product.goods_image}` ||
                       "/placeholder.svg?height=200&width=200"
                     }
                     alt={product.goods_name}
-                    className="object-cover w-full h-48 rounded-t-lg"
+                    className="object-cover w-full h-60 rounded-t-lg"
                   />
 
                   {/* 품절 오버레이 */}
