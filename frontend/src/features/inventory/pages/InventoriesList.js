@@ -192,10 +192,6 @@ function InventoriesList() {
     }
   }
 
-  // 재고 부족 상품 계산
-  const lowStockItems = inventoryList.filter(
-    (item) => item.stockStatus === "재고부족"
-  );
 
   // 상품명 기준으로 재고 합치기
   const groupedStock = {};
