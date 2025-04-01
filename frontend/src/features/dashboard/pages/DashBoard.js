@@ -8,11 +8,16 @@ import ExpiringSoonList from "./ExpiringSoonList";
 import ChatWidget from "../../../components/ChatWidget";
 
 import { fetchDisposalByDate } from "../../disposal/api/HttpDisposalService";
-import { fetchExpiringItems } from "../../inventory/api/HttpInventoryService"; // 위치 확인 필요
+import {
+  fetchExpiringItems,
+  fetchInventoryList,
+} from "../../inventory/api/HttpInventoryService"; // 위치 확인 필요
 import {
   fetchGetTodaySales,
   fetchGetTodayVisitors,
 } from "../api/DashboardService";
+import { fetchOrders } from "../../ordering/api/HttpOrderingService";
+import { FormatDate } from "../../disposal/components/FormatDate";
 
 export default function DashBoard() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -26,6 +31,10 @@ export default function DashBoard() {
   const [sales, setSales] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const [orderData, setOrderData] = useState([]);
+  const [inventoryList, setInventoryList] = useState([]);
+
+  // 폐기 예정 상품 개수
   useEffect(() => {
     async function getDisposalCount() {
       try {
@@ -40,6 +49,7 @@ export default function DashBoard() {
     getDisposalCount();
   }, []);
 
+  // 유통기한 임박 상품 불러오기
   useEffect(() => {
     async function getExpiringCount() {
       try {
@@ -53,16 +63,28 @@ export default function DashBoard() {
     getExpiringCount();
   }, []);
 
+  // 발주 현황
+  useEffect(() => {
+    async function getOrdersList() {
+      try {
+        const data = await fetchOrders();
+        console.log("발주 리스트", data);
+        let latestData = data.sort((a, b) => b.orderId - a.orderId).slice(0, 3);
+
+        setOrderData(latestData);
+      } catch (e) {
+        console.log(e.message);
+      }
+    }
+    getOrdersList();
+  }, []);
+
   useEffect(() => {
     const fetchTodaysData = async () => {
       setLoading(true);
       try {
         const visitorResponse = await fetchGetTodayVisitors();
         const salesResponse = await fetchGetTodaySales();
-
-        console.log("visitorResponse", visitorResponse);
-        console.log("salesResponse", salesResponse);
-
         setVisitors(visitorResponse.data);
         setSales(salesResponse.data);
       } catch (error) {
@@ -82,30 +104,39 @@ export default function DashBoard() {
     { category: "과일", percentage: 30 },
   ];
 
-  // 발주 현황 데이터 (실제로는 API에서 가져올 데이터)
-  const orderData = [
-    {
-      id: "ORD-2023-0542",
-      date: "2023.05.14",
-      amount: "₩450,000",
-      status: "배송 완료",
-      statusColor: "bg-green-100 text-green-800",
-    },
-    {
-      id: "ORD-2023-0541",
-      date: "2023.05.12",
-      amount: "₩320,000",
-      status: "배송 중",
-      statusColor: "bg-blue-100 text-blue-800",
-    },
-    {
-      id: "ORD-2023-0540",
-      date: "2023.05.10",
-      amount: "₩280,000",
-      status: "배송 완료",
-      statusColor: "bg-green-100 text-green-800",
-    },
-  ];
+  // 전체 재고현황 불러오는 메서드 (리스트 변경될 때마다 가져오기)
+  useEffect(() => {
+    async function getInventoryList() {
+      try {
+        setLoading(true);
+        const data = await fetchInventoryList();
+        setInventoryList(data);
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getInventoryList();
+  }, []);
+
+  // 상품명 기준으로 재고 합치기
+  const groupedStock = {};
+
+  inventoryList.forEach((item) => {
+    if (!groupedStock[item.goodsName]) {
+      groupedStock[item.goodsName] = 0;
+    }
+    groupedStock[item.goodsName] += item.stockQuantity;
+  });
+
+  // 기준치 이하만 필터링
+  const mergedLowStock = Object.entries(groupedStock)
+    .filter(([_, total]) => total < 5)
+    .map(([name, total]) => ({
+      goodsName: name,
+      totalStock: total,
+    }));
 
   // 시간 업데이트
   useEffect(() => {
@@ -430,22 +461,19 @@ export default function DashBoard() {
                 />
               </svg>
             }
-            title="재고 현황"
+            title="재고부족 현황"
             linkTo="/inventory/findAll"
           />
           <div className="space-y-4">
-            {inventoryData.map((item, index) => (
+            {mergedLowStock.slice(0, 3).map((item, index) => (
               <div key={index} className="flex justify-between items-center">
-                <span className="text-gray-600">{item.category}</span>
+                <span className="text-gray-600">{item.goodsName}</span>
                 <div className="flex items-center">
                   <div className="w-48 h-2 bg-gray-200 rounded-full mr-2">
-                    <div
-                      className="h-full bg-blue-600 rounded-full"
-                      style={{ width: `${item.percentage}%` }}
-                    ></div>
+                    <div className="h-full bg-blue-600 rounded-full"></div>
                   </div>
                   <span className="text-sm font-medium">
-                    {item.percentage}%
+                    {item.totalStock}개
                   </span>
                 </div>
               </div>
@@ -485,7 +513,7 @@ export default function DashBoard() {
                     날짜
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    금액
+                    수량
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     상태
@@ -496,17 +524,19 @@ export default function DashBoard() {
                 {orderData.map((order, index) => (
                   <tr key={index}>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {order.id}
+                      ORD-{order.orderId}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                      {order.date}
+                      {FormatDate(order.orderTime).slice(0, 13)}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                      {order.amount}
+                      {order.orderQuantity}개
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.statusColor}`}
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                          
+                         bg-green-100 text-green-800`}
                       >
                         {order.status}
                       </span>

@@ -41,7 +41,7 @@ export default function DisposalToday() {
           </p>
         ) : (
           <div className="divide-y divide-gray-100">
-            {disposal.map((item) => (
+            {disposal.slice(0, 3).map((item) => (
               <div
                 key={item.disposal_id}
                 className="flex items-center py-3 px-3 hover:bg-gray-50"
