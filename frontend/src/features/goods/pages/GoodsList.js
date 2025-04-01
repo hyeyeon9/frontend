@@ -430,8 +430,7 @@ function GoodsList() {
                               <div className="relative group">
                                 <img
                                   src={
-                                    `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${item.goods_image}` ||
-                                    "/placeholder.svg"
+                                    `${item.goods_image}` || "/placeholder.svg"
                                   }
                                   alt={item.goods_name}
                                   className="w-16 h-16 object-cover rounded-md border border-gray-200 group-hover:border-indigo-300 transition-colors"
@@ -523,10 +522,7 @@ function GoodsList() {
                     >
                       <div className="relative">
                         <img
-                          src={
-                            `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${item.goods_image}` ||
-                            "/placeholder.svg"
-                          }
+                          src={`${item.goods_image}` || "/placeholder.svg"}
                           alt={item.goods_name}
                           className="w-full h-48 object-cover"
                         />

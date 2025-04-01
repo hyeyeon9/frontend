@@ -663,7 +663,7 @@ function OrderingPage() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <img
                                 src={
-                                  `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${item.goods_image}` ||
+                                  `${item.goods_image}` ||
                                   "/placeholder.svg"
                                 }
                                 alt={item.goods_name}
@@ -792,7 +792,7 @@ function OrderingPage() {
                             <div className="flex items-center">
                               <img
                                 src={
-                                  `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${product.goods_image}` ||
+                                  `${product.goods_image}` ||
                                   "/placeholder.svg"
                                 }
                                 alt={product.goods_name}
@@ -1016,8 +1016,7 @@ function OrderingPage() {
                                 <img
                                   className="h-10 w-10 rounded-md object-cover"
                                   src={
-                                    `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${order.goodsImage}` ||
-                                    "/placeholder.svg"
+                                    `${order.goodsImage}` || "/placeholder.svg"
                                   }
                                   alt={order.goodsName}
                                 />
@@ -1094,7 +1093,7 @@ function OrderingPage() {
                         >
                           <img
                             src={
-                              `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${product.goods_image}` ||
+                              `${product.goods_image}` ||
                               "/placeholder.svg"
                             }
                             alt={product.goods_name}

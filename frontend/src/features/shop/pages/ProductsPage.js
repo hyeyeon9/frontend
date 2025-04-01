@@ -218,7 +218,7 @@ export default function ProductsPage() {
                 <div className="relative">
                   <img
                     src={
-                      `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${product.goods_image}` ||
+                      `${product.goods_image}` ||
                       "/placeholder.svg?height=200&width=200"
                     }
                     alt={product.goods_name}

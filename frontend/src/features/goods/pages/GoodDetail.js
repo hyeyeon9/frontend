@@ -111,10 +111,7 @@ function GoodsDetail() {
                   <div className="relative group">
                     <div className="overflow-hidden rounded-xl shadow-lg">
                       <img
-                        src={
-                          `https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images/goods_images/${goods.goods_image}` ||
-                          "/placeholder.svg"
-                        }
+                        src={`${goods.goods_image}` || "/placeholder.svg"}
                         alt={goods.goods_name}
                         className="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105"
                       />
