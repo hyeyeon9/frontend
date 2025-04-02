@@ -369,7 +369,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
               </Dropdown.Header>
               <Dropdown.Item
                 onClick={() => setSortBy("")}
-                className={sortBy === "popularity" ? "bg-gray-100" : ""}
+                className={sortBy === "" ? "bg-gray-100" : ""}
               >
                 기본
               </Dropdown.Item>
@@ -400,33 +400,6 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
 
               <Dropdown.Divider />
 
-              <Dropdown.Header>
-                <span className="block text-sm font-medium">가격 범위</span>
-              </Dropdown.Header>
-              <div className="px-4 py-2 flex gap-2 items-center">
-                <TextInput
-                  placeholder="최소"
-                  value={priceRange.min}
-                  onChange={(e) =>
-                    handlePriceRangeChange("min", e.target.value)
-                  }
-                  className="w-24"
-                  size="sm"
-                />
-                <span>~</span>
-                <TextInput
-                  placeholder="최대"
-                  value={priceRange.max}
-                  onChange={(e) =>
-                    handlePriceRangeChange("max", e.target.value)
-                  }
-                  className="w-24"
-                  size="sm"
-                />
-              </div>
-
-              <Dropdown.Divider />
-
               <div className="px-4 py-2">
                 <label className="flex items-center cursor-pointer">
                   <input
@@ -437,17 +410,6 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
                   />
                   <span className="text-sm">재고 있는 상품만 보기</span>
                 </label>
-              </div>
-
-              <Dropdown.Divider />
-
-              <div className="px-4 py-2 flex gap-2">
-                <Button size="xs" color="light" onClick={resetFilters}>
-                  초기화
-                </Button>
-                <Button size="xs" color="blue" onClick={applyFilters}>
-                  적용하기
-                </Button>
               </div>
             </Dropdown>
           </div>
