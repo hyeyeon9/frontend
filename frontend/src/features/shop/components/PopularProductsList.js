@@ -5,9 +5,6 @@ import { useNavigate } from "react-router-dom";
 import categoryMapping from "../../../components/categoryMapping";
 import { fetchGetTop10Items } from "../api/HttpShopService";
 
-// 메인 카테고리 목록 추출
-const mainCategories = [...new Set(categoryMapping.map((cat) => cat.main))];
-
 export default function PopularProductsList({ onAddToCart }) {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -39,6 +36,18 @@ export default function PopularProductsList({ onAddToCart }) {
           : current.offsetWidth / 2;
       current.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }
+  };
+
+  // 이벤트 객체 사용하지 않고 직접 productId 전달
+  const handleAddToCart = (event, productId) => {
+    if (event) {
+      event.stopPropagation(); // 이벤트 객체가 있을 경우에만 stopPropagation 호출
+    }
+    onAddToCart(productId);
+  };
+
+  const goToProductDetail = (productId) => {
+    navigate(`/shop/products/${productId}`);
   };
 
   return (
@@ -78,10 +87,15 @@ export default function PopularProductsList({ onAddToCart }) {
             key={product.goodsDTO.goods_id}
             className="flex-shrink-0 w-[180px] sm:w-[220px]"
           >
-            <Card className="h-full">
+            <Card
+              className={`h-full cursor-pointer hover:shadow-lg transition-shadow duration-300 ${
+                product.goodsDTO.goods_stock <= 0 ? "opacity-70" : ""
+              }`}
+              onClick={() => goToProductDetail(product.goodsDTO.goods_id)}
+            >
               <div className="relative">
                 <img
-                  src={`${product.goodsDTO.goods_image}` || "/placeholder.svg"}
+                  src={product.goodsDTO.goods_image || "/placeholder.svg"}
                   alt={product.goodsDTO.goods_name}
                   className="object-cover w-full h-40 rounded-t-lg"
                 />
@@ -118,9 +132,10 @@ export default function PopularProductsList({ onAddToCart }) {
                   color="blue"
                   className="w-full"
                   size="xs"
-                  onClick={() => onAddToCart(product.goodsDTO.goods_id)}
+                  onClick={(e) => handleAddToCart(e, product.goodsDTO.goods_id)}
+                  disabled={product.goodsDTO.goods_stock <= 0}
                 >
-                  장바구니 담기
+                  {product.goodsDTO.goods_stock > 0 ? "장바구니 담기" : "품절"}
                 </Button>
               </div>
             </Card>
