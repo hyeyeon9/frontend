@@ -58,3 +58,17 @@ export async function fetchWeekSales(goodsId) {
 }
 
 
+// 상품 status 변환 (발수완료 -> 입고완료)
+export async function fetchConfirmArrival(orderId) {
+  const response 
+  = await axios.post(`http://localhost:8090/app/orderRequest/confirm/${orderId}`);
+  console.log("response", response);
+
+  if (response.status !== 200) {
+    console.log("에러");
+    throw new Error("fetchConfirmArrival 예외발생");
+  }
+
+  return response.data;
+}
+
