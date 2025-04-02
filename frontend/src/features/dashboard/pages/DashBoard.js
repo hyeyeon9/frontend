@@ -81,12 +81,10 @@ export default function DashBoard() {
 
   useEffect(() => {
     const fetchTodaysData = async () => {
-      const now = new Date().toISOString().slice(0, 19);
-      console.log(now);
       setLoading(true);
       try {
-        const visitorResponse = await fetchGetTodayVisitors(now);
-        const salesResponse = await fetchGetTodaySales(now);
+        const visitorResponse = await fetchGetTodayVisitors();
+        const salesResponse = await fetchGetTodaySales();
 
         setVisitors(visitorResponse.data);
         setSales(salesResponse.data);
@@ -281,7 +279,7 @@ export default function DashBoard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <DashboardCard
           title="오늘 매출"
-          value={`₩${sales}`}
+          value={`₩${sales.toLocaleString()}`}
           bgColor="bg-blue-100"
           textColor="text-blue-600"
           icon={
