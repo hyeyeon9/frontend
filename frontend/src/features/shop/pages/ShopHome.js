@@ -104,100 +104,6 @@ export default function ShopHome() {
     },
   ];
 
-  // Popular products
-  const popularProducts = [
-    {
-      id: 1,
-      name: "아이스 아메리카노",
-      price: 2.5,
-      rating: 4.8,
-      sales: 1240,
-      category: "Coffee",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-    {
-      id: 8,
-      name: "카페 라떼",
-      price: 3.99,
-      rating: 4.7,
-      sales: 980,
-      category: "Coffee",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-    {
-      id: 3,
-      name: "에너지 드링크",
-      price: 3.29,
-      rating: 4.5,
-      sales: 850,
-      category: "Drinks",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-    {
-      id: 11,
-      name: "핫도그",
-      price: 3.49,
-      rating: 4.6,
-      sales: 790,
-      category: "Food",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-    {
-      id: 2,
-      name: "치킨 샌드위치",
-      price: 4.99,
-      rating: 4.7,
-      sales: 720,
-      category: "Food",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-    {
-      id: 12,
-      name: "아이스크림",
-      price: 2.99,
-      rating: 4.9,
-      sales: 680,
-      category: "Ice Cream",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-    {
-      id: 4,
-      name: "초콜릿 바",
-      price: 1.99,
-      rating: 4.4,
-      sales: 650,
-      category: "Snacks",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-    {
-      id: 7,
-      name: "생수",
-      price: 1.49,
-      rating: 4.3,
-      sales: 620,
-      category: "Drinks",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-    {
-      id: 5,
-      name: "감자칩",
-      price: 2.49,
-      rating: 4.5,
-      sales: 580,
-      category: "Snacks",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-    {
-      id: 9,
-      name: "탄산음료",
-      price: 1.99,
-      rating: 4.4,
-      sales: 540,
-      category: "Drinks",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-  ];
-
   // 장바구니 추가
   const addToCart = (productId) => {
     console.log(`Added product ${productId} to cart`);
@@ -225,16 +131,10 @@ export default function ShopHome() {
         </div>
 
         {/* Discounted Products Section */}
-        <DiscountedProductsList
-          products={discountedProducts}
-          onAddToCart={addToCart}
-        />
+        <DiscountedProductsList onAddToCart={addToCart} />
 
         {/* Popular Products Section */}
-        <PopularProductsList
-          products={popularProducts}
-          onAddToCart={addToCart}
-        />
+        <PopularProductsList onAddToCart={addToCart} />
 
         {/* Shop by Category Section - Simplified */}
         <section className="max-w-7xl mx-auto px-4 mb-10">

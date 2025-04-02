@@ -62,3 +62,15 @@ export async function fetchGetDiscountedGoods() {
 
   return response.data;
 }
+
+// 인기 상품 목록
+export async function fetchGetTop10Items() {
+  const response = await axios.get(`http://localhost:8090/app/shop/top10`);
+
+  if (response.status !== 200) {
+    console.log("예외발생");
+    throw new Error("fetchGetDiscountedGoods 예외발생");
+  }
+
+  return response.data;
+}
