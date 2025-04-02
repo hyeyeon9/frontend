@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ArrowUpDown, Filter, Search } from "lucide-react";
+import { ArrowUpDown, Filter, Search, ShoppingCart } from "lucide-react";
 import {
   Card,
   Badge,
@@ -143,13 +143,15 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
     navigate(`/shop/products/${productId}`);
   };
 
-  // 장바구니에 상품 추가 후 장바구니 페이지로 이동
-  const handleAddToCart = (e, productId) => {
-    e.stopPropagation(); // 이벤트 버블링 방지
+  // 장바구니에 상품 추가 - 이벤트 객체 사용하지 않고 직접 productId 전달
+  const handleAddToCart = (event, productId) => {
+    if (event) {
+      event.stopPropagation(); // 이벤트 객체가 있을 경우에만 stopPropagation 호출
+    }
 
     // 장바구니에 추가
     if (onAddToCart) {
-      onAddToCart(e, productId);
+      onAddToCart(productId);
     } else {
       console.log(`상품 ID ${productId}를 장바구니에 추가했습니다.`);
     }
@@ -235,11 +237,12 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
           <div className="flex flex-wrap gap-2 mb-6">
             {filteredSubCategories.map((category) => (
               <Button
+                outline
                 key={category.id}
                 color={
                   selectedCategory === category.id.toString() ? "blue" : "light"
                 }
-                size="sm"
+                size="xs"
                 onClick={() => handleSubCategorySelect(category.id)}
               >
                 {category.sub}
@@ -254,7 +257,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {products.map((product) => (
               <Card
                 key={product.goods_id}
@@ -268,6 +271,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
                     src={
                       product.goods_image ||
                       "/placeholder.svg?height=150&width=150" ||
+                      "/placeholder.svg" ||
                       "/placeholder.svg"
                     }
                     alt={product.goods_name}
@@ -446,7 +450,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
               color={
                 selectedCategory === category.id.toString() ? "blue" : "light"
               }
-              size="sm"
+              size="xs"
               onClick={() => handleSubCategorySelect(category.id)}
             >
               {category.sub}
@@ -462,7 +466,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
         </div>
       ) : products.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
               <Card
                 key={product.goods_id}
@@ -476,6 +480,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
                     src={
                       product.goods_image ||
                       "/placeholder.svg?height=200&width=200" ||
+                      "/placeholder.svg" ||
                       "/placeholder.svg"
                     }
                     alt={product.goods_name}
@@ -545,7 +550,14 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
                     onClick={(e) => handleAddToCart(e, product.goods_id)}
                     disabled={product.goods_stock <= 0}
                   >
-                    {product.goods_stock > 0 ? "장바구니 담기" : "품절"}
+                    {product.goods_stock > 0 ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <ShoppingCart size={18} />
+                        <span>장바구니 담기</span>
+                      </div>
+                    ) : (
+                      "품절"
+                    )}
                   </Button>
                 </div>
               </Card>

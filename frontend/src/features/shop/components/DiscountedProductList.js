@@ -36,8 +36,11 @@ export default function DiscountedProductsList({ onAddToCart }) {
     }
   };
 
-  const handleAddToCart = (e, productId) => {
-    e.stopPropagation(); // 이벤트 버블링 방지
+  // 이벤트 객체 사용하지 않고 직접 productId 전달
+  const handleAddToCart = (event, productId) => {
+    if (event) {
+      event.stopPropagation(); // 이벤트 객체가 있을 경우에만 stopPropagation 호출
+    }
     onAddToCart(productId);
   };
 
@@ -96,8 +99,9 @@ export default function DiscountedProductsList({ onAddToCart }) {
                 <div className="relative">
                   <img
                     src={
-                      `${product.goods_image}` ||
-                      "/placeholder.svg?height=200&width=200"
+                      product.goods_image ||
+                      "/placeholder.svg?height=200&width=200" ||
+                      "/placeholder.svg"
                     }
                     alt={product.goods_name}
                     className="object-cover w-full h-40 rounded-t-lg"
