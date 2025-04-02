@@ -5,6 +5,8 @@ export async function fetchGetPagedGoods({
   page = 0,
   size = 12,
   category = undefined,
+  minPrice = undefined,
+  maxPrice = undefined,
   search = undefined,
   sortBy,
 }) {
@@ -17,6 +19,13 @@ export async function fetchGetPagedGoods({
   }
   if (search) {
     url += `&search=${encodeURIComponent(search)}`;
+  }
+  // 최대-최소값 필터링
+  if (minPrice !== undefined) {
+    url += `&minPrice=${minPrice}`;
+  }
+  if (maxPrice !== undefined) {
+    url += `&maxPrice=${maxPrice}`;
   }
   // 정렬 파라미터 추가
   if (sortBy) {
@@ -54,6 +63,18 @@ export async function fetchGetDiscountedGoods() {
   const response = await axios.get(
     `http://localhost:8090/app/shop/isDiscountedList`
   );
+
+  if (response.status !== 200) {
+    console.log("예외발생");
+    throw new Error("fetchGetDiscountedGoods 예외발생");
+  }
+
+  return response.data;
+}
+
+// 인기 상품 목록
+export async function fetchGetTop10Items() {
+  const response = await axios.get(`http://localhost:8090/app/shop/top10`);
 
   if (response.status !== 200) {
     console.log("예외발생");
