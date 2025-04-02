@@ -5,7 +5,7 @@ import ShopToAdmin from "../components/temp/ShopToAdmin";
 
 export default function UserLayout() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-w-screen">
       <UserHeader />
       <main className="flex-1 p-4">
         <Outlet />

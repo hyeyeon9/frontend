@@ -5,16 +5,29 @@ import DiscountedProductsList from "../components/DiscountedProductList";
 import EventBanner from "../components/EventBanner";
 import PopularProductsList from "../components/PopularProductsList";
 import Products from "../components/Products";
+import { addItemToCart, getCartItemCount } from "../utils/CartUtils";
+import { fetchGoodsDetail } from "../../goods/api/HttpGoodsService";
 
 export default function ShopHome() {
   const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
 
   // 장바구니 추가
-  const addToCart = (e, productId) => {
-    if (e) e.stopPropagation(); // 이벤트 버블링 방지
-    console.log(`Added product ${productId} to cart`);
-    setCartCount(cartCount + 1);
+  const addToCart = async (productId, quantity = 1) => {
+    try {
+      // 상품 상세 정보 가져오기
+      const productDetail = await fetchGoodsDetail(productId);
+
+      // 장바구니에 추가
+      addItemToCart(productDetail, quantity);
+
+      // 장바구니 개수 업데이트
+      setCartCount(getCartItemCount());
+
+      console.log(`Added product ${productId} to cart, quantity: ${quantity}`);
+    } catch (error) {
+      console.error("장바구니에 상품을 추가하는 중 오류 발생:", error);
+    }
   };
 
   return (
