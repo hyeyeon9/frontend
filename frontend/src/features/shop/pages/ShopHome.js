@@ -1,169 +1,254 @@
+import { Button } from "flowbite-react";
+import { Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  ShoppingCart,
-  Search,
-  Coffee,
-  Pizza,
-  Sandwich,
-  BeerIcon as Drink,
-  IceCream,
-  Cigarette,
-  Gift,
-} from "lucide-react";
-import { Card, Badge, Button } from "flowbite-react";
+import DiscountedProductsList from "../components/DiscountedProductList";
+import EventBanner from "../components/EventBanner";
+import PopularProductsList from "../components/PopularProductsList";
 
 export default function ShopHome() {
   const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
 
-  // 나중에 api 따와서 수정
-  const featuredProducts = [
+  // Discounted products
+  const discountedProducts = [
     {
       id: 1,
-      name: "Iced Americano",
+      name: "아이스 아메리카노",
+      originalPrice: 3.5,
       price: 2.5,
-      category: "Drinks",
-      image: "/placeholder.svg?height=120&width=120",
+      discount: "29%",
+      category: "Coffee",
+      image: "/placeholder.svg?height=200&width=200",
     },
     {
       id: 2,
-      name: "Chicken Sandwich",
+      name: "치킨 샌드위치",
+      originalPrice: 6.99,
       price: 4.99,
+      discount: "29%",
       category: "Food",
-      image: "/placeholder.svg?height=120&width=120",
+      image: "/placeholder.svg?height=200&width=200",
     },
     {
       id: 3,
-      name: "Energy Drink",
+      name: "에너지 드링크",
+      originalPrice: 4.29,
       price: 3.29,
+      discount: "23%",
       category: "Drinks",
-      image: "/placeholder.svg?height=120&width=120",
+      image: "/placeholder.svg?height=200&width=200",
     },
     {
       id: 4,
-      name: "Chocolate Bar",
+      name: "초콜릿 바",
+      originalPrice: 2.49,
       price: 1.99,
+      discount: "20%",
       category: "Snacks",
-      image: "/placeholder.svg?height=120&width=120",
+      image: "/placeholder.svg?height=200&width=200",
     },
     {
       id: 5,
-      name: "Potato Chips",
+      name: "감자칩",
+      originalPrice: 3.49,
       price: 2.49,
+      discount: "29%",
       category: "Snacks",
-      image: "/placeholder.svg?height=120&width=120",
+      image: "/placeholder.svg?height=200&width=200",
     },
     {
       id: 6,
-      name: "Fresh Salad",
-      price: 5.99,
-      category: "Food",
-      image: "/placeholder.svg?height=120&width=120",
+      name: "그릭 요거트",
+      originalPrice: 4.99,
+      price: 3.99,
+      discount: "20%",
+      category: "Dairy",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 7,
+      name: "아이스티",
+      originalPrice: 3.99,
+      price: 2.99,
+      discount: "25%",
+      category: "Drinks",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 8,
+      name: "바나나 우유",
+      originalPrice: 2.99,
+      price: 1.99,
+      discount: "33%",
+      category: "Dairy",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 9,
+      name: "프로틴 바",
+      originalPrice: 3.99,
+      price: 2.99,
+      discount: "25%",
+      category: "Snacks",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 10,
+      name: "카페 라떼",
+      originalPrice: 4.99,
+      price: 3.99,
+      discount: "20%",
+      category: "Coffee",
+      image: "/placeholder.svg?height=200&width=200",
     },
   ];
 
-  // Categories with icons
-  const categories = [
-    { name: "Coffee", icon: Coffee, color: "bg-amber-100" },
-    { name: "Food", icon: Pizza, color: "bg-red-100" },
-    { name: "Sandwiches", icon: Sandwich, color: "bg-green-100" },
-    { name: "Drinks", icon: Drink, color: "bg-blue-100" },
-    { name: "Ice Cream", icon: IceCream, color: "bg-purple-100" },
-    { name: "Tobacco", icon: Cigarette, color: "bg-gray-100" },
-    { name: "Gifts", icon: Gift, color: "bg-pink-100" },
+  // Popular products
+  const popularProducts = [
+    {
+      id: 1,
+      name: "아이스 아메리카노",
+      price: 2.5,
+      rating: 4.8,
+      sales: 1240,
+      category: "Coffee",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 8,
+      name: "카페 라떼",
+      price: 3.99,
+      rating: 4.7,
+      sales: 980,
+      category: "Coffee",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 3,
+      name: "에너지 드링크",
+      price: 3.29,
+      rating: 4.5,
+      sales: 850,
+      category: "Drinks",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 11,
+      name: "핫도그",
+      price: 3.49,
+      rating: 4.6,
+      sales: 790,
+      category: "Food",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 2,
+      name: "치킨 샌드위치",
+      price: 4.99,
+      rating: 4.7,
+      sales: 720,
+      category: "Food",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 12,
+      name: "아이스크림",
+      price: 2.99,
+      rating: 4.9,
+      sales: 680,
+      category: "Ice Cream",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 4,
+      name: "초콜릿 바",
+      price: 1.99,
+      rating: 4.4,
+      sales: 650,
+      category: "Snacks",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 7,
+      name: "생수",
+      price: 1.49,
+      rating: 4.3,
+      sales: 620,
+      category: "Drinks",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 5,
+      name: "감자칩",
+      price: 2.49,
+      rating: 4.5,
+      sales: 580,
+      category: "Snacks",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: 9,
+      name: "탄산음료",
+      price: 1.99,
+      rating: 4.4,
+      sales: 540,
+      category: "Drinks",
+      image: "/placeholder.svg?height=200&width=200",
+    },
   ];
 
-  const addToCart = () => {
+  // 장바구니 추가
+  const addToCart = (productId) => {
+    console.log(`Added product ${productId} to cart`);
     setCartCount(cartCount + 1);
   };
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header with search and cart */}
-      <header className="sticky top-0 z-10 bg-white border-b p-4">
-        <div className="flex justify-between items-center max-w-7xl mx-auto">
-          <h1 className="text-2xl font-bold">Quick Mart</h1>
-          <div className="flex items-center gap-4">
-            <button className="p-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded-lg">
-              <Search className="h-5 w-5" />
-            </button>
-            <button
-              className="p-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded-lg relative"
-              onClick={() => navigate("/cart")}
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-blue-600 text-white rounded-full">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+      <main className="flex-1 w-full">
+        {/* Event Banner Carousel - Now with fixed banners */}
+        <EventBanner />
+
+        {/* Search Bar */}
+        <div className="max-w-7xl mx-auto px-4 mb-8">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Search className="h-5 w-5 text-gray-500" />
+            </div>
+            <input
+              type="text"
+              placeholder="찾으시는 상품을 검색해보세요..."
+              className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg"
+            />
           </div>
         </div>
-      </header>
 
-      <main className="flex-1 p-4 max-w-7xl mx-auto w-full">
-        {/* Welcome banner */}
-        <div className="rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-2">Welcome to Quick Mart!</h2>
-          <p className="opacity-90">
-            Find everything you need, quickly and easily.
-          </p>
-        </div>
+        {/* Discounted Products Section */}
+        <DiscountedProductsList
+          products={discountedProducts}
+          onAddToCart={addToCart}
+        />
 
-        {/* Categories */}
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Categories</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
-            {categories.map((category) => (
-              <button
-                key={category.name}
-                className="h-auto flex flex-col items-center justify-center p-4 gap-2 border border-gray-200 rounded-lg hover:bg-gray-50"
-                onClick={() => navigate(`/products?category=${category.name}`)}
+        {/* Popular Products Section */}
+        <PopularProductsList
+          products={popularProducts}
+          onAddToCart={addToCart}
+        />
+
+        {/* Shop by Category Section - Simplified */}
+        <section className="max-w-7xl mx-auto px-4 mb-10">
+          <h2 className="text-xl font-bold mb-4">카테고리별 쇼핑</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {["Coffee", "Food", "Drinks", "Snacks"].map((category) => (
+              <Button
+                key={category}
+                color="light"
+                className="h-auto py-4"
+                onClick={() => navigate(`/shop/products?category=${category}`)}
               >
-                <div className={`p-3 rounded-full ${category.color}`}>
-                  <category.icon className="h-6 w-6" />
-                </div>
-                <span>{category.name}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Featured products */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Popular Items</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {featuredProducts.map((product) => (
-              <Card key={product.id} className="max-w-sm">
-                <div className="relative">
-                  <img
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.name}
-                    className="object-cover w-full h-40 rounded-t-lg"
-                  />
-                  <Badge color="info" className="absolute top-2 right-2">
-                    {product.category}
-                  </Badge>
-                </div>
-                <div className="p-3">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium">{product.name}</h3>
-                    <span className="font-bold">
-                      ${product.price.toFixed(2)}
-                    </span>
-                  </div>
-                  <Button
-                    color="blue"
-                    className="w-full"
-                    size="sm"
-                    onClick={addToCart}
-                  >
-                    Add to Cart
-                  </Button>
-                </div>
-              </Card>
+                {category}
+              </Button>
             ))}
           </div>
         </section>
@@ -176,9 +261,9 @@ export default function ShopHome() {
             color="blue"
             size="lg"
             className="w-full"
-            onClick={() => navigate("/checkout")}
+            onClick={() => navigate("/shop/cart")}
           >
-            Start Order
+            장바구니 보기 {cartCount > 0 && `(${cartCount})`}
           </Button>
         </div>
       </div>
