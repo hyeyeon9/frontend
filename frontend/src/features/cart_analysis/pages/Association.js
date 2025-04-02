@@ -398,7 +398,7 @@ function Association() {
               <div className="p-4 flex items-center">
                 <div className="bg-indigo-100 p-3 rounded-full mr-4">{getTimePeriodIcon(timePeriod)}</div>
                 <div className="flex-1">
-                  <div className="flex items-center">
+                  <div className="flex items-center ">
                     <h3 className="text-lg font-bold text-gray-800">{timePeriod}</h3>
                     <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
                       현재
@@ -407,17 +407,16 @@ function Association() {
 
                   {timeRules.length > 0 ? (
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500 mb-1">시간대별 추천 조합:</p>
                       <div className="flex items-center mt-1">
                         {timeRules.map((item, idx) => (
-                          <div key={idx} className="flex items-center bg-gray-100 rounded-lg p-2">
+                          <div key={idx} className="flex items-center bg-gray-100 rounded-lg p-3 w-70">
                             <div className="flex flex-col items-center mr-3 bg-white p-2 rounded-md shadow-sm">
-                              <span className="text-xs text-gray-500">추천 1</span>
+                              <span className="text-xs text-gray-500 w-20">추천 1</span>
                               <span className="font-medium text-indigo-600">{item.itemset_a}</span>
                             </div>
-                            <div className="flex items-center text-gray-400 mx-1">+</div>
+                            <div className="flex items-center text-gray-400 mx-1 mr-4">+</div>
                             <div className="flex flex-col items-center bg-white p-2 rounded-md shadow-sm">
-                              <span className="text-xs text-gray-500">추천 2</span>
+                              <span className="text-xs text-gray-500 w-20">추천 2</span>
                               <span className="font-medium text-indigo-600">{item.itemset_b}</span>
                             </div>
                           </div>

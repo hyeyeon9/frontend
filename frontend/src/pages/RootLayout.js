@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Headers from "../components/Headers";
 import Sidebar from "../components/Sidebar";
 import { useUser } from "../features/member/UserContext";
+import AdminToShop from "../components/temp/AdminToShop";
 
 export default function RootLayout() {
   const { user } = useUser(); // `user` 상태 가져오기
@@ -26,6 +27,7 @@ export default function RootLayout() {
         <Sidebar />
         <main className="flex-1 p-4 overflow-auto">
           <Outlet />
+          <AdminToShop />
         </main>
       </div>
     </div>
