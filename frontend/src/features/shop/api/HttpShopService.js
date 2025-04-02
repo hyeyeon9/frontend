@@ -5,6 +5,8 @@ export async function fetchGetPagedGoods({
   page = 0,
   size = 12,
   category = undefined,
+  minPrice = undefined,
+  maxPrice = undefined,
   search = undefined,
   sortBy,
 }) {
@@ -17,6 +19,13 @@ export async function fetchGetPagedGoods({
   }
   if (search) {
     url += `&search=${encodeURIComponent(search)}`;
+  }
+  // 최대-최소값 필터링
+  if (minPrice !== undefined) {
+    url += `&minPrice=${minPrice}`;
+  }
+  if (maxPrice !== undefined) {
+    url += `&maxPrice=${maxPrice}`;
   }
   // 정렬 파라미터 추가
   if (sortBy) {
