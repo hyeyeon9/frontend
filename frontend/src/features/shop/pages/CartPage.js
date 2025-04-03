@@ -7,6 +7,7 @@ import {
   updateCartItemQuantity,
   removeCartItem,
 } from "../utils/CartUtils";
+import { fetchPostOrder } from "../api/HttpShopService";
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -65,6 +66,32 @@ export default function CartPage() {
       (total, item) => total + item.price * item.quantity,
       0
     );
+  };
+
+  // 장바구니 아이템 결제하기
+  const handlePayment = async () => {
+    try {
+      const order = {
+        member: null,
+        finalPrice: calculateTotal(),
+        orderSummary: `${cartItems[0].name} 외 ${cartItems.length - 1}건`,
+        paymentStatus: 0,
+      };
+
+      // 주문 후 toss 결제 url 받아오기
+      const orderId = await fetchPostOrder(order);
+
+      // toss 결제창 띄우기
+      const paymentUrl = `/payment?orderId=${orderId}&amount=${order.finalPrice}&orderSummary=${order.orderSummary}`;
+      window.open(
+        paymentUrl,
+        "_blank",
+        "width=500,height=700,resizable=yes,scrollbars=yes"
+      );
+    } catch (error) {
+      console.error("결제 처리 중 오류 발생:", error);
+      showAlertMessage("결제 처리 중 오류가 발생했습니다.", "failure");
+    }
   };
 
   return (
@@ -195,7 +222,12 @@ export default function CartPage() {
                     </span>
                   </div>
                 </div>
-                <Button color="blue" className="w-full" size="lg">
+                <Button
+                  color="blue"
+                  className="w-full"
+                  size="lg"
+                  onClick={handlePayment}
+                >
                   결제하기
                 </Button>
               </Card>
