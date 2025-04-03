@@ -74,7 +74,7 @@ export default function DashBoard() {
         const data = await fetchDisposalByDate(today);
         setDisposalCount(data.length);
       } catch (error) {
-        console.error("폐기 예정 상품 개수 불러오기 실패:", error);
+        console.error("폐기 상품 개수 불러오기 실패:", error);
       }
     }
 
@@ -586,7 +586,7 @@ export default function DashBoard() {
         />
 
         <DashboardCard
-          title="폐기 예정 상품"
+          title="폐기 처리 상품"
           value={`${disposalCount}개`}
           bgColor="bg-red-100"
           textColor="text-red-600"
@@ -605,7 +605,7 @@ export default function DashBoard() {
               />
             </svg>
           }
-          footer={<span className="text-gray-500 text-sm">최근 3일 이내</span>}
+          footer={<span className="text-gray-500 text-sm">오늘</span>}
         />
 
         <DashboardCard
@@ -628,7 +628,7 @@ export default function DashBoard() {
               />
             </svg>
           }
-          footer={<span className="text-gray-500 text-sm">7일 이내</span>}
+          footer={<span className="text-gray-500 text-sm">3일 이내</span>}
         />
 
         <DashboardCard
@@ -683,7 +683,7 @@ export default function DashBoard() {
               }`}
               onClick={() => setActiveTab("disposal")}
             >
-              폐기 예정
+              폐기 처리
             </button>
             <button
               className={`flex-1 py-4 px-6 text-center font-medium ${

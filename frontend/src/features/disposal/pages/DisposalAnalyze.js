@@ -25,6 +25,7 @@ function DisposalAnalyze() {
       setLoading(true)
       try {
         const res = await fetchStats(month, year)
+        console.log("년월 폐기",res);
         // 데이터 가공
         const formatted = res
           .map((item) => ({
@@ -42,6 +43,7 @@ function DisposalAnalyze() {
           .map((item) => item.label)
 
         setTopItems(top3)
+        console.log("년월 폐기 top3",top3);
       } catch (error) {
         setError(error.message)
       } finally {
@@ -58,6 +60,7 @@ function DisposalAnalyze() {
 
       try {
         const response = await fetchDisposalRate(topItems.join(","), month, year)
+        console.log("년월 폐기 비율 response",response);
         setDisposalRates(response)
       } catch (error) {
         console.log(error.message)
