@@ -92,16 +92,6 @@ export default function UserHeader() {
         <Navbar.Link as={Link} to="/shop/products">
           상품
         </Navbar.Link>
-        {!user && (
-          <div className="md:hidden flex flex-col mt-4 gap-2">
-            <Navbar.Link as={Link} to="/login">
-              로그인
-            </Navbar.Link>
-            <Button color="blue" as={Link} to="/signup">
-              회원가입
-            </Button>
-          </div>
-        )}
       </Navbar.Collapse>
     </Navbar>
   );

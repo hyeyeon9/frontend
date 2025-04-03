@@ -1,16 +1,24 @@
 import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
+import { Button } from "flowbite-react";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
 const customerKey = "mC_buQ9sOszT7frxgs4D_";
 
 export function CheckoutPage() {
+  const [searchParams] = useSearchParams(); // 쿼리 스트링 방식
+  const queryOrderId = searchParams.get("orderId");
+  const queryAmount = Number(searchParams.get("amount"));
+  const orderSummary = searchParams.get("orderSummary");
+
   const [amount, setAmount] = useState({
     currency: "KRW",
-    value: 50_000,
+    value: queryAmount,
   });
   const [ready, setReady] = useState(false);
   const [widgets, setWidgets] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     async function fetchPaymentWidgets() {
@@ -65,50 +73,33 @@ export function CheckoutPage() {
   }, [widgets, amount]);
 
   return (
-    <div className="wrapper">
-      <div className="box_section">
+    <div className="flex flex-col items-center p-6 overflow-auto">
+      <div className="max-w-[540px] w-full bg-white shadow-md rounded-lg p-6">
         {/* 결제 UI */}
         <div id="payment-method" />
         {/* 이용약관 UI */}
         <div id="agreement" />
-        {/* 쿠폰 체크박스 */}
-        <div>
-          <div>
-            <label htmlFor="coupon-box">
-              <input
-                id="coupon-box"
-                type="checkbox"
-                aria-checked="true"
-                disabled={!ready}
-                onChange={(event) => {
-                  // ------  주문서의 결제 금액이 변경되었을 경우 결제 금액 업데이트 ------
-                  setAmount(
-                    event.target.checked ? amount - 5_000 : amount + 5_000
-                  );
-                }}
-              />
-              <span>5,000원 쿠폰 적용</span>
-            </label>
-          </div>
-        </div>
-
         {/* 결제하기 버튼 */}
-        <button
-          className="button"
-          disabled={!ready}
+        <Button
+          className={`w-full px-[22px] py-[11px] border-none rounded-lg 
+            font-semibold text-[17px] cursor-pointer transition 
+            ${
+              !ready || isProcessing
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-blue-500 text-white"
+            }
+          `}
+          disabled={!ready || isProcessing} // 결제 요청 중일 때 버튼 비활성화
           onClick={async () => {
             try {
-              // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
-              // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
-              // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
               await widgets.requestPayment({
-                orderId: "GOxWm3iteej48bDgKbWUm2",
-                orderName: "토스 티셔츠 외 2건",
+                orderId: queryOrderId,
+                orderName: orderSummary,
                 successUrl: window.location.origin + "/payment/success",
                 failUrl: window.location.origin + "/payment/fail",
-                customerEmail: "customer123@gmail.com",
-                customerName: "김토스",
-                customerMobilePhone: "01012341234",
+                customerEmail: "star970909@gmail.com",
+                customerName: "비회원",
+                customerMobilePhone: "01043115966",
               });
             } catch (error) {
               // 에러 처리하기
@@ -117,7 +108,7 @@ export function CheckoutPage() {
           }}
         >
           결제하기
-        </button>
+        </Button>
       </div>
     </div>
   );
