@@ -1,9 +1,19 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { fetchConfirmArrival, fetchLatest, fetchOrders, fetchWeekSales, requestOrder } from "../api/HttpOrderingService"
-import { fetchInventoryList } from "../../inventory/api/HttpInventoryService"
-import { fetchGoodsByCategory, fetchGoodsBySubCategory, fetchGoodsList } from "../../goods/api/HttpGoodsService"
+import { useEffect, useState } from "react";
+import {
+  fetchConfirmArrival,
+  fetchLatest,
+  fetchOrders,
+  fetchWeekSales,
+  requestOrder,
+} from "../api/HttpOrderingService";
+import { fetchInventoryList } from "../../inventory/api/HttpInventoryService";
+import {
+  fetchGoodsByCategory,
+  fetchGoodsBySubCategory,
+  fetchGoodsList,
+} from "../../goods/api/HttpGoodsService";
 import {
   AlertCircle,
   Calendar,
@@ -19,114 +29,302 @@ import {
   ShoppingCart,
   Trash2,
   X,
-} from "lucide-react"
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
-import * as XLSX from "xlsx"
-import { saveAs } from "file-saver"
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 function OrderingPage() {
-  const [inventoryList, setInventoryList] = useState([])
-  const [goodsList, setGoodsList] = useState([])
-  const [filteredInventory, setFilteredInventory] = useState([])
+  const [inventoryList, setInventoryList] = useState([]);
+  const [goodsList, setGoodsList] = useState([]);
+  const [filteredInventory, setFilteredInventory] = useState([]);
 
-  const [selectedItems, setSelectedItems] = useState({}) // 객체 Object
-  const [latestOrderQuantities, setLatestOrderQuantities] = useState({}) // 최근 발주 수량 저장
+  const [selectedItems, setSelectedItems] = useState({}); // 객체 Object
+  const [latestOrderQuantities, setLatestOrderQuantities] = useState({}); // 최근 발주 수량 저장
 
-  const [category, setCategory] = useState("")
-  const [subCategory, setSubCategory] = useState("")
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
 
-  const [sortOption, setSortOption] = useState("")
-  const [statusFilter, setStatusFilter] = useState("") // 상품 상태 필터 (정상.재고부족)
-  const [searchQuery, setSearchQuery] = useState("") // (상품 검색창)
+  const [sortOption, setSortOption] = useState("");
+  const [statusFilter, setStatusFilter] = useState(""); // 상품 상태 필터 (정상.재고부족)
+  const [searchQuery, setSearchQuery] = useState(""); // (상품 검색창)
 
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [processingOrder, setProcessingOrder] = useState(false)
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [processingOrder, setProcessingOrder] = useState(false);
 
-  const [orders, setOrders] = useState([])
-  const [filteredOrders, setFilteredOrders] = useState([])
-  const [orderSearchQuery, setOrderSearchQuery] = useState("")
-  const [orderStatusFilter, setOrderStatusFilter] = useState("")
-  const [orderSortOption, setOrderSortOption] = useState("")
+  const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [orderSearchQuery, setOrderSearchQuery] = useState("");
+  const [orderStatusFilter, setOrderStatusFilter] = useState("");
+  const [orderSortOption, setOrderSortOption] = useState("");
 
-  const [activeTab, setActiveTab] = useState("manage")
-  const [showConfirmModal, setShowConfirmModal] = useState(false)
-  const [showExcelModal, setShowExcelModal] = useState(false)
-  const [showInspectionModal, setShowInspectionModal] = useState(false)
-  const [selectedOrderId, setSelectedOrderId] = useState(null)
+  const [activeTab, setActiveTab] = useState("manage");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showExcelModal, setShowExcelModal] = useState(false);
+  const [showInspectionModal, setShowInspectionModal] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
-  const [inventoryItem, setInventoryItem] = useState(0)
-  const [average, setAverage] = useState(0)
+  const [inventoryItem, setInventoryItem] = useState(0);
+  const [average, setAverage] = useState(0);
 
-  const [orderDateFilter, setOrderDateFilter] = useState("")
+  const [orderDateFilter, setOrderDateFilter] = useState("");
+
+  
+    // 날짜 포맷팅 함수 추가 (요일 포함)
+    const formatDateWithDay = (date) => {
+      const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+      const dayIndex = date.getDay();
+      return `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}월 ${String(date.getDate()).padStart(2, "0")}일 (${
+        dayNames[dayIndex]
+      })`;
+    };
 
   useEffect(() => {
     async function getInventoryList() {
       try {
-        setLoading(true)
-        const data = await fetchInventoryList()
-        setInventoryList(data)
+        setLoading(true);
+        const data = await fetchInventoryList();
+        setInventoryList(data);
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    getInventoryList()
-  }, [])
+    getInventoryList();
+  }, []);
 
   // 리스트 가져오기
   useEffect(() => {
     async function getOrdersList() {
       try {
-        setLoading(true)
-        const data = await fetchOrders()
-        setOrders(data)
-        setFilteredOrders(data)
-        console.log("발주 리스트", data)
+        setLoading(true);
+        const data = await fetchOrders();
+        setOrders(data);
+        setFilteredOrders(data);
+        console.log("발주 리스트", data);
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    getOrdersList()
-  }, [])
+    getOrdersList();
+  }, []);
+
+  // 날짜 이동 함수 추가
+  const navigateDate = (direction) => {
+    const newDate = new Date(
+      orderDateFilter ? new Date(orderDateFilter) : new Date()
+    );
+    newDate.setDate(newDate.getDate() + direction);
+
+    // YYYY-MM-DD 형식으로 변환
+    const year = newDate.getFullYear();
+    const month = String(newDate.getMonth() + 1).padStart(2, "0");
+    const day = String(newDate.getDate()).padStart(2, "0");
+    setOrderDateFilter(`${year}-${month}-${day}`);
+  };
+
+  // 커스텀 날짜 선택기 렌더링 함수 추가
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const renderCustomDatePicker = () => {
+    if (!showDatePicker) return null;
+
+    const today = new Date();
+    const selectedDate = orderDateFilter
+      ? new Date(orderDateFilter)
+      : new Date();
+    const currentMonth = selectedDate.getMonth();
+    const currentYear = selectedDate.getFullYear();
+
+    // 현재 월의 첫 날과 마지막 날
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+
+    // 달력에 표시할 날짜 배열 생성
+    const daysInMonth = lastDayOfMonth.getDate();
+    const firstDayOfWeek = firstDayOfMonth.getDay(); // 0: 일요일, 1: 월요일, ...
+
+    // 이전 달의 날짜들 (달력 첫 주 채우기)
+    const prevMonthDays = [];
+    const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+      prevMonthDays.push({
+        date: new Date(currentYear, currentMonth - 1, prevMonthLastDay - i),
+        isCurrentMonth: false,
+      });
+    }
+
+    // 현재 달의 날짜들
+    const currentMonthDays = [];
+    for (let i = 1; i <= daysInMonth; i++) {
+      currentMonthDays.push({
+        date: new Date(currentYear, currentMonth, i),
+        isCurrentMonth: true,
+      });
+    }
+
+    // 다음 달의 날짜들 (달력 마지막 주 채우기)
+    const nextMonthDays = [];
+    const totalDaysDisplayed = prevMonthDays.length + currentMonthDays.length;
+    const remainingCells =
+      Math.ceil(totalDaysDisplayed / 7) * 7 - totalDaysDisplayed;
+    for (let i = 1; i <= remainingCells; i++) {
+      nextMonthDays.push({
+        date: new Date(currentYear, currentMonth + 1, i),
+        isCurrentMonth: false,
+      });
+    }
+
+    // 모든 날짜 합치기
+    const allDays = [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
+
+    // 주 단위로 분할
+    const weeks = [];
+    for (let i = 0; i < allDays.length; i += 7) {
+      weeks.push(allDays.slice(i, i + 7));
+    }
+
+    // 날짜 선택 함수
+    const handleDateChange = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      setOrderDateFilter(`${year}-${month}-${day}`);
+      setShowDatePicker(false);
+    };
+
+
+    const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+
+    return (
+      <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg z-10 p-2 border border-gray-200 w-72">
+        <div className="flex justify-between items-center mb-2 px-2">
+          <button
+            onClick={() => {
+              const newDate = new Date(currentYear, currentMonth - 1, 1);
+              handleDateChange(newDate);
+            }}
+            className="p-1 hover:bg-gray-100 rounded-full"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <div className="font-medium">{`${currentYear}년 ${
+            currentMonth + 1
+          }월`}</div>
+          <button
+            onClick={() => {
+              const newDate = new Date(currentYear, currentMonth + 1, 1);
+              handleDateChange(newDate);
+            }}
+            className="p-1 hover:bg-gray-100 rounded-full"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-7 gap-1 mb-1">
+          {dayNames.map((day, index) => (
+            <div
+              key={index}
+              className="text-center text-xs font-medium text-gray-500 py-1"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-7 gap-1">
+          {weeks.flat().map((dayObj, index) => {
+            const { date, isCurrentMonth } = dayObj;
+            const isToday = date.toDateString() === today.toDateString();
+            const isSelected =
+              selectedDate &&
+              date.toDateString() === selectedDate.toDateString();
+
+            return (
+              <button
+                key={index}
+                onClick={() => handleDateChange(date)}
+                className={`
+                  w-9 h-9 flex items-center justify-center rounded-full text-sm
+                  ${isCurrentMonth ? "text-gray-800" : "text-gray-400"}
+                  ${isToday ? "bg-blue-100" : ""}
+                  ${
+                    isSelected
+                      ? "bg-indigo-600 text-white"
+                      : "hover:bg-gray-100"
+                  }
+                `}
+              >
+                {date.getDate()}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-2 flex justify-between border-t pt-2">
+          <button
+            onClick={() => handleDateChange(today)}
+            className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+          >
+            오늘
+          </button>
+          <button
+            onClick={() => setShowDatePicker(false)}
+            className="text-xs text-gray-600 hover:text-gray-800 font-medium"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   // 발주 버튼을 누른경우
   async function handleConfirmAddStock() {
-    setShowConfirmModal(false)
+    setShowConfirmModal(false);
 
     // Object.entries : key - value 쌍으로
     const orders = Object.entries(selectedItems)
-      .filter(([goodsId, data]) => data.quantity && Number.parseInt(data.quantity) > 0)
+      .filter(
+        ([goodsId, data]) => data.quantity && Number.parseInt(data.quantity) > 0
+      )
       .map(([goodsId, data]) => ({
         goodsId: Number.parseInt(goodsId),
         quantity: Number.parseInt(data.quantity),
-      }))
+      }));
 
     if (orders.length === 0) {
-      alert("수량이 입력된 상품이 없습니다.")
-      return
+      alert("수량이 입력된 상품이 없습니다.");
+      return;
     }
 
-    setProcessingOrder(true)
+    setProcessingOrder(true);
     try {
       for (const order of orders) {
-        await requestOrder(order.goodsId, order.quantity)
+        await requestOrder(order.goodsId, order.quantity);
       }
 
-      alert("모든 발주가 등록되었습니다.")
-      setSelectedItems({}) // 초기화
+      alert("모든 발주가 등록되었습니다.");
+      setSelectedItems({}); // 초기화
 
       // 발주 리스트 새로고침
-      const updatedOrders = await fetchOrders()
-      setOrders(updatedOrders)
-      setFilteredOrders(updatedOrders)
+      const updatedOrders = await fetchOrders();
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
     } catch (error) {
-      alert(`발주 처리 중 오류가 발생했습니다: ${error.message}`)
+      alert(`발주 처리 중 오류가 발생했습니다: ${error.message}`);
     } finally {
-      setProcessingOrder(false)
+      setProcessingOrder(false);
     }
   }
 
@@ -134,63 +332,63 @@ function OrderingPage() {
   useEffect(() => {
     async function getGoodsList() {
       try {
-        const data = await fetchGoodsList()
-        setGoodsList(data)
+        const data = await fetchGoodsList();
+        setGoodsList(data);
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       }
     }
-    getGoodsList()
-  }, [])
+    getGoodsList();
+  }, []);
 
   // 발주할 상품 선택
   async function handleSelectItem(goodsId) {
     setSelectedItems((prev) => {
-      const updated = { ...prev }
+      const updated = { ...prev };
       if (updated[goodsId]) {
-        delete updated[goodsId]
+        delete updated[goodsId];
       } else {
-        updated[goodsId] = { quantity: "" }
+        updated[goodsId] = { quantity: "" };
       }
-      return updated
-    })
+      return updated;
+    });
 
     try {
-      const latest = await fetchLatest(goodsId)
-      const latestQuantity = latest?.orderQuantity || ""
-      console.log(latestQuantity)
+      const latest = await fetchLatest(goodsId);
+      const latestQuantity = latest?.orderQuantity || "";
+      console.log(latestQuantity);
 
       // 최근 발주 수량 저장
       setLatestOrderQuantities((prev) => ({
         ...prev,
         [goodsId]: latestQuantity,
-      }))
+      }));
 
-      const data = await fetchWeekSales(goodsId)
+      const data = await fetchWeekSales(goodsId);
       // 추천 발수량 계산
-      const total = data.reduce((sum, item) => sum + item.amount, 0)
-      setAverage(total / 7)
+      const total = data.reduce((sum, item) => sum + item.amount, 0);
+      setAverage(total / 7);
 
-      const inventoryItem = inventoryList.find((i) => i.goodsId === goodsId) // 선택한 상품의 재고 정보
+      const inventoryItem = inventoryList.find((i) => i.goodsId === goodsId); // 선택한 상품의 재고 정보
 
-      setInventoryItem(inventoryItem)
+      setInventoryItem(inventoryItem);
     } catch (e) {
-      console.error("⚠️ 발주 수량 불러오기 실패", e.message)
+      console.error("⚠️ 발주 수량 불러오기 실패", e.message);
     }
   }
 
-  const stock = inventoryItem?.stockQuantity || 0
+  const stock = inventoryItem?.stockQuantity || 0;
 
-  const daysLeft = average > 0 ? Math.floor(stock / average) : "N/A"
+  const daysLeft = average > 0 ? Math.floor(stock / average) : "N/A";
 
   // 다음 입고까지 7일이라고 가정할떄, 7일치 평균개수 - 남은 재고 수  만큼 발주해라고 추천
-  const recommendedOrder = Math.ceil(Math.max(0, average * 1 - stock))
+  const recommendedOrder = Math.ceil(Math.max(0, average * 1 - stock));
 
   // 이전 발주 수량 적용 함수
   function applyLatestQuantity(goodsId) {
-    const latestQuantity = latestOrderQuantities[goodsId]
+    const latestQuantity = latestOrderQuantities[goodsId];
     if (latestQuantity) {
-      handleQuantityChange(goodsId, latestQuantity)
+      handleQuantityChange(goodsId, latestQuantity);
     }
   }
 
@@ -201,98 +399,109 @@ function OrderingPage() {
         ...prev[goodsId],
         quantity,
       },
-    }))
+    }));
   }
 
   function handleSelectAll(e) {
-    const isChecked = e.target.checked
-    const newSelections = {}
+    const isChecked = e.target.checked;
+    const newSelections = {};
 
     if (isChecked) {
       filteredInventory.forEach((item) => {
-        newSelections[item.goods_id] = { quantity: "" }
-      })
+        newSelections[item.goods_id] = { quantity: "" };
+      });
     }
 
-    setSelectedItems(isChecked ? newSelections : {})
+    setSelectedItems(isChecked ? newSelections : {});
   }
 
   function handleCategoryChange(e) {
-    setCategory(e.target.value)
-    setSubCategory("") // 대분류 바뀌면 소분류 초기화
+    setCategory(e.target.value);
+    setSubCategory(""); // 대분류 바뀌면 소분류 초기화
   }
 
-  async function getFilteredInventory(inventoryList, category, subCategory, statusFilter, searchQuery, sortOption) {
-    let goodsList = []
+  async function getFilteredInventory(
+    inventoryList,
+    category,
+    subCategory,
+    statusFilter,
+    searchQuery,
+    sortOption
+  ) {
+    let goodsList = [];
 
     // 1. 카테고리에 따라 서버에서 goods 불러오기
     if (category && subCategory) {
-      goodsList = await fetchGoodsBySubCategory(category, subCategory)
+      goodsList = await fetchGoodsBySubCategory(category, subCategory);
     } else if (category) {
-      goodsList = await fetchGoodsByCategory(category)
+      goodsList = await fetchGoodsByCategory(category);
     } else {
-      goodsList = await fetchGoodsList()
+      goodsList = await fetchGoodsList();
     }
 
     // 2. 재고 병합 및 상태 재계산
-    const mergedMap = new Map()
+    const mergedMap = new Map();
 
     inventoryList.forEach((item) => {
-      const existing = mergedMap.get(item.goodsId)
+      const existing = mergedMap.get(item.goodsId);
       if (existing) {
-        const newStock = existing.stockQuantity + item.stockQuantity
+        const newStock = existing.stockQuantity + item.stockQuantity;
         mergedMap.set(item.goodsId, {
           ...existing,
           stockQuantity: newStock,
           stockStatus: newStock >= 5 ? "정상" : "재고부족",
-        })
+        });
       } else {
         mergedMap.set(item.goodsId, {
           ...item,
           stockStatus: item.stockQuantity >= 5 ? "정상" : "재고부족",
-        })
+        });
       }
-    })
+    });
 
-    let mergedList = Array.from(mergedMap.values())
+    let mergedList = Array.from(mergedMap.values());
 
     // 3. inventory + goods 병합
     mergedList = mergedList
       .filter((item) => goodsList.some((g) => g.goods_id === item.goodsId))
       .map((item) => {
-        const matched = goodsList.find((g) => g.goods_id === item.goodsId)
+        const matched = goodsList.find((g) => g.goods_id === item.goodsId);
         return {
           ...item,
           ...matched,
-        }
-      })
+        };
+      });
 
     // 4. 상태 필터링
     if (statusFilter) {
-      mergedList = mergedList.filter((item) => item.stockStatus === statusFilter)
+      mergedList = mergedList.filter(
+        (item) => item.stockStatus === statusFilter
+      );
     }
 
     // 5. 검색 필터링
     if (searchQuery.trim() !== "") {
-      mergedList = mergedList.filter((item) => item.goods_name?.toLowerCase().includes(searchQuery.toLowerCase()))
+      mergedList = mergedList.filter((item) =>
+        item.goods_name?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
 
     // 6. 정렬
     if (sortOption === "price_asc") {
-      mergedList.sort((a, b) => a.goods_price - b.goods_price)
+      mergedList.sort((a, b) => a.goods_price - b.goods_price);
     } else if (sortOption === "price_desc") {
-      mergedList.sort((a, b) => b.goods_price - a.goods_price)
+      mergedList.sort((a, b) => b.goods_price - a.goods_price);
     } else if (sortOption === "stock_asc") {
-      mergedList.sort((a, b) => a.stockQuantity - b.stockQuantity)
+      mergedList.sort((a, b) => a.stockQuantity - b.stockQuantity);
     } else if (sortOption === "stock_desc") {
-      mergedList.sort((a, b) => b.stockQuantity - a.stockQuantity)
+      mergedList.sort((a, b) => b.stockQuantity - a.stockQuantity);
     }
 
-    return mergedList
+    return mergedList;
   }
 
   useEffect(() => {
-    if (!inventoryList.length) return
+    if (!inventoryList.length) return;
 
     async function fetchAndFilter() {
       try {
@@ -302,61 +511,82 @@ function OrderingPage() {
           subCategory,
           statusFilter,
           searchQuery,
-          sortOption,
-        )
-        setFilteredInventory(result)
+          sortOption
+        );
+        setFilteredInventory(result);
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       }
     }
 
-    fetchAndFilter()
-  }, [inventoryList, category, subCategory, statusFilter, searchQuery, sortOption])
+    fetchAndFilter();
+  }, [
+    inventoryList,
+    category,
+    subCategory,
+    statusFilter,
+    searchQuery,
+    sortOption,
+  ]);
 
   // 발주 리스트 필터링
   useEffect(() => {
-    let filtered = [...orders]
+    let filtered = [...orders];
 
     // 7. 날짜 필터링
     if (orderDateFilter) {
-      filtered = filtered.filter((order) => order.scheduledTime.startsWith(orderDateFilter))
+      filtered = filtered.filter((order) =>
+        order.scheduledTime.startsWith(orderDateFilter)
+      );
     }
 
     // 검색어 필터링
     if (orderSearchQuery.trim() !== "") {
       filtered = filtered.filter(
         (order) =>
-          order.goodsName?.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
-          order.orderId?.toString().includes(orderSearchQuery),
-      )
+          order.goodsName
+            ?.toLowerCase()
+            .includes(orderSearchQuery.toLowerCase()) ||
+          order.orderId?.toString().includes(orderSearchQuery)
+      );
     }
 
     // 상태 필터링
     if (orderStatusFilter) {
-      filtered = filtered.filter((order) => order.status === orderStatusFilter)
+      filtered = filtered.filter((order) => order.status === orderStatusFilter);
     }
 
     // 정렬
     if (orderSortOption === "date_desc") {
-      filtered.sort((a, b) => new Date(b.scheduledTime) - new Date(a.scheduledTime))
+      filtered.sort(
+        (a, b) => new Date(b.scheduledTime) - new Date(a.scheduledTime)
+      );
     } else if (orderSortOption === "date_asc") {
-      filtered.sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime))
+      filtered.sort(
+        (a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime)
+      );
     } else if (orderSortOption === "quantity_desc") {
-      filtered.sort((a, b) => b.orderQuantity - a.orderQuantity)
+      filtered.sort((a, b) => b.orderQuantity - a.orderQuantity);
     } else if (orderSortOption === "quantity_asc") {
-      filtered.sort((a, b) => a.orderQuantity - b.orderQuantity)
+      filtered.sort((a, b) => a.orderQuantity - b.orderQuantity);
     }
 
-    setFilteredOrders(filtered)
-  }, [orders, orderSearchQuery, orderStatusFilter, orderSortOption, orderDateFilter])
+    setFilteredOrders(filtered);
+  }, [
+    orders,
+    orderSearchQuery,
+    orderStatusFilter,
+    orderSortOption,
+    orderDateFilter,
+  ]);
 
   // 선택된 상품 총 개수
-  const selectedCount = Object.keys(selectedItems).length
+  const selectedCount = Object.keys(selectedItems).length;
 
   // 선택된 상품 총 수량
   const totalQuantity = Object.values(selectedItems).reduce((sum, item) => {
-    return sum + (Number.parseInt(item.quantity) || 0)
-  }, 0)
+    return sum + (Number.parseInt(item.quantity) || 0);
+  }, 0);
 
   // 발주 상태에 따른 배지 색상 및 아이콘
   const getStatusBadge = (status) => {
@@ -367,45 +597,45 @@ function OrderingPage() {
             <CheckCircle className="w-3 h-3 mr-1" />
             입고완료
           </span>
-        )
+        );
       case "발주 진행중":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
             <Clock className="w-3 h-3 mr-1" />
             발주 진행중
           </span>
-        )
+        );
       case "발주 완료":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
             <CheckCircle className="w-3 h-3 mr-1" />
-            발주 완료
+            발주완료
           </span>
-        )
+        );
       default:
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
             {status}
           </span>
-        )
+        );
     }
-  }
+  };
 
   // 날짜 포맷팅 함수
   const formatDate = (dateString) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat("ko-KR", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(date)
-  }
+    }).format(date);
+  };
 
   // 엑셀로 내보내기
   const exportOrdersToExcel = () => {
-    setShowExcelModal(false)
+    setShowExcelModal(false);
 
     const data = filteredOrders.map((order) => ({
       주문번호: order.orderId,
@@ -413,46 +643,46 @@ function OrderingPage() {
       수량: order.orderQuantity,
       주문시간: formatDate(order.scheduledTime),
       상태: order.status,
-    }))
+    }));
 
     // data 배열은 엑셀에서 사용할 수 있는 시트 형식으로 변환
     // xlsx 라이브러리의 기능으로, json을 바로 시트로 만들 수 있음
-    const worksheet = XLSX.utils.json_to_sheet(data)
+    const worksheet = XLSX.utils.json_to_sheet(data);
 
     // 엑셀 파일(워크북) 생성, 여러개의 시트를 포함 가능
-    const workbook = XLSX.utils.book_new()
+    const workbook = XLSX.utils.book_new();
 
     // 위에서 만든 시트를 워크북에 추가 / 이름은 발주리스트
-    XLSX.utils.book_append_sheet(workbook, worksheet, "발주 리스트")
+    XLSX.utils.book_append_sheet(workbook, worksheet, "발주 리스트");
 
     // 워크북을 .xlsx 형식의 버퍼로 변환
     // JavaScript ArrayBuffer 로 결과를 받겠다는 의미
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
       type: "array",
-    })
+    });
 
     // ArrayBuffer를 Blob(파일 객체)로 감쌈
     // 파일로 다운로드하려면 Blob 형태로 만들어야 함
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" })
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
 
     // file-saver 라이브러리의 saveAs 를 이용해서 파일 다운로드 실행
     // 파일이름은 "발주_리스트_2025-04-02.xlsx" 느낌
-    saveAs(blob, `발주_리스트_${new Date().toISOString().slice(0, 10)}.xlsx`)
-  }
+    saveAs(blob, `발주_리스트_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
 
   // 검수하기 버튼
   const confirmArrival = async (orderId) => {
-    setShowInspectionModal(false)
+    setShowInspectionModal(false);
     try {
-      await fetchConfirmArrival(orderId)
-      const updated = await fetchOrders()
-      setOrders(updated)
-      setFilteredOrders(updated)
+      await fetchConfirmArrival(orderId);
+      const updated = await fetchOrders();
+      setOrders(updated);
+      setFilteredOrders(updated);
     } catch (error) {
-      console.error("입고 확인 실패", error)
+      console.error("입고 확인 실패", error);
     }
-  }
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen p-6">
@@ -499,9 +729,9 @@ function OrderingPage() {
           <>
             {/* 검색 및 필터 영역 */}
             <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
                 {/* 검색창 */}
-                <div className="relative">
+                <div className="relative md:col-span-6">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Search className="h-5 w-5 text-gray-400" />
                   </div>
@@ -523,7 +753,7 @@ function OrderingPage() {
                 </div>
 
                 {/* 카테고리 필터 */}
-                <div className="flex gap-3">
+                <div className="flex gap-3 md:col-span-4">
                   <select
                     value={category}
                     onChange={handleCategoryChange}
@@ -547,10 +777,14 @@ function OrderingPage() {
                       <>
                         <option value="즉석식품">즉석식품</option>
                         <option value="라면 & 면류">라면 & 면류</option>
-                        <option value="베이커리 & 샌드위치">베이커리 & 샌드위치</option>
+                        <option value="베이커리 & 샌드위치">
+                          베이커리 & 샌드위치
+                        </option>
                         <option value="냉장 & 냉동식품">냉장 & 냉동식품</option>
                         <option value="과자 & 스낵">과자 & 스낵</option>
-                        <option value="아이스크림 & 디저트">아이스크림 & 디저트</option>
+                        <option value="아이스크림 & 디저트">
+                          아이스크림 & 디저트
+                        </option>
                       </>
                     ) : category === "음료" ? (
                       <>
@@ -569,7 +803,9 @@ function OrderingPage() {
                       </>
                     ) : category === "디지털 & 문구" ? (
                       <>
-                        <option value="전자기기 & 액세서리">전자기기 & 액세서리</option>
+                        <option value="전자기기 & 액세서리">
+                          전자기기 & 액세서리
+                        </option>
                         <option value="문구류">문구류</option>
                       </>
                     ) : null}
@@ -577,17 +813,19 @@ function OrderingPage() {
                 </div>
 
                 {/* 정렬 옵션 */}
-                <select
-                  value={sortOption}
-                  onChange={(e) => setSortOption(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-no-repeat bg-[right_0.5rem_center] pr-10"
-                >
-                  <option value="">기본 정렬</option>
-                  <option value="stock_asc">재고 적은순</option>
-                  <option value="stock_desc">재고 많은순</option>
-                  <option value="price_asc">가격 낮은순</option>
-                  <option value="price_desc">가격 높은순</option>
-                </select>
+                <div className="md:col-span-2">
+                  <select
+                    value={sortOption}
+                    onChange={(e) => setSortOption(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-no-repeat bg-[right_0.5rem_center] pr-10"
+                  >
+                    <option value="">기본 정렬</option>
+                    <option value="stock_asc">재고 적은순</option>
+                    <option value="stock_desc">재고 많은순</option>
+                    <option value="price_asc">가격 낮은순</option>
+                    <option value="price_desc">가격 높은순</option>
+                  </select>
+                </div>
               </div>
 
               {/* 재고 상태 필터 */}
@@ -597,7 +835,9 @@ function OrderingPage() {
                   <button
                     onClick={() => setStatusFilter("")}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                      statusFilter === "" ? "bg-white text-indigo-700 shadow-sm" : "text-gray-600 hover:bg-gray-200"
+                      statusFilter === ""
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
                     }`}
                   >
                     전체
@@ -605,7 +845,9 @@ function OrderingPage() {
                   <button
                     onClick={() => setStatusFilter("정상")}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                      statusFilter === "정상" ? "bg-white text-green-700 shadow-sm" : "text-gray-600 hover:bg-gray-200"
+                      statusFilter === "정상"
+                        ? "bg-white text-green-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
                     }`}
                   >
                     정상
@@ -651,7 +893,9 @@ function OrderingPage() {
                               type="checkbox"
                               checked={
                                 filteredInventory.length > 0 &&
-                                filteredInventory.every((item) => selectedItems[item.goods_id])
+                                filteredInventory.every(
+                                  (item) => selectedItems[item.goods_id]
+                                )
                               }
                               onChange={handleSelectAll}
                               className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
@@ -691,16 +935,23 @@ function OrderingPage() {
                                 className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                               />
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.goods_id}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {item.goods_id}
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap w-24">
                               <img
-                                src={`${item.goods_image || "/placeholder.svg"}` || "/placeholder.svg"}
+                                src={
+                                  `${item.goods_image || "/placeholder.svg"}` ||
+                                  "/placeholder.svg"
+                                }
                                 alt={item.goods_name}
                                 className="w-16 h-16 object-cover rounded-md border border-gray-200"
                               />
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">{item.goods_name}</div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {item.goods_name}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-semibold text-indigo-600">
@@ -725,47 +976,70 @@ function OrderingPage() {
                                 <div className="flex items-center space-x-2">
                                   <input
                                     type="number"
-                                    value={selectedItems[item.goods_id]?.quantity || ""}
-                                    onChange={(e) => handleQuantityChange(item.goods_id, e.target.value)}
+                                    value={
+                                      selectedItems[item.goods_id]?.quantity ||
+                                      ""
+                                    }
+                                    onChange={(e) =>
+                                      handleQuantityChange(
+                                        item.goods_id,
+                                        e.target.value
+                                      )
+                                    }
                                     disabled={!selectedItems[item.goods_id]}
                                     min="1"
                                     className="w-20 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-center disabled:bg-gray-100 disabled:text-gray-400"
                                     placeholder="수량"
                                   />
 
-                                  {selectedItems[item.goods_id] && latestOrderQuantities[item.goods_id] && (
-                                    <button
-                                      onClick={() => applyLatestQuantity(item.goods_id)}
-                                      className="flex items-center px-2 py-1 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors"
-                                      title="이전 발주 수량 적용"
-                                    >
-                                      <History className="w-3 h-3 mr-1" />
-                                      {latestOrderQuantities[item.goods_id]}개
-                                    </button>
-                                  )}
+                                  {selectedItems[item.goods_id] &&
+                                    latestOrderQuantities[item.goods_id] && (
+                                      <button
+                                        onClick={() =>
+                                          applyLatestQuantity(item.goods_id)
+                                        }
+                                        className="flex items-center px-2 py-1 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors"
+                                        title="이전 발주 수량 적용"
+                                      >
+                                        <History className="w-3 h-3 mr-1" />
+                                        {latestOrderQuantities[item.goods_id]}개
+                                      </button>
+                                    )}
                                 </div>
 
-                                {selectedItems[item.goods_id] && item.goods_id === inventoryItem?.goodsId && (
-                                  <div className="flex items-center">
-                                    <button
-                                      onClick={() => handleQuantityChange(item.goods_id, recommendedOrder.toString())}
-                                      className="flex items-center text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md px-2 py-1 hover:bg-indigo-100 transition-colors"
-                                    >
-                                      <span className="font-bold mr-1">{recommendedOrder}개</span>
-                                      추천
-                                    </button>
-                                    <div className="ml-2 text-xs text-gray-500 flex items-center">
-                                      <span className="inline-flex items-center mr-2">
-                                        <span className="font-medium text-indigo-600 mr-1">{average.toFixed(1)}개</span>
-                                        일평균
-                                      </span>
-                                      <span className="inline-flex items-center">
-                                        <span className="font-medium text-indigo-600 mr-1">{daysLeft}</span>
-                                        일치
-                                      </span>
+                                {selectedItems[item.goods_id] &&
+                                  item.goods_id === inventoryItem?.goodsId && (
+                                    <div className="flex items-center">
+                                      <button
+                                        onClick={() =>
+                                          handleQuantityChange(
+                                            item.goods_id,
+                                            recommendedOrder.toString()
+                                          )
+                                        }
+                                        className="flex items-center text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md px-2 py-1 hover:bg-indigo-100 transition-colors"
+                                      >
+                                        <span className="font-bold mr-1">
+                                          {recommendedOrder}개
+                                        </span>
+                                        추천
+                                      </button>
+                                      <div className="ml-2 text-xs text-gray-500 flex items-center">
+                                        <span className="inline-flex items-center mr-2">
+                                          <span className="font-medium text-indigo-600 mr-1">
+                                            {average.toFixed(1)}개
+                                          </span>
+                                          일평균
+                                        </span>
+                                        <span className="inline-flex items-center">
+                                          <span className="font-medium text-indigo-600 mr-1">
+                                            {daysLeft}
+                                          </span>
+                                          일치
+                                        </span>
+                                      </div>
                                     </div>
-                                  </div>
-                                )}
+                                  )}
                               </div>
                             </td>
                           </tr>
@@ -797,11 +1071,13 @@ function OrderingPage() {
                   ) : (
                     <ul className="space-y-3">
                       {Object.entries(selectedItems).map(([goodsId, data]) => {
-                        if (!data) return null
+                        if (!data) return null;
 
-                        const product = goodsList.find((g) => g.goods_id === Number.parseInt(goodsId))
+                        const product = goodsList.find(
+                          (g) => g.goods_id === Number.parseInt(goodsId)
+                        );
 
-                        if (!product) return null
+                        if (!product) return null;
 
                         return (
                           <li
@@ -810,28 +1086,41 @@ function OrderingPage() {
                           >
                             <div className="flex items-center">
                               <img
-                                src={`${product.goods_image || "/placeholder.svg"}` || "/placeholder.svg"}
+                                src={
+                                  `${
+                                    product.goods_image || "/placeholder.svg"
+                                  }` || "/placeholder.svg"
+                                }
                                 alt={product.goods_name}
                                 className="w-10 h-10 object-cover rounded-md mr-3"
                               />
                               <div>
-                                <div className="font-medium text-gray-800 text-sm">{product.goods_name}</div>
+                                <div className="font-medium text-gray-800 text-sm">
+                                  {product.goods_name}
+                                </div>
                                 <div className="flex items-center text-xs">
                                   {data.quantity ? (
-                                    <span className="text-indigo-600 font-medium">{data.quantity}개</span>
+                                    <span className="text-indigo-600 font-medium">
+                                      {data.quantity}개
+                                    </span>
                                   ) : (
-                                    <span className="text-gray-500">수량 미지정</span>
+                                    <span className="text-gray-500">
+                                      수량 미지정
+                                    </span>
                                   )}
 
-                                  {latestOrderQuantities[goodsId] && !data.quantity && (
-                                    <button
-                                      onClick={() => applyLatestQuantity(goodsId)}
-                                      className="ml-2 flex items-center text-xs text-blue-600 hover:text-blue-800"
-                                    >
-                                      <RefreshCw className="w-3 h-3 mr-1" />
-                                      이전 {latestOrderQuantities[goodsId]}개
-                                    </button>
-                                  )}
+                                  {latestOrderQuantities[goodsId] &&
+                                    !data.quantity && (
+                                      <button
+                                        onClick={() =>
+                                          applyLatestQuantity(goodsId)
+                                        }
+                                        className="ml-2 flex items-center text-xs text-blue-600 hover:text-blue-800"
+                                      >
+                                        <RefreshCw className="w-3 h-3 mr-1" />
+                                        이전 {latestOrderQuantities[goodsId]}개
+                                      </button>
+                                    )}
                                 </div>
                               </div>
                             </div>
@@ -842,7 +1131,7 @@ function OrderingPage() {
                               <X className="h-5 w-5" />
                             </button>
                           </li>
-                        )
+                        );
                       })}
                     </ul>
                   )}
@@ -851,7 +1140,9 @@ function OrderingPage() {
                 <div className="p-6 border-t border-gray-200 bg-gray-50">
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-sm text-gray-600">총 발주 수량:</span>
-                    <span className="font-bold text-indigo-700">{totalQuantity}개</span>
+                    <span className="font-bold text-indigo-700">
+                      {totalQuantity}개
+                    </span>
                   </div>
 
                   <div className="space-y-3">
@@ -868,21 +1159,27 @@ function OrderingPage() {
                       onClick={() => {
                         if (
                           Object.keys(selectedItems).length > 0 &&
-                          Object.values(selectedItems).some((item) => item.quantity)
+                          Object.values(selectedItems).some(
+                            (item) => item.quantity
+                          )
                         ) {
-                          setShowConfirmModal(true)
+                          setShowConfirmModal(true);
                         } else {
-                          alert("수량이 입력된 상품이 없습니다.")
+                          alert("수량이 입력된 상품이 없습니다.");
                         }
                       }}
                       disabled={
                         Object.keys(selectedItems).length === 0 ||
-                        !Object.values(selectedItems).some((item) => item.quantity) ||
+                        !Object.values(selectedItems).some(
+                          (item) => item.quantity
+                        ) ||
                         processingOrder
                       }
                       className={`w-full px-4 py-2 rounded-lg text-white flex items-center justify-center ${
                         Object.keys(selectedItems).length === 0 ||
-                        !Object.values(selectedItems).some((item) => item.quantity) ||
+                        !Object.values(selectedItems).some(
+                          (item) => item.quantity
+                        ) ||
                         processingOrder
                           ? "bg-gray-400 cursor-not-allowed"
                           : "bg-indigo-600 hover:bg-indigo-700"
@@ -911,73 +1208,123 @@ function OrderingPage() {
           <>
             {/* 발주 리스트 검색 및 필터 영역 */}
             <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                {/* 검색창 */}
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="상품명 또는 주문번호로 검색"
-                    value={orderSearchQuery}
-                    onChange={(e) => setOrderSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                  {orderSearchQuery && (
+              <div className="flex flex-col gap-4">
+                {/* 첫 번째 줄: 날짜, 검색, 정렬 */}
+                <div className="grid grid-cols-12 gap-4">
+                  {/* 날짜 필터 (왼쪽) */}
+                  <div className="col-span-4 flex items-center gap-2">
                     <button
-                      onClick={() => setOrderSearchQuery("")}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                      onClick={() => navigateDate(-1)}
+                      className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
                     >
-                      <X className="h-5 w-5" />
+                      <ChevronLeft className="h-5 w-5" />
                     </button>
-                  )}
+
+                    <div className="relative flex-grow">
+                      <button
+                        onClick={() => setShowDatePicker(!showDatePicker)}
+                        className="w-full flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                      >
+                        <Calendar className="h-4 w-4 text-gray-500" />
+                        <span className="font-medium">
+                          {orderDateFilter
+                            ? formatDateWithDay(new Date(orderDateFilter))
+                            : formatDateWithDay(new Date())}
+                        </span>
+                      </button>
+                      {renderCustomDatePicker()}
+                    </div>
+
+                    <button
+                      onClick={() => navigateDate(1)}
+                      className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  {/* 검색창 (중간 - 더 길게) */}
+                  <div className="col-span-6 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Search className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="상품명 또는 주문번호로 검색"
+                      value={orderSearchQuery}
+                      onChange={(e) => setOrderSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                    {orderSearchQuery && (
+                      <button
+                        onClick={() => setOrderSearchQuery("")}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* 정렬 옵션 (오른쪽 - 짧게) */}
+                  <div className="col-span-2">
+                    <select
+                      value={orderSortOption}
+                      onChange={(e) => setOrderSortOption(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-no-repeat bg-[right_0.5rem_center] pr-10"
+                    >
+                      <option value="date_desc">최신순</option>
+                      <option value="date_asc">오래된순</option>
+                      <option value="quantity_desc">수량 많은순</option>
+                      <option value="quantity_asc">수량 적은순</option>
+                    </select>
+                  </div>
                 </div>
 
-                {/* 상태 필터 */}
-                <select
-                  value={orderStatusFilter}
-                  onChange={(e) => setOrderStatusFilter(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-no-repeat bg-[right_0.5rem_center] pr-10"
-                >
-                  <option value="">모든 상태</option>
-                  <option value="발주 진행중">발주 진행중</option>
-                  <option value="발주 완료">발주 완료</option>
-                  <option value="입고완료">입고완료</option>
-                </select>
-
-                {/* 정렬 옵션 */}
-                <select
-                  value={orderSortOption}
-                  onChange={(e) => setOrderSortOption(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-no-repeat bg-[right_0.5rem_center] pr-10"
-                >
-                  <option value="">기본 정렬</option>
-                  <option value="date_desc">최신순</option>
-                  <option value="date_asc">오래된순</option>
-                  <option value="quantity_desc">수량 많은순</option>
-                  <option value="quantity_asc">수량 적은순</option>
-                </select>
-
-                {/* 날짜 필터 */}
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Calendar className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="date"
-                    value={orderDateFilter}
-                    onChange={(e) => setOrderDateFilter(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                  {orderDateFilter && (
+                {/* 두 번째 줄: 상태 필터 버블 */}
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-gray-500" />
+                  <div className="flex bg-gray-100 rounded-lg p-1">
                     <button
-                      onClick={() => setOrderDateFilter("")}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                      onClick={() => setOrderStatusFilter("")}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                        orderStatusFilter === ""
+                          ? "bg-white text-indigo-700 shadow-sm"
+                          : "text-gray-600 hover:bg-gray-200"
+                      }`}
                     >
-                      <X className="h-5 w-5" />
+                      전체
                     </button>
-                  )}
+                    <button
+                      onClick={() => setOrderStatusFilter("발주 진행중")}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                        orderStatusFilter === "발주 진행중"
+                          ? "bg-white text-yellow-700 shadow-sm"
+                          : "text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      발주 진행중
+                    </button>
+                    <button
+                      onClick={() => setOrderStatusFilter("발주 완료")}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                        orderStatusFilter === "발주 완료"
+                          ? "bg-white text-blue-700 shadow-sm"
+                          : "text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      발주 완료
+                    </button>
+                    <button
+                      onClick={() => setOrderStatusFilter("입고완료")}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                        orderStatusFilter === "입고완료"
+                          ? "bg-white text-green-700 shadow-sm"
+                          : "text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      입고완료
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1039,28 +1386,38 @@ function OrderingPage() {
                               <div className="flex-shrink-0 h-10 w-10">
                                 <img
                                   className="h-10 w-10 rounded-md object-cover"
-                                  src={`${order.goodsImage || "/placeholder.svg"}` || "/placeholder.svg"}
+                                  src={
+                                    `${
+                                      order.goodsImage || "/placeholder.svg"
+                                    }` || "/placeholder.svg"
+                                  }
                                   alt={order.goodsName}
                                 />
                               </div>
                               <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">{order.goodsName}</div>
+                                <div className="text-sm font-medium text-gray-900">
+                                  {order.goodsName}
+                                </div>
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span className="font-semibold text-indigo-600">{order.orderQuantity}개</span>
+                            <span className="font-semibold text-indigo-600">
+                              {order.orderQuantity}개
+                            </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {formatDate(order.scheduledTime)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(order.status)}</td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {order.status === "발주 완료" && (
+                            {getStatusBadge(order.status)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {order.status === "발주완료" && (
                               <button
                                 onClick={() => {
-                                  setSelectedOrderId(order.orderId)
-                                  setShowInspectionModal(true)
+                                  setSelectedOrderId(order.orderId);
+                                  setShowInspectionModal(true);
                                 }}
                                 className="px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center"
                               >
@@ -1102,7 +1459,9 @@ function OrderingPage() {
             <div className="p-6">
               <div className="mb-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-500">선택한 상품</span>
+                  <span className="text-sm font-medium text-gray-500">
+                    선택한 상품
+                  </span>
                   <span className="bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full px-2 py-1">
                     {selectedCount}개 상품
                   </span>
@@ -1112,11 +1471,13 @@ function OrderingPage() {
                 <div className="max-h-60 overflow-y-auto mb-4 pr-1">
                   <ul className="space-y-2">
                     {Object.entries(selectedItems).map(([goodsId, data]) => {
-                      if (!data || !data.quantity) return null
+                      if (!data || !data.quantity) return null;
 
-                      const product = goodsList.find((g) => g.goods_id === Number.parseInt(goodsId))
+                      const product = goodsList.find(
+                        (g) => g.goods_id === Number.parseInt(goodsId)
+                      );
 
-                      if (!product) return null
+                      if (!product) return null;
 
                       return (
                         <li
@@ -1124,13 +1485,20 @@ function OrderingPage() {
                           className="flex items-center p-2 border border-gray-100 rounded-lg bg-gray-50"
                         >
                           <img
-                            src={`${product.goods_image || "/placeholder.svg"}` || "/placeholder.svg"}
+                            src={
+                              `${product.goods_image || "/placeholder.svg"}` ||
+                              "/placeholder.svg"
+                            }
                             alt={product.goods_name}
                             className="w-10 h-10 object-cover rounded-md mr-3 border border-gray-200"
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-800 truncate">{product.goods_name}</p>
-                            <p className="text-xs text-gray-500">{Number(product.goods_price).toLocaleString()}원</p>
+                            <p className="text-sm font-medium text-gray-800 truncate">
+                              {product.goods_name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {Number(product.goods_price).toLocaleString()}원
+                            </p>
                           </div>
                           <div className="ml-2 text-right">
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
@@ -1138,7 +1506,7 @@ function OrderingPage() {
                             </span>
                           </div>
                         </li>
-                      )
+                      );
                     })}
                   </ul>
                 </div>
@@ -1147,16 +1515,22 @@ function OrderingPage() {
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-gray-600">총 상품 종류:</span>
-                    <span className="font-medium text-gray-800">{selectedCount}개</span>
+                    <span className="font-medium text-gray-800">
+                      {selectedCount}개
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">총 발주 수량:</span>
-                    <span className="font-bold text-indigo-700">{totalQuantity}개</span>
+                    <span className="font-bold text-indigo-700">
+                      {totalQuantity}개
+                    </span>
                   </div>
                 </div>
 
                 <div className="mt-6 text-center">
-                  <p className="text-sm text-gray-600">위 상품들을 발주하시겠습니까?</p>
+                  <p className="text-sm text-gray-600">
+                    위 상품들을 발주하시겠습니까?
+                  </p>
                 </div>
               </div>
             </div>
@@ -1188,7 +1562,9 @@ function OrderingPage() {
             <div className="bg-green-50 p-6 border-b border-green-100">
               <div className="flex items-center">
                 <Download className="h-6 w-6 text-green-600 mr-3" />
-                <h3 className="text-lg font-bold text-gray-900">엑셀 내보내기</h3>
+                <h3 className="text-lg font-bold text-gray-900">
+                  엑셀 내보내기
+                </h3>
               </div>
             </div>
 
@@ -1200,9 +1576,12 @@ function OrderingPage() {
                     <Download className="h-6 w-6 text-green-600" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900">발주 리스트 다운로드</h4>
+                    <h4 className="text-lg font-semibold text-gray-900">
+                      발주 리스트 다운로드
+                    </h4>
                     <p className="text-sm text-gray-600">
-                      현재 필터링된 {filteredOrders.length}개의 발주 내역을 엑셀 파일로 내보냅니다.
+                      현재 필터링된 {filteredOrders.length}개의 발주 내역을 엑셀
+                      파일로 내보냅니다.
                     </p>
                   </div>
                 </div>
@@ -1210,16 +1589,22 @@ function OrderingPage() {
                 <div className="bg-gray-50 p-4 rounded-lg mb-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-gray-600">파일 형식:</span>
-                    <span className="font-medium text-gray-800">Excel (.xlsx)</span>
+                    <span className="font-medium text-gray-800">
+                      Excel (.xlsx)
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">발주 내역 수:</span>
-                    <span className="font-bold text-green-700">{filteredOrders.length}개</span>
+                    <span className="font-bold text-green-700">
+                      {filteredOrders.length}개
+                    </span>
                   </div>
                 </div>
 
                 <div className="text-center">
-                  <p className="text-sm text-gray-600">발주 리스트를 엑셀 파일로 내보내시겠습니까?</p>
+                  <p className="text-sm text-gray-600">
+                    발주 리스트를 엑셀 파일로 내보내시겠습니까?
+                  </p>
                 </div>
               </div>
             </div>
@@ -1264,9 +1649,12 @@ function OrderingPage() {
                     <CheckCircle className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900">발주 검수 완료</h4>
+                    <h4 className="text-lg font-semibold text-gray-900">
+                      발주 검수 완료
+                    </h4>
                     <p className="text-sm text-gray-600">
-                      주문번호 #{selectedOrderId}의 발주 상품이 정상적으로 입고되었는지 확인하셨나요?
+                      주문번호 #{selectedOrderId}의 발주 상품이 정상적으로
+                      입고되었는지 확인하셨나요?
                     </p>
                   </div>
                 </div>
@@ -1275,13 +1663,16 @@ function OrderingPage() {
                   <div className="flex items-start">
                     <AlertCircle className="h-5 w-5 text-yellow-600 mr-2 mt-0.5" />
                     <p className="text-sm text-yellow-800">
-                      검수 확인 후에는 상태가 '입고완료'로 변경되며, 이 작업은 되돌릴 수 없습니다.
+                      검수 확인 후에는 상태가 '입고완료'로 변경되며, 이 작업은
+                      되돌릴 수 없습니다.
                     </p>
                   </div>
                 </div>
 
                 <div className="text-center">
-                  <p className="text-sm text-gray-600">검수 완료 처리를 진행하시겠습니까?</p>
+                  <p className="text-sm text-gray-600">
+                    검수 완료 처리를 진행하시겠습니까?
+                  </p>
                 </div>
               </div>
             </div>
@@ -1306,8 +1697,7 @@ function OrderingPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default OrderingPage
-
+export default OrderingPage;
