@@ -1,18 +1,13 @@
-import { useState, useMemo } from "react";
-import { ResponsiveBar } from "@nivo/bar";
-import { format } from "date-fns";
+"use client"
 
-export default function SalesComparisonChart({
-  previousData,
-  currentData,
-  previousDate,
-  currentDate,
-  hourLabel,
-}) {
-  const [chartView, setChartView] = useState("sales"); // 'sales' or 'quantity'
+import { useState, useMemo } from "react"
+import { ResponsiveBar } from "@nivo/bar"
+
+export default function SalesComparisonChart({ previousData, currentData, previousDate, currentDate, hourLabel }) {
+  const [chartView, setChartView] = useState("sales") // 'sales' or 'quantity'
 
   const chartData = useMemo(() => {
-    const productMap = {};
+    const productMap = {}
 
     // 이전 데이터 처리
     previousData.forEach((item) => {
@@ -20,50 +15,38 @@ export default function SalesComparisonChart({
         product: item.productName,
         이전: chartView === "sales" ? item.totalPrice : item.totalAmount,
         현재: 0, // 기본값
-      };
-    });
+      }
+    })
 
     // 현재 데이터 처리
     currentData.forEach((item) => {
       if (productMap[item.productId]) {
         // 기존 상품이면 현재 값만 업데이트
-        productMap[item.productId].현재 =
-          chartView === "sales" ? item.totalPrice : item.totalAmount;
+        productMap[item.productId].현재 = chartView === "sales" ? item.totalPrice : item.totalAmount
       } else {
         // 새로운 상품이면 추가
         productMap[item.productId] = {
           product: item.productName,
           이전: 0, // 기존 데이터 없음
           현재: chartView === "sales" ? item.totalPrice : item.totalAmount,
-        };
+        }
       }
-    });
+    })
 
     // 정렬 & 상위 7개 선택
     return Object.values(productMap)
       .sort((a, b) => b.현재 + b.이전 - (a.현재 + a.이전))
-      .slice(0, 7);
-  }, [previousData, currentData, chartView]);
+      .slice(0, 7)
+  }, [previousData, currentData, chartView])
 
-  const previousTotal = previousData.reduce(
-    (sum, item) => sum + item.totalPrice,
-    0
-  );
-  const currentTotal = currentData.reduce(
-    (sum, item) => sum + item.totalPrice,
-    0
-  );
-  const totalChange = (
-    ((currentTotal - previousTotal) / previousTotal) *
-    100
-  ).toFixed(1);
+  const previousTotal = previousData.reduce((sum, item) => sum + item.totalPrice, 0)
+  const currentTotal = currentData.reduce((sum, item) => sum + item.totalPrice, 0)
+  const totalChange = (((currentTotal - previousTotal) / previousTotal) * 100).toFixed(1)
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-4">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">
-          {hourLabel}시 판매 비교 차트
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-800">{hourLabel}시 판매 비교 차트</h3>
         <div className="flex gap-2">
           <button
             onClick={() => setChartView("sales")}
@@ -162,9 +145,7 @@ export default function SalesComparisonChart({
           ]}
           role="application"
           ariaLabel="상품별 판매 비교"
-          barAriaLabel={(e) =>
-            e.id + ": " + e.formattedValue + " " + e.indexValue
-          }
+          barAriaLabel={(e) => e.id + ": " + e.formattedValue + " " + e.indexValue}
           tooltip={({ id, value, color }) => (
             <div
               style={{
@@ -176,9 +157,7 @@ export default function SalesComparisonChart({
             >
               <strong style={{ color }}>
                 {id === "이전" ? "7일 전" : "현재"}:{" "}
-                {chartView === "sales"
-                  ? value.toLocaleString() + "원"
-                  : value + "개"}
+                {chartView === "sales" ? value.toLocaleString() + "원" : value + "개"}
               </strong>
             </div>
           )}
@@ -190,17 +169,12 @@ export default function SalesComparisonChart({
           <div>
             <p className="text-sm text-gray-500">총 매출 변화</p>
             <p className="text-lg font-semibold">
-              {previousTotal.toLocaleString()}원 →{" "}
-              {currentTotal.toLocaleString()}원
+              {previousTotal.toLocaleString()}원 → {currentTotal.toLocaleString()}원
             </p>
           </div>
           <div
             className={`text-lg font-bold ${
-              totalChange > 0
-                ? "text-green-600"
-                : totalChange < 0
-                ? "text-red-600"
-                : "text-gray-600"
+              totalChange > 0 ? "text-green-600" : totalChange < 0 ? "text-red-600" : "text-gray-600"
             }`}
           >
             {totalChange > 0 ? "+" : ""}
@@ -209,5 +183,6 @@ export default function SalesComparisonChart({
         </div>
       </div>
     </div>
-  );
+  )
 }
+
