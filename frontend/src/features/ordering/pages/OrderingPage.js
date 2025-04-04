@@ -66,24 +66,24 @@ function OrderingPage() {
   const [showExcelModal, setShowExcelModal] = useState(false);
   const [showInspectionModal, setShowInspectionModal] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  // Replace the existing selectedOrders state with an object-based approach
+  const [selectedOrders, setSelectedOrders] = useState({});
+  const [selectAllChecked, setSelectAllChecked] = useState(false);
 
   const [inventoryItem, setInventoryItem] = useState(0);
   const [average, setAverage] = useState(0);
 
   const [orderDateFilter, setOrderDateFilter] = useState("");
 
-  
-    // 날짜 포맷팅 함수 추가 (요일 포함)
-    const formatDateWithDay = (date) => {
-      const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
-      const dayIndex = date.getDay();
-      return `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(
-        2,
-        "0"
-      )}월 ${String(date.getDate()).padStart(2, "0")}일 (${
-        dayNames[dayIndex]
-      })`;
-    };
+  // 날짜 포맷팅 함수 추가 (요일 포함)
+  const formatDateWithDay = (date) => {
+    const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+    const dayIndex = date.getDay();
+    return `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}월 ${String(date.getDate()).padStart(2, "0")}일 (${dayNames[dayIndex]})`;
+  };
 
   useEffect(() => {
     async function getInventoryList() {
@@ -201,7 +201,6 @@ function OrderingPage() {
       setOrderDateFilter(`${year}-${month}-${day}`);
       setShowDatePicker(false);
     };
-
 
     const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -684,6 +683,157 @@ function OrderingPage() {
     }
   };
 
+  // Update the handleSelectOrder function to work with an object
+  const handleSelectOrder = (orderId) => {
+    setSelectedOrders((prev) => ({
+      ...prev,
+      [orderId]: !prev[orderId],
+    }));
+  };
+
+  // Add a function to handle "select all" checkbox
+  const handleSelectAllOrders = (e) => {
+    const isChecked = e.target.checked;
+    setSelectAllChecked(isChecked);
+
+    const newSelectedOrders = {};
+
+    // Only select orders with "발주완료" status
+    filteredOrders.forEach((order) => {
+      if (order.status === "발주완료") {
+        newSelectedOrders[order.orderId] = isChecked;
+      }
+    });
+
+    setSelectedOrders(newSelectedOrders);
+  };
+
+  // Add a function to get the count of selected orders
+  const getSelectedOrdersCount = () => {
+    return Object.entries(selectedOrders).filter(
+      ([_, isSelected]) => isSelected
+    ).length;
+  };
+
+  // Add a function to get an array of selected order IDs
+  const getSelectedOrderIds = () => {
+    return Object.entries(selectedOrders)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([orderId, _]) => Number(orderId));
+  };
+
+  // Update the batch confirmation function to show a modal first
+  const confirmBatchArrival = async () => {
+    const selectedIds = getSelectedOrderIds();
+
+    if (selectedIds.length === 0) {
+      alert("선택된 발주가 없습니다.");
+      return;
+    }
+
+    // Show batch confirmation modal instead of directly processing
+    setShowBatchInspectionModal(true);
+  };
+
+  // Add a new function to handle the actual batch processing after modal confirmation
+  const processBatchArrival = async () => {
+    setShowBatchInspectionModal(false);
+    const selectedIds = getSelectedOrderIds();
+
+    try {
+      for (const orderId of selectedIds) {
+        await fetchConfirmArrival(orderId);
+      }
+
+      const updated = await fetchOrders();
+      setOrders(updated);
+      setFilteredOrders(updated);
+      setSelectedOrders({});
+      setSelectAllChecked(false);
+
+      alert(`${selectedIds.length}개의 발주가 검수 완료되었습니다.`);
+    } catch (error) {
+      console.error("일괄 입고 확인 실패", error);
+      alert("일괄 검수 처리 중 오류가 발생했습니다.");
+    }
+  };
+
+  // Add a new state for the batch inspection modal
+  const [showBatchInspectionModal, setShowBatchInspectionModal] =
+    useState(false);
+
+  // Add a new state for previous orders button
+  const [showPreviousOrdersModal, setShowPreviousOrdersModal] = useState(false);
+  const [previousOrders, setPreviousOrders] = useState([]);
+  const [selectedPreviousOrders, setSelectedPreviousOrders] = useState({});
+
+  // Add this function to load previous orders
+  const loadPreviousOrders = async () => {
+    try {
+      // You can filter to only show completed orders
+      const completedOrders = orders.filter(
+        (order) => order.status === "입고완료" || order.status === "발주완료"
+      );
+
+      // Group orders by date
+      const groupedOrders = {};
+      completedOrders.forEach((order) => {
+        const date = order.scheduledTime.split("T")[0];
+        if (!groupedOrders[date]) {
+          groupedOrders[date] = [];
+        }
+        groupedOrders[date].push(order);
+      });
+
+      setPreviousOrders(Object.entries(groupedOrders));
+      setShowPreviousOrdersModal(true);
+    } catch (error) {
+      console.error("이전 발주 불러오기 실패", error);
+    }
+  };
+
+  // Add this function to handle selecting previous orders
+  const handleSelectPreviousOrder = (orderId) => {
+    setSelectedPreviousOrders((prev) => ({
+      ...prev,
+      [orderId]: !prev[orderId],
+    }));
+  };
+
+  // Add this function to apply selected previous orders
+  const applyPreviousOrders = () => {
+    const selectedOrderIds = Object.entries(selectedPreviousOrders)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([orderId, _]) => Number(orderId));
+
+    if (selectedOrderIds.length === 0) {
+      alert("선택된 발주가 없습니다.");
+      return;
+    }
+
+    // Find the selected orders and add them to the cart
+    const newSelectedItems = { ...selectedItems };
+
+    orders.forEach((order) => {
+      if (selectedOrderIds.includes(order.orderId)) {
+        const goodsId = order.goodsId.toString();
+        newSelectedItems[goodsId] = {
+          quantity: order.orderQuantity.toString(),
+        };
+
+        // Also update latest order quantities
+        setLatestOrderQuantities((prev) => ({
+          ...prev,
+          [goodsId]: order.orderQuantity,
+        }));
+      }
+    });
+
+    setSelectedItems(newSelectedItems);
+    setShowPreviousOrdersModal(false);
+    setSelectedPreviousOrders({});
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
@@ -757,7 +907,7 @@ function OrderingPage() {
                   <select
                     value={category}
                     onChange={handleCategoryChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-no-repeat bg-[right_0.5rem_center] pr-10"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-no-repeat bg-[right_0.5rem_center] pr-10"
                   >
                     <option value="">모든 카테고리</option>
                     <option value="식품">식품</option>
@@ -863,7 +1013,17 @@ function OrderingPage() {
                     재고부족
                   </button>
                 </div>
+                <div>
+                <button
+                onClick={loadPreviousOrders}
+                className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm"
+              >
+                <History className="w-3.5 h-3.5 mr-1.5" />
+                이전 발주 보기
+              </button>
+                </div>
               </div>
+
             </div>
 
             {/* 메인 콘텐츠 영역 */}
@@ -1053,13 +1213,15 @@ function OrderingPage() {
               {/* 발주 장바구니 */}
               <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-                    <ShoppingCart className="h-5 w-5 mr-2 text-indigo-600" />
-                    발주 예정 상품
-                    <span className="ml-2 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full px-2 py-0.5">
-                      {selectedCount}
-                    </span>
-                  </h3>
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                      <ShoppingCart className="h-5 w-5 mr-2 text-indigo-600" />
+                      발주 예정 상품
+                      <span className="ml-2 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full px-2 py-0.5">
+                        {selectedCount}
+                      </span>
+                    </h3>
+                  </div>
                 </div>
 
                 <div className="p-6 max-h-[50vh] overflow-y-auto">
@@ -1305,9 +1467,9 @@ function OrderingPage() {
                       발주 진행중
                     </button>
                     <button
-                      onClick={() => setOrderStatusFilter("발주 완료")}
+                      onClick={() => setOrderStatusFilter("발주완료")}
                       className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                        orderStatusFilter === "발주 완료"
+                        orderStatusFilter === "발주완료"
                           ? "bg-white text-blue-700 shadow-sm"
                           : "text-gray-600 hover:bg-gray-200"
                       }`}
@@ -1329,6 +1491,24 @@ function OrderingPage() {
               </div>
             </div>
 
+            {/* 일괄 검수 버튼 */}
+            {getSelectedOrdersCount() > 0 && (
+              <div className="mb-4 flex justify-between items-center">
+                <div className="flex items-center">
+                  <span className="text-sm font-medium text-gray-700 mr-2">
+                    {getSelectedOrdersCount()}개 선택됨
+                  </span>
+                </div>
+                <button
+                  onClick={confirmBatchArrival}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  선택한 발주 일괄 검수 확인
+                </button>
+              </div>
+            )}
+
             {/* 발주 리스트 테이블 */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
               {loading ? (
@@ -1349,6 +1529,14 @@ function OrderingPage() {
                   <table className="w-full border-collapse">
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-200">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <input
+                            type="checkbox"
+                            checked={selectAllChecked}
+                            onChange={handleSelectAllOrders}
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                          />
+                        </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           주문번호
                         </th>
@@ -1378,6 +1566,19 @@ function OrderingPage() {
                           key={order.orderId}
                           className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
                         >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <input
+                              type="checkbox"
+                              checked={selectedOrders[order.orderId] || false}
+                              onChange={() => handleSelectOrder(order.orderId)}
+                              disabled={order.status !== "발주완료"}
+                              className={`h-4 w-4 focus:ring-indigo-500 border-gray-300 rounded ${
+                                order.status === "발주완료"
+                                  ? "text-indigo-600 cursor-pointer"
+                                  : "text-gray-300 cursor-not-allowed"
+                              }`}
+                            />
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             #{order.orderId}
                           </td>
@@ -1692,6 +1893,217 @@ function OrderingPage() {
                 <CheckCircle className="h-4 w-4 mr-2" />
                 검수 확인
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Batch Inspection Confirmation Modal */}
+      {showBatchInspectionModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg max-w-md w-full mx-4 shadow-xl overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-blue-50 p-6 border-b border-blue-100">
+              <div className="flex items-center">
+                <CheckCircle className="h-6 w-6 text-blue-600 mr-3" />
+                <h3 className="text-lg font-bold text-gray-900">
+                  일괄 검수 확인
+                </h3>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              <div className="mb-4">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                    <CheckCircle className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900">
+                      발주 일괄 검수 완료
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      선택한 {getSelectedOrdersCount()}개의 발주 상품이
+                      정상적으로 입고되었는지 확인하셨나요?
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-4">
+                  <div className="flex items-start">
+                    <AlertCircle className="h-5 w-5 text-yellow-600 mr-2 mt-0.5" />
+                    <p className="text-sm text-yellow-800">
+                      검수 확인 후에는 상태가 '입고완료'로 변경되며, 이 작업은
+                      되돌릴 수 없습니다.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">
+                    선택한 {getSelectedOrdersCount()}개 발주의 검수 완료 처리를
+                    진행하시겠습니까?
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-50 p-4 border-t border-gray-100 flex justify-end gap-3">
+              <button
+                onClick={() => setShowBatchInspectionModal(false)}
+                className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+              >
+                취소
+              </button>
+              <button
+                onClick={processBatchArrival}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
+              >
+                <CheckCircle className="h-4 w-4 mr-2" />
+                일괄 검수 확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 이전 발주 모달 */}
+      {showPreviousOrdersModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg max-w-4xl w-full mx-4 shadow-xl overflow-hidden">
+            {/* 모달 헤더 */}
+            <div className="bg-blue-50 p-6 border-b border-blue-100">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <History className="h-6 w-6 text-blue-600 mr-3" />
+                  <h3 className="text-lg font-bold text-gray-900">
+                    이전 발주 내역
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowPreviousOrdersModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* 모달 내용 */}
+            <div className="p-6 max-h-[70vh] overflow-y-auto">
+              {previousOrders.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <Package className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                  <p>이전 발주 내역이 없습니다.</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {previousOrders.map(([date, dateOrders]) => (
+                    <div
+                      key={date}
+                      className="border border-gray-200 rounded-lg overflow-hidden"
+                    >
+                      <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 text-gray-500 mr-2" />
+                          <h4 className="font-medium text-gray-700">
+                            {new Date(date).toLocaleDateString("ko-KR", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              weekday: "long",
+                            })}
+                          </h4>
+                          <span className="ml-2 bg-blue-100 text-blue-700 text-xs font-bold rounded-full px-2 py-0.5">
+                            {dateOrders.length}개
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="divide-y divide-gray-100">
+                        {dateOrders.map((order) => (
+                          <div
+                            key={order.orderId}
+                            className="p-4 hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex items-center">
+                              <input
+                                type="checkbox"
+                                checked={
+                                  selectedPreviousOrders[order.orderId] || false
+                                }
+                                onChange={() =>
+                                  handleSelectPreviousOrder(order.orderId)
+                                }
+                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded mr-4"
+                              />
+
+                              <div className="flex items-center flex-1">
+                                <div className="flex-shrink-0 h-12 w-12">
+                                  <img
+                                    className="h-12 w-12 rounded-md object-cover border border-gray-200"
+                                    src={
+                                      `${
+                                        order.goodsImage || "/placeholder.svg"
+                                      }` || "/placeholder.svg"
+                                    }
+                                    alt={order.goodsName}
+                                  />
+                                </div>
+                                <div className="ml-4 flex-1">
+                                  <div className="flex justify-between">
+                                    <div className="text-sm font-medium text-gray-900">
+                                      {order.goodsName}
+                                    </div>
+                                    <div className="text-sm font-semibold text-indigo-600">
+                                      {order.orderQuantity}개
+                                    </div>
+                                  </div>
+                                  <div className="flex justify-between mt-1">
+                                    <div className="text-xs text-gray-500">
+                                      주문번호: #{order.orderId}
+                                    </div>
+                                    <div>{getStatusBadge(order.status)}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 모달 푸터 */}
+            <div className="bg-gray-50 p-4 border-t border-gray-100 flex justify-between">
+              <div className="text-sm text-gray-600">
+                {Object.values(selectedPreviousOrders).filter(Boolean).length}개
+                선택됨
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowPreviousOrdersModal(false)}
+                  className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={applyPreviousOrders}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center"
+                  disabled={
+                    Object.values(selectedPreviousOrders).filter(Boolean)
+                      .length === 0
+                  }
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  선택 상품 발주하기
+                </button>
+              </div>
             </div>
           </div>
         </div>
