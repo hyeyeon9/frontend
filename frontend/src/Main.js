@@ -32,7 +32,11 @@ import ShopHome from "./features/shop/pages/ShopHome";
 import CartPage from "./features/shop/pages/CartPage";
 import ProductsPage from "./features/shop/pages/ProductsPage";
 import ProductDetailPage from "./features/shop/pages/ProductDetailPage";
-import ChatBot from "./components/ChatBot";
+import { CheckoutPage } from "./features/shop/feature/payments/Checkout";
+import { SuccessPage } from "./features/shop/feature/payments/Success";
+import { FailPage } from "./features/shop/feature/payments/Fail";
+import PayLayout from "./pages/PayLayout";
+
 
 const router = createBrowserRouter([
   {
@@ -164,6 +168,28 @@ const router = createBrowserRouter([
         // 장바구니 페이지
         path: "cart",
         element: <CartPage />,
+      },
+    ],
+  },
+  {
+    // 결제 페이지(토스페이)
+    path: "/payment",
+    element: <PayLayout />,
+    children: [
+      {
+        // 결제 메인
+        path: "",
+        element: <CheckoutPage />,
+      },
+      {
+        // 결제 성공
+        path: "success",
+        element: <SuccessPage />,
+      },
+      {
+        // 결제 실패
+        path: "fail",
+        element: <FailPage />,
       },
     ],
   },
