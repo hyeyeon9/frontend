@@ -46,7 +46,7 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`fixed lg:sticky top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out
+        className={`fixed lg:sticky top-14 left-0 z-40 h-screen transition-all duration-300 ease-in-out
                    ${
                      isMobileOpen
                        ? "translate-x-0"
