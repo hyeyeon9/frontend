@@ -86,8 +86,9 @@ export async function fetchGetTop10Items() {
 
 // goods_id로 sub_name 가져오기
 export async function fetchSubName(goodsId) {
-  const response = await 
-  axios.get(`http://localhost:8090/app/goods/subName?goodsId=${goodsId}`);
+  const response = await axios.get(
+    `http://localhost:8090/app/goods/subName?goodsId=${goodsId}`
+  );
 
   if (response.status !== 200) {
     console.log("예외발생");
@@ -99,8 +100,9 @@ export async function fetchSubName(goodsId) {
 
 // 연관상품 가져오기
 export async function fetchRecommendations(subName) {
-  const response = await 
-  axios.get(`http://localhost:8090/app/goods/recommendations?subName=${subName}`);
+  const response = await axios.get(
+    `http://localhost:8090/app/goods/recommendations?subName=${subName}`
+  );
 
   if (response.status !== 200) {
     console.log("예외발생");
@@ -108,4 +110,24 @@ export async function fetchRecommendations(subName) {
   }
 
   return response.data;
+}
+
+// 결제하기를 누르면 장바구니에 담긴 상품을 결제하기 위한 API 호출
+export async function fetchPostOrder(order) {
+  try {
+    // 주문 정보 저장
+    const response = await axios.post(
+      `http://localhost:8090/app/payment/order`,
+      order
+    );
+
+    if (response.status !== 200) {
+      console.log("주문 저장 실패");
+      throw new Error("주문 저장 실패");
+    }
+    return response.data.orderId;
+  } catch (error) {
+    console.error("결제 처리 중 오류 발생:", error);
+    throw new Error("결제 처리 중 오류 발생");
+  }
 }
