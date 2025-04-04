@@ -32,6 +32,7 @@ import ShopHome from "./features/shop/pages/ShopHome";
 import CartPage from "./features/shop/pages/CartPage";
 import ProductsPage from "./features/shop/pages/ProductsPage";
 import ProductDetailPage from "./features/shop/pages/ProductDetailPage";
+import ChatBot from "./components/ChatBot";
 
 const router = createBrowserRouter([
   {
@@ -134,7 +135,7 @@ const router = createBrowserRouter([
       {
         // 챗봇 페이지
         path: "/chatBot",
-        element: <SmartChatBot />,
+        element: <ChatBot />,
       },
     ],
   },
