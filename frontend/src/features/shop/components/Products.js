@@ -1,6 +1,8 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ArrowUpDown, Filter, RefreshCw, Search } from "lucide-react";
+import { ArrowUpDown, Filter, Search, RefreshCw } from "lucide-react";
 import {
   Card,
   Badge,
@@ -11,6 +13,8 @@ import {
 } from "flowbite-react";
 import { fetchGetPagedGoods } from "../api/HttpShopService";
 import categoryMapping from "../../../components/categoryMapping";
+import { addItemToCart, getCartItemCount } from "../utils/CartUtils";
+import { fetchGoodsDetail } from "../../goods/api/HttpGoodsService";
 
 // 메인 카테고리 목록 추출
 const mainCategories = [...new Set(categoryMapping.map((cat) => cat.main))];
@@ -26,6 +30,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
   const [selectedMainCategory, setSelectedMainCategory] = useState("전체");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cartCount, setCartCount] = useState(0);
 
   // 필터링 상태
   const [sortBy, setSortBy] = useState("");
@@ -38,6 +43,27 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const pageSize = 12; // 고정된 페이지 크기
+
+  // 장바구니 아이템 수 상태 추가
+  const [cartCountState, setCartCountState] = useState(getCartItemCount());
+
+  // 컴포넌트 마운트 시 장바구니 개수 로드
+  useEffect(() => {
+    setCartCount(getCartItemCount());
+
+    // 세션 스토리지 변경 이벤트 리스너 추가
+    const handleStorageChange = () => {
+      setCartCount(getCartItemCount());
+    };
+
+    // 커스텀 이벤트 리스너 등록
+    window.addEventListener("storage-cart-updated", handleStorageChange);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener("storage-cart-updated", handleStorageChange);
+    };
+  }, []);
 
   // 카테고리 파라미터가 변경될 때 선택된 카테고리 업데이트
   useEffect(() => {
@@ -144,21 +170,29 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
   };
 
   // 장바구니에 상품 추가 - 이벤트 객체 사용하지 않고 직접 productId 전달
-  const handleAddToCart = (event, productId) => {
+  const handleAddToCart = async (event, productId) => {
     if (event) {
       event.stopPropagation(); // 이벤트 객체가 있을 경우에만 stopPropagation 호출
     }
 
-    // 장바구니에 추가
-    if (onAddToCart) {
-      onAddToCart(productId);
-    } else {
-      console.log(`상품 ID ${productId}를 장바구니에 추가했습니다.`);
-    }
+    try {
+      // 상품 상세 정보 가져오기
+      const productDetail = await fetchGoodsDetail(productId);
 
-    // 홈페이지에서는 장바구니로 이동하지 않음
-    if (!isHomePage && !isFullPage) {
-      navigate("/shop/cart");
+      // 장바구니에 추가
+      addItemToCart(productDetail, 1);
+
+      // 장바구니 개수 업데이트
+      setCartCount(getCartItemCount());
+
+      // 부모 컴포넌트의 onAddToCart가 있으면 호출
+      if (onAddToCart) {
+        onAddToCart(productId, 1);
+      }
+
+      console.log(`Added product ${productId} to cart`);
+    } catch (error) {
+      console.error("장바구니에 상품을 추가하는 중 오류 발생:", error);
     }
   };
 
@@ -193,11 +227,6 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
       ...prev,
       [type]: numericValue,
     }));
-  };
-
-  // 필터 적용 핸들러
-  const applyFilters = () => {
-    setShowFilterDropdown(false);
   };
 
   // 필터 초기화 핸들러
@@ -271,14 +300,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
               >
                 <div className="relative">
                   <img
-                    src={
-                      product.goods_image ||
-                      "/placeholder.svg?height=150&width=150" ||
-                      "/placeholder.svg" ||
-                      "/placeholder.svg" ||
-                      "/placeholder.svg" ||
-                      "/placeholder.svg"
-                    }
+                    src={product.goods_image}
                     alt={product.goods_name}
                     className="object-cover w-full h-40 rounded-t-lg"
                   />
@@ -498,14 +520,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
               >
                 <div className="relative">
                   <img
-                    src={
-                      product.goods_image ||
-                      "/placeholder.svg?height=200&width=200" ||
-                      "/placeholder.svg" ||
-                      "/placeholder.svg" ||
-                      "/placeholder.svg" ||
-                      "/placeholder.svg"
-                    }
+                    src={product.goods_image}
                     alt={product.goods_name}
                     className="object-cover w-full h-60 rounded-t-lg"
                   />
@@ -599,6 +614,22 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
           <Button color="light" onClick={resetFilters} className="mt-4">
             필터 초기화
           </Button>
+        </div>
+      )}
+
+      {/* 하단 장바구니 위젯 - 전체 화면 모드일 때만 표시 */}
+      {isFullPage && (
+        <div className="sticky bottom-0 bg-white border-t p-4 z-10">
+          <div className="flex justify-between max-w-7xl mx-auto">
+            <Button
+              color="blue"
+              size="lg"
+              className="w-full"
+              onClick={() => navigate("/shop/cart")}
+            >
+              장바구니 보기 {cartCount > 0 && `(${cartCount})`}
+            </Button>
+          </div>
         </div>
       )}
     </div>

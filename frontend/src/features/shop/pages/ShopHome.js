@@ -1,5 +1,5 @@
 import { Button } from "flowbite-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DiscountedProductsList from "../components/DiscountedProductList";
 import EventBanner from "../components/EventBanner";
@@ -30,6 +30,27 @@ export default function ShopHome() {
     }
   };
 
+  // 장바구니 아이템 수 상태 추가
+  const [cartCountState, setCartCountState] = useState(getCartItemCount());
+
+  // 컴포넌트 마운트 시 장바구니 개수 로드
+  useEffect(() => {
+    setCartCount(getCartItemCount());
+
+    // 세션 스토리지 변경 이벤트 리스너 추가
+    const handleStorageChange = () => {
+      setCartCount(getCartItemCount());
+    };
+
+    // 커스텀 이벤트 리스너 등록
+    window.addEventListener("storage-cart-updated", handleStorageChange);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener("storage-cart-updated", handleStorageChange);
+    };
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1 w-full">
@@ -55,8 +76,8 @@ export default function ShopHome() {
         </section>
       </main>
 
-      {/* Bottom navigation */}
-      <div className="sticky bottom-0 bg-white border-t p-4">
+      {/* 하단 장바구니 위젯 */}
+      <div className="sticky bottom-0 bg-white border-t p-4 z-10">
         <div className="flex justify-between max-w-7xl mx-auto">
           <Button
             color="blue"
