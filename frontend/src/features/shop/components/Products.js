@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ArrowUpDown, Filter, Search, ShoppingCart } from "lucide-react";
+import { ArrowUpDown, Filter, RefreshCw, Search } from "lucide-react";
 import {
   Card,
   Badge,
@@ -157,7 +157,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
     }
 
     // 홈페이지에서는 장바구니로 이동하지 않음
-    if (!isHomePage) {
+    if (!isHomePage && !isFullPage) {
       navigate("/shop/cart");
     }
   };
@@ -202,9 +202,13 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
 
   // 필터 초기화 핸들러
   const resetFilters = () => {
-    setSortBy("popularity");
+    setSearchQuery("");
+    setSortBy("");
     setPriceRange({ min: "", max: "" });
     setInStockOnly(false);
+    setSelectedCategory("");
+    setSelectedMainCategory("전체");
+    setCurrentPage(1);
   };
 
   // 홈페이지에서는 간소화된 UI 표시
@@ -237,12 +241,11 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
           <div className="flex flex-wrap gap-2 mb-6">
             {filteredSubCategories.map((category) => (
               <Button
-                outline
                 key={category.id}
                 color={
                   selectedCategory === category.id.toString() ? "blue" : "light"
                 }
-                size="xs"
+                size="sm"
                 onClick={() => handleSubCategorySelect(category.id)}
               >
                 {category.sub}
@@ -257,7 +260,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {products.map((product) => (
               <Card
                 key={product.goods_id}
@@ -271,6 +274,8 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
                     src={
                       product.goods_image ||
                       "/placeholder.svg?height=150&width=150" ||
+                      "/placeholder.svg" ||
+                      "/placeholder.svg" ||
                       "/placeholder.svg" ||
                       "/placeholder.svg"
                     }
@@ -327,7 +332,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
 
   // 전체 페이지 버전
   return (
-    <div className="container mx-auto">
+    <div className="max-w-7xl mx-auto px-4">
       {/* 헤더 영역 */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <h1 className="text-2xl font-bold">{getSelectedCategoryName()}</h1>
@@ -354,6 +359,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
               {sortBy === "price-low" && "가격 낮은순"}
               {sortBy === "price-high" && "가격 높은순"}
               {sortBy === "name" && "이름순"}
+              {!sortBy && "정렬"}
             </Button>
 
             <Dropdown
@@ -415,6 +421,21 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
                   <span className="text-sm">재고 있는 상품만 보기</span>
                 </label>
               </div>
+
+              <Dropdown.Divider />
+
+              {/* 필터 초기화 버튼 */}
+              <div className="px-4 py-2">
+                <Button
+                  color="light"
+                  size="sm"
+                  onClick={resetFilters}
+                  className="w-full flex items-center justify-center"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  필터 초기화
+                </Button>
+              </div>
             </Dropdown>
           </div>
         </div>
@@ -450,7 +471,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
               color={
                 selectedCategory === category.id.toString() ? "blue" : "light"
               }
-              size="xs"
+              size="sm"
               onClick={() => handleSubCategorySelect(category.id)}
             >
               {category.sub}
@@ -466,7 +487,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
         </div>
       ) : products.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
               <Card
                 key={product.goods_id}
@@ -480,6 +501,8 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
                     src={
                       product.goods_image ||
                       "/placeholder.svg?height=200&width=200" ||
+                      "/placeholder.svg" ||
+                      "/placeholder.svg" ||
                       "/placeholder.svg" ||
                       "/placeholder.svg"
                     }
@@ -550,14 +573,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
                     onClick={(e) => handleAddToCart(e, product.goods_id)}
                     disabled={product.goods_stock <= 0}
                   >
-                    {product.goods_stock > 0 ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <ShoppingCart size={18} />
-                        <span>장바구니 담기</span>
-                      </div>
-                    ) : (
-                      "품절"
-                    )}
+                    {product.goods_stock > 0 ? "장바구니 담기" : "품절"}
                   </Button>
                 </div>
               </Card>
@@ -580,6 +596,9 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
         <div className="text-center py-12">
           <h3 className="text-lg font-medium">상품을 찾을 수 없습니다</h3>
           <p className="text-gray-500">검색어나 필터 조건을 변경해보세요</p>
+          <Button color="light" onClick={resetFilters} className="mt-4">
+            필터 초기화
+          </Button>
         </div>
       )}
     </div>
