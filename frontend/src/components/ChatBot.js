@@ -1,63 +1,62 @@
-"use client"
-
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react";
 
 const ChatBot = () => {
-  const [question, setQuestion] = useState("")
-  const [messages, setMessages] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
-  const chatContainerRef = useRef(null)
+  const [question, setQuestion] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const chatContainerRef = useRef(null);
 
   // 메시지가 변경될 때마다 스크롤을 아래로 이동
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
-  }, [messages])
+  }, [messages]);
 
   // 한 글자씩 타이핑 효과 구현 함수
   const typeResponse = (response) => {
     // 봇 메시지 자리 추가
-    setMessages((prev) => [...prev, { type: "bot", text: "", isTyping: true }])
+    setMessages((prev) => [...prev, { type: "bot", text: "", isTyping: true }]);
 
-    let i = 0
+    let i = 0;
     const typingInterval = setInterval(() => {
       setMessages((prev) => {
-        const newMessages = [...prev]
-        const lastIndex = newMessages.length - 1
+        const newMessages = [...prev];
+        const lastIndex = newMessages.length - 1;
 
         // 한 글자씩 추가
         if (i < response.length) {
           newMessages[lastIndex] = {
             ...newMessages[lastIndex],
             text: response.substring(0, i + 1),
-          }
-          i++
+          };
+          i++;
         } else {
           // 타이핑 완료
           newMessages[lastIndex] = {
             type: "bot",
             text: response,
             isTyping: false,
-          }
-          clearInterval(typingInterval)
+          };
+          clearInterval(typingInterval);
         }
 
-        return newMessages
-      })
-    }, 30) // 타이핑 속도 조절 (밀리초)
-  }
+        return newMessages;
+      });
+    }, 30); // 타이핑 속도 조절 (밀리초)
+  };
 
   // 채팅 메시지 전송 함수
   const handleSubmit = async () => {
-    if (!question.trim()) return
+    if (!question.trim()) return;
 
     // 사용자 메시지 추가
-    setMessages((prev) => [...prev, { type: "user", text: question }])
+    setMessages((prev) => [...prev, { type: "user", text: question }]);
 
     // 입력 필드 초기화 및 로딩 상태 표시
-    setQuestion("")
-    setIsLoading(true)
+    setQuestion("");
+    setIsLoading(true);
 
     try {
       // FastAPI 서버 호출
@@ -67,39 +66,47 @@ const ChatBot = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ question }),
-      })
+      });
 
       if (!res.ok) {
-        throw new Error("서버 응답이 정상적이지 않습니다.")
+        throw new Error("서버 응답이 정상적이지 않습니다.");
       }
 
-      const data = await res.json()
-      setIsLoading(false)
+      const data = await res.json();
+      setIsLoading(false);
 
       // 응답 타이핑 효과 시작
-      typeResponse(data.answer)
+      typeResponse(data.answer);
     } catch (error) {
-      console.error("에러 발생:", error)
-      setIsLoading(false)
-      typeResponse("오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+      console.error("에러 발생:", error);
+      setIsLoading(false);
+      typeResponse("오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
     }
-  }
+  };
 
   // Enter 키 처리
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
-      handleSubmit()
+      handleSubmit();
     }
-  }
+  };
 
   return (
     <div className="p-4 max-w-xl mx-auto">
       <h2 className="text-xl font-bold mb-4">📊 관리자용 판매 챗봇</h2>
 
       {/* 채팅창 */}
-      <div ref={chatContainerRef} className="bg-gray-100 p-4 h-64 overflow-y-auto rounded mb-4">
+      <div
+        ref={chatContainerRef}
+        className="bg-gray-100 p-4 h-64 overflow-y-auto rounded mb-4"
+      >
         {messages.map((msg, idx) => (
-          <div key={idx} className={`mb-2 ${msg.type === "user" ? "text-right" : "text-left"}`}>
+          <div
+            key={idx}
+            className={`mb-2 ${
+              msg.type === "user" ? "text-right" : "text-left"
+            }`}
+          >
             <span
               className={`inline-block p-2 rounded shadow ${
                 msg.type === "user" ? "bg-blue-500 text-white" : "bg-white"
@@ -121,7 +128,14 @@ const ChatBot = () => {
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
                 <path
                   className="opacity-75"
                   fill="currentColor"
@@ -148,7 +162,9 @@ const ChatBot = () => {
         <button
           onClick={handleSubmit}
           className={`px-4 py-2 rounded ${
-            isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+            isLoading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
           } text-white`}
           disabled={isLoading}
         >
@@ -156,8 +172,7 @@ const ChatBot = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ChatBot
-
+export default ChatBot;
