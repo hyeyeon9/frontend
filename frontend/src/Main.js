@@ -37,6 +37,7 @@ import { SuccessPage } from "./features/shop/feature/payments/Success";
 import { FailPage } from "./features/shop/feature/payments/Fail";
 import PayLayout from "./pages/PayLayout";
 
+
 const router = createBrowserRouter([
   {
     // 관리자 페이지(기본)
@@ -138,7 +139,7 @@ const router = createBrowserRouter([
       {
         // 챗봇 페이지
         path: "/chatBot",
-        element: <SmartChatBot />,
+        element: <ChatBot />,
       },
     ],
   },
