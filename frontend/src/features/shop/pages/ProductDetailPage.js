@@ -5,6 +5,8 @@ import { Badge, Button, Alert, Spinner } from "flowbite-react";
 import { fetchGoodsDetail } from "../../goods/api/HttpGoodsService";
 import categoryMapping from "../../../components/categoryMapping";
 import { addItemToCart } from "../utils/CartUtils";
+import { fetchRecommendations, fetchSubName } from "../api/HttpShopService";
+
 
 export default function ProductDetailPage({ onAddToCart }) {
   const { id } = useParams();
@@ -15,6 +17,9 @@ export default function ProductDetailPage({ onAddToCart }) {
   const [error, setError] = useState(null);
   const [showAddedAlert, setShowAddedAlert] = useState(false);
 
+  const [subName, setSubName] = useState("");
+  const [recommendations, setRecommendations] = useState([]);
+
   // 개별 상품 데이터 가져오기
   useEffect(() => {
     const getProduct = async () => {
@@ -22,6 +27,7 @@ export default function ProductDetailPage({ onAddToCart }) {
       try {
         const response = await fetchGoodsDetail(id);
         setProduct(response);
+        console.log("상품", response);
       } catch (error) {
         console.error("상품 목록을 불러오는 중 오류 발생:", error);
         setProduct();
@@ -31,6 +37,42 @@ export default function ProductDetailPage({ onAddToCart }) {
     };
     getProduct();
   }, [id]);
+
+  // 소분류 이름 가져오기
+  useEffect(() => {
+    if (!product) return;
+    const getSubName = async () => {
+      try {
+        const data = await fetchSubName(product.goods_id);
+        setSubName(data);
+      } catch (e) {
+        console.log(e.message);
+      }
+    };
+    getSubName();
+  }, [product]);
+
+  // 나중에 삭제하기
+  useEffect(() => {
+    if (subName) {
+      console.log("✅ 소분류명:", subName);
+    }
+  }, [subName]);
+
+  // 연관상품 들고오기
+  useEffect(() => {
+    if (!subName) return;
+    const getRecommendations = async () => {
+      try {
+        const data = await fetchRecommendations(subName);
+        setRecommendations(data);
+        console.log("연관 상품 가져오기", recommendations);
+      } catch (e) {
+        console.log(e.message);
+      }
+    };
+    getRecommendations();
+  }, [subName]);
 
   // 수량 변경 함수
   const incrementQuantity = () => setQuantity((prev) => prev + 1);
@@ -235,6 +277,58 @@ export default function ProductDetailPage({ onAddToCart }) {
                 ).toLocaleString()}`
               : "품절된 상품입니다"}
           </Button>
+        </div>
+        <div className="col-span-2 mt-8">
+          <h2 className="text-xl font-bold mb-4">함께 구매하면 좋은 상품</h2>
+
+          {recommendations && recommendations.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {recommendations.slice(0, 3).map((item) => (
+                <Link
+                  key={item.goods_id}
+                  to={`/shop/products/${item.goods_id}`}
+                  className="group"
+                >
+                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={
+                          item.goods_image ||
+                          "/placeholder.svg?height=400&width=400"
+                        }
+                        alt={item.goods_name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+
+                    <div className="p-4 flex flex-col flex-grow">
+                      <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                        {item.goods_name}
+                      </h3>
+
+                      <div className="mt-auto">
+                        <p className="font-bold text-lg text-blue-700">
+                          ₩
+                          {item.goods_price?.toLocaleString() ||
+                            "가격 정보 없음"}
+                        </p>
+                        <div className="mt-2 flex justify-between items-center">
+                          <Badge color="indigo" className="text-xs">
+                            추천 상품
+                          </Badge>
+                          <span className="text-sm text-gray-500">
+                            지금 구매하기
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 italic">추천 상품이 없습니다.</p>
+          )}
         </div>
       </div>
     </div>
