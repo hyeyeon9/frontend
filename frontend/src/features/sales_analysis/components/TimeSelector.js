@@ -153,8 +153,8 @@ export default function TimeSelector({
       <div className="mt-4 text-xs text-gray-500 flex items-center">
         <Clock className="h-3 w-3 mr-1" />
         <span>
-          시간을 선택하여 상세 정보를 확인하세요 (회색 시간대는 당일 매출액이
-          0원입니다)
+          시간을 선택하여 상세 정보를 확인하세요 (회색 시간대에는 매출 데이터가
+          없습니다)
         </span>
       </div>
     </div>
