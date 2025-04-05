@@ -1,199 +1,210 @@
-"use client"
-
-import { useEffect, useState } from "react"
-import { format, getDay } from "date-fns"
-import { Calendar, TrendingUp, Clock, ChevronLeft, ChevronRight } from "lucide-react"
-import { Button, Spinner } from "flowbite-react"
-import { fetchGetAlertListByTrend } from "../api/HttpSalesAnalysisService"
-import ReportTable from "../components/ReportTable"
-import TimeSelector from "../components/TimeSelector"
-import ReportDetailModal from "../components/ReportDetailModal"
+import { useEffect, useState } from "react";
+import { format, getDay } from "date-fns";
+import {
+  Calendar,
+  TrendingUp,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { Button, Spinner } from "flowbite-react";
+import { fetchGetAlertListByTrend } from "../api/HttpSalesAnalysisService";
+import ReportTable from "../components/ReportTable";
+import TimeSelector from "../components/TimeSelector";
+import ReportDetailModal from "../components/ReportDetailModal";
 
 export default function SalesReport() {
-  const [selectedDate, setSelectedDate] = useState(new Date())
-  const [selectedMode, setSelectedMode] = useState(1) // 기본값을 전주 동요일 대비(1)로 설정
-  const [salesData, setSalesData] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [selectedTimeData, setSelectedTimeData] = useState(null)
-  const [selectedHour, setSelectedHour] = useState(null)
-  const [showDetailView, setShowDetailView] = useState(false)
-  const [viewMode, setViewMode] = useState("time") // "time" or "table"
-  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedMode, setSelectedMode] = useState(1); // 기본값을 전주 동요일 대비(1)로 설정
+  const [salesData, setSalesData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedTimeData, setSelectedTimeData] = useState(null);
+  const [selectedHour, setSelectedHour] = useState(null);
+  const [showDetailView, setShowDetailView] = useState(false);
+  const [viewMode, setViewMode] = useState("time"); // "time" or "table"
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // 조회 모드 옵션 (전체 옵션 제거)
   const modes = [
-    { value: 1, label: "전주 동요일 대비" },
-    { value: 7, label: "일주일 단기 트렌드" },
-    { value: 30, label: "한 달 장기 트렌드" },
-  ]
+    { value: 1, label: "일주일 전 대비" },
+    { value: 2, label: "1개월 전 대비" },
+    { value: 3, label: "1년 전 대비" },
+  ];
 
   // 요일 배열
-  const dayNames = ["일", "월", "화", "수", "목", "금", "토"]
+  const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
 
   // 페이지 로드 시 오늘 날짜의 전주 동요일 대비 데이터 조회
   useEffect(() => {
     const fetchInitialData = async () => {
-      setLoading(true)
-      const formattedDate = format(new Date(), "yyyy-MM-dd")
+      setLoading(true);
+      const formattedDate = format(new Date(), "yyyy-MM-dd");
       // 기본값을 전주 동요일 대비(1)로 설정하여 API 호출
-      const response = await fetchGetAlertListByTrend(formattedDate, 1)
-      setSalesData(response.data)
-      setLoading(false)
-    }
+      const response = await fetchGetAlertListByTrend(formattedDate, 1);
+      setSalesData(response.data);
+      setLoading(false);
+    };
 
-    fetchInitialData()
-  }, [])
+    fetchInitialData();
+  }, []);
 
   // 날짜 변경 함수
   const handleDateChange = (date) => {
-    setSelectedDate(date)
-    setSelectedTimeData(null)
-    setSelectedHour(null)
-    setShowDetailView(false)
-    setShowDatePicker(false) // 날짜 선택 후 달력 닫기
-  }
+    setSelectedDate(date);
+    setSelectedTimeData(null);
+    setSelectedHour(null);
+    setShowDetailView(false);
+    setShowDatePicker(false); // 날짜 선택 후 달력 닫기
+  };
 
   // 날짜 이동 함수 (이전/다음 날짜)
   const navigateDate = (direction) => {
-    const newDate = new Date(selectedDate)
-    newDate.setDate(newDate.getDate() + direction)
-    setSelectedDate(newDate)
-    setSelectedTimeData(null)
-    setSelectedHour(null)
-    setShowDetailView(false)
-  }
+    const newDate = new Date(selectedDate);
+    newDate.setDate(newDate.getDate() + direction);
+    setSelectedDate(newDate);
+    setSelectedTimeData(null);
+    setSelectedHour(null);
+    setShowDetailView(false);
+  };
 
   // 조회 모드 변경 함수
   const handleModeChange = (modeValue) => {
-    setSelectedMode(modeValue)
-    setSelectedTimeData(null)
-    setSelectedHour(null)
-    setShowDetailView(false)
-  }
+    setSelectedMode(modeValue);
+    setSelectedTimeData(null);
+    setSelectedHour(null);
+    setShowDetailView(false);
+  };
 
   // 데이터 조회 함수
   const handleSearch = async () => {
-    setLoading(true)
+    setLoading(true);
     // 날짜 형식 맞추기
-    const formattedDate = format(selectedDate, "yyyy-MM-dd")
-    let response
+    const formattedDate = format(selectedDate, "yyyy-MM-dd");
+    let response;
 
     // 항상 트렌드 API 사용 (전체 옵션 제거)
-    response = await fetchGetAlertListByTrend(formattedDate, selectedMode)
+    response = await fetchGetAlertListByTrend(formattedDate, selectedMode);
 
-    setSalesData(response.data)
-    setSelectedTimeData(null)
-    setSelectedHour(null)
-    setShowDetailView(false)
-    setLoading(false)
-  }
+    setSalesData(response.data);
+    setSelectedTimeData(null);
+    setSelectedHour(null);
+    setShowDetailView(false);
+    setLoading(false);
+  };
 
   // 날짜 또는 조회 모드가 바뀔 때마다 자동으로 조회
   useEffect(() => {
     if (selectedDate && selectedMode !== null) {
-      handleSearch()
+      handleSearch();
     }
-  }, [selectedDate, selectedMode])
+  }, [selectedDate, selectedMode]);
 
   // 시간 선택 함수
   const handleTimeSelect = (hour, data) => {
-    setSelectedHour(hour)
-    setSelectedTimeData(data)
-    setShowDetailView(true)
-  }
+    setSelectedHour(hour);
+    setSelectedTimeData(data);
+    setShowDetailView(true);
+  };
 
   // 모달 열기 함수 (ReportTable에서 사용)
   const handleOpenModal = (alert) => {
-    setSelectedTimeData(alert)
-  }
+    setSelectedTimeData(alert);
+  };
 
   // 뷰 모드 변경 함수
   const toggleViewMode = () => {
-    setViewMode(viewMode === "time" ? "table" : "time")
-    setSelectedTimeData(null)
-    setSelectedHour(null)
-    setShowDetailView(false)
-  }
+    setViewMode(viewMode === "time" ? "table" : "time");
+    setSelectedTimeData(null);
+    setSelectedHour(null);
+    setShowDetailView(false);
+  };
 
   // 현재 선택된 모드 라벨 가져오기
   const getSelectedModeLabel = () => {
-    const selectedModeObj = modes.find((mode) => mode.value === selectedMode)
-    return selectedModeObj ? selectedModeObj.label : ""
-  }
+    const selectedModeObj = modes.find((mode) => mode.value === selectedMode);
+    return selectedModeObj ? selectedModeObj.label : "";
+  };
 
   // 날짜 포맷팅 함수
   const formatDateWithDay = (date) => {
-    const dayIndex = getDay(date)
-    return `${format(date, "yyyy년 MM월 dd일")} (${dayNames[dayIndex]})`
-  }
+    const dayIndex = getDay(date);
+    return `${format(date, "yyyy년 MM월 dd일")} (${dayNames[dayIndex]})`;
+  };
 
   // 커스텀 날짜 선택기 렌더링
   const renderCustomDatePicker = () => {
-    if (!showDatePicker) return null
+    if (!showDatePicker) return null;
 
-    const today = new Date()
-    const currentMonth = selectedDate.getMonth()
-    const currentYear = selectedDate.getFullYear()
+    const today = new Date();
+    const currentMonth = selectedDate.getMonth();
+    const currentYear = selectedDate.getFullYear();
 
     // 현재 월의 첫 날과 마지막 날
-    const firstDayOfMonth = new Date(currentYear, currentMonth, 1)
-    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0)
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
 
     // 달력에 표시할 날짜 배열 생성
-    const daysInMonth = lastDayOfMonth.getDate()
-    const firstDayOfWeek = firstDayOfMonth.getDay() // 0: 일요일, 1: 월요일, ...
+    const daysInMonth = lastDayOfMonth.getDate();
+    const firstDayOfWeek = firstDayOfMonth.getDay(); // 0: 일요일, 1: 월요일, ...
 
     // 이전 달의 날짜들 (달력 첫 주 채우기)
-    const prevMonthDays = []
-    const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate()
+    const prevMonthDays = [];
+    const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
       prevMonthDays.push({
         date: new Date(currentYear, currentMonth - 1, prevMonthLastDay - i),
         isCurrentMonth: false,
-      })
+      });
     }
 
     // 현재 달의 날짜들
-    const currentMonthDays = []
+    const currentMonthDays = [];
     for (let i = 1; i <= daysInMonth; i++) {
       currentMonthDays.push({
         date: new Date(currentYear, currentMonth, i),
         isCurrentMonth: true,
-      })
+      });
     }
 
     // 다음 달의 날짜들 (달력 마지막 주 채우기)
-    const nextMonthDays = []
-    const totalDaysDisplayed = prevMonthDays.length + currentMonthDays.length
-    const remainingCells = Math.ceil(totalDaysDisplayed / 7) * 7 - totalDaysDisplayed
+    const nextMonthDays = [];
+    const totalDaysDisplayed = prevMonthDays.length + currentMonthDays.length;
+    const remainingCells =
+      Math.ceil(totalDaysDisplayed / 7) * 7 - totalDaysDisplayed;
     for (let i = 1; i <= remainingCells; i++) {
       nextMonthDays.push({
         date: new Date(currentYear, currentMonth + 1, i),
         isCurrentMonth: false,
-      })
+      });
     }
 
     // 모든 날짜 합치기
-    const allDays = [...prevMonthDays, ...currentMonthDays, ...nextMonthDays]
+    const allDays = [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
 
     // 주 단위로 분할
-    const weeks = []
+    const weeks = [];
     for (let i = 0; i < allDays.length; i += 7) {
-      weeks.push(allDays.slice(i, i + 7))
+      weeks.push(allDays.slice(i, i + 7));
     }
 
     return (
       <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg z-10 p-2 border border-gray-200 w-72">
         <div className="flex justify-between items-center mb-2 px-2">
           <button
-            onClick={() => setSelectedDate(new Date(currentYear, currentMonth - 1, 1))}
+            onClick={() =>
+              setSelectedDate(new Date(currentYear, currentMonth - 1, 1))
+            }
             className="p-1 hover:bg-gray-100 rounded-full"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <div className="font-medium">{format(selectedDate, "yyyy년 MM월")}</div>
+          <div className="font-medium">
+            {format(selectedDate, "yyyy년 MM월")}
+          </div>
           <button
-            onClick={() => setSelectedDate(new Date(currentYear, currentMonth + 1, 1))}
+            onClick={() =>
+              setSelectedDate(new Date(currentYear, currentMonth + 1, 1))
+            }
             className="p-1 hover:bg-gray-100 rounded-full"
           >
             <ChevronRight className="h-4 w-4" />
@@ -202,7 +213,10 @@ export default function SalesReport() {
 
         <div className="grid grid-cols-7 gap-1 mb-1">
           {dayNames.map((day, index) => (
-            <div key={index} className="text-center text-xs font-medium text-gray-500 py-1">
+            <div
+              key={index}
+              className="text-center text-xs font-medium text-gray-500 py-1"
+            >
               {day}
             </div>
           ))}
@@ -210,9 +224,10 @@ export default function SalesReport() {
 
         <div className="grid grid-cols-7 gap-1">
           {weeks.flat().map((dayObj, index) => {
-            const { date, isCurrentMonth } = dayObj
-            const isToday = date.toDateString() === today.toDateString()
-            const isSelected = date.toDateString() === selectedDate.toDateString()
+            const { date, isCurrentMonth } = dayObj;
+            const isToday = date.toDateString() === today.toDateString();
+            const isSelected =
+              date.toDateString() === selectedDate.toDateString();
 
             return (
               <button
@@ -222,12 +237,16 @@ export default function SalesReport() {
                   w-9 h-9 flex items-center justify-center rounded-full text-sm
                   ${isCurrentMonth ? "text-gray-800" : "text-gray-400"}
                   ${isToday ? "bg-blue-100" : ""}
-                  ${isSelected ? "bg-indigo-600 text-white" : "hover:bg-gray-100"}
+                  ${
+                    isSelected
+                      ? "bg-indigo-600 text-white"
+                      : "hover:bg-gray-100"
+                  }
                 `}
               >
                 {date.getDate()}
               </button>
-            )
+            );
           })}
         </div>
 
@@ -246,8 +265,8 @@ export default function SalesReport() {
           </button>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen p-6 max-w-7xl mx-auto">
@@ -261,7 +280,10 @@ export default function SalesReport() {
         <div className="flex flex-col gap-4">
           {/* 첫 번째 줄: 날짜 선택 */}
           <div className="flex items-center gap-2">
-            <button onClick={() => navigateDate(-1)} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
+            <button
+              onClick={() => navigateDate(-1)}
+              className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
+            >
               <ChevronLeft className="h-5 w-5" />
             </button>
 
@@ -271,17 +293,26 @@ export default function SalesReport() {
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
                 <Calendar className="h-4 w-4 text-gray-500" />
-                <span className="font-medium">{formatDateWithDay(selectedDate)}</span>
+                <span className="font-medium">
+                  {formatDateWithDay(selectedDate)}
+                </span>
               </button>
               {renderCustomDatePicker()}
             </div>
 
-            <button onClick={() => navigateDate(1)} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg">
+            <button
+              onClick={() => navigateDate(1)}
+              className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
+            >
               <ChevronRight className="h-5 w-5" />
             </button>
 
             <div className="ml-auto">
-              <Button color="light" onClick={toggleViewMode} className="text-sm">
+              <Button
+                color="light"
+                onClick={toggleViewMode}
+                className="text-sm"
+              >
                 {viewMode === "time" ? "테이블 뷰로 보기" : "시간별 뷰로 보기"}
               </Button>
             </div>
@@ -345,7 +376,11 @@ export default function SalesReport() {
             </div>
           </div>
 
-          <TimeSelector salesData={salesData} selectedHour={selectedHour} onTimeSelect={handleTimeSelect} />
+          <TimeSelector
+            salesData={salesData}
+            selectedHour={selectedHour}
+            onTimeSelect={handleTimeSelect}
+          />
         </div>
       )}
 
@@ -367,6 +402,5 @@ export default function SalesReport() {
         </div>
       )}
     </div>
-  )
+  );
 }
-

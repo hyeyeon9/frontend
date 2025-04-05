@@ -35,6 +35,7 @@ import { SuccessPage } from "./features/shop/feature/payments/Success";
 import { FailPage } from "./features/shop/feature/payments/Fail";
 import PayLayout from "./pages/PayLayout";
 import ChatBot from "./components/ChatBot";
+import Statistics from "./features/statistics/pages/Statistics";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +58,11 @@ const router = createBrowserRouter([
         // 회원가입
         path: "/signup",
         element: <SignUpPage />,
+      },
+      {
+        // 매출 통계
+        path: "/statistics",
+        element: <Statistics />,
       },
       {
         // 매출 분석
