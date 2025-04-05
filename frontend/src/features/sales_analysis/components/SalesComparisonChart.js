@@ -46,14 +46,31 @@ export default function SalesComparisonChart({
       .slice(0, 10);
   }, [previousData, currentData, chartView]);
 
+  // 이전 데이터와 현재 데이터를 분리한 트리맵 데이터 생성
   const treemapData = useMemo(() => {
-    return {
-      name: "root",
-      children: chartData.map((item) => ({
-        name: item.product,
-        value: item.현재 + item.이전,
-      })),
+    // 이전 데이터 트리맵
+    const previousTreemap = {
+      name: "이전",
+      children: chartData
+        .filter((item) => item.이전 > 0) // 값이 0인 항목 제외
+        .map((item) => ({
+          name: item.product,
+          value: item.이전,
+        })),
     };
+
+    // 현재 데이터 트리맵
+    const currentTreemap = {
+      name: "현재",
+      children: chartData
+        .filter((item) => item.현재 > 0) // 값이 0인 항목 제외
+        .map((item) => ({
+          name: item.product,
+          value: item.현재,
+        })),
+    };
+
+    return { previous: previousTreemap, current: currentTreemap };
   }, [chartData]);
 
   const previousTotal = previousData.reduce(
@@ -215,43 +232,98 @@ export default function SalesComparisonChart({
           )}
 
           {activeTab === "treemap" && (
-            <div className="min-h-[300px] sm:h-80 w-full">
-              <ResponsiveTreeMapHtml
-                data={treemapData}
-                identity="name"
-                label={(node) => `${node.data.name}
-                  (${
-                    chartView === "sales"
-                      ? `${node.value.toLocaleString()}원`
-                      : `${node.value}개`
-                  })`}
-                value="value"
-                tile="binary"
-                leavesOnly={true}
-                margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-                labelSkipSize={12}
-                labelTextColor={{ from: "color", modifiers: [["darker", 3]] }}
-                parentLabelTextColor={{
-                  from: "color",
-                  modifiers: [["darker", 2]],
-                }}
-                colors={{ scheme: "blues" }}
-                nodeOpacity={0.6}
-                borderColor={{ from: "color", modifiers: [["darker", 0.3]] }}
-                tooltip={({ node }) => (
-                  <div
-                    style={{
-                      padding: 12,
-                      background: "#fff",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
+            <div className="min-h-[300px] sm:h-80 w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* 이전 데이터 트리맵 */}
+              <div className="flex flex-col">
+                <h4 className="text-xs font-medium text-gray-700 mb-2 text-center">
+                  {previousDate}
+                </h4>
+                <div className="flex-1 border rounded-lg overflow-hidden">
+                  <ResponsiveTreeMapHtml
+                    data={treemapData.previous}
+                    identity="name"
+                    label={(node) =>
+                      node.id === "이전" ? "" : `${node.data.name}`
+                    }
+                    value="value"
+                    tile="binary"
+                    leavesOnly={true}
+                    margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+                    labelSkipSize={12}
+                    labelTextColor={{
+                      from: "color",
+                      modifiers: [["darker", 3]],
                     }}
-                  >
-                    <strong>{node.data.name}</strong>:{" "}
-                    {node.value.toLocaleString()}
-                  </div>
-                )}
-              />
+                    colors={{ scheme: "blues" }}
+                    nodeOpacity={0.45}
+                    borderColor={{
+                      from: "color",
+                      modifiers: [["darker", 0.3]],
+                    }}
+                    tooltip={({ node }) => (
+                      <div
+                        style={{
+                          padding: 12,
+                          background: "#fff",
+                          border: "1px solid #ccc",
+                          borderRadius: "4px",
+                        }}
+                      >
+                        <strong>{node.data.name}</strong>:{" "}
+                        {chartView === "sales"
+                          ? `${node.value.toLocaleString()}원`
+                          : `${node.value}개`}
+                      </div>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* 현재 데이터 트리맵 */}
+              <div className="flex flex-col">
+                <h4 className="text-xs font-bold text-blue-800 mb-2 text-center">
+                  {currentDate}
+                </h4>
+                <div className="flex-1 border rounded-lg overflow-hidden">
+                  <ResponsiveTreeMapHtml
+                    data={treemapData.current}
+                    identity="name"
+                    label={(node) =>
+                      node.id === "현재" ? "" : `${node.data.name}`
+                    }
+                    value="value"
+                    tile="binary"
+                    leavesOnly={true}
+                    margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+                    labelSkipSize={12}
+                    labelTextColor={{
+                      from: "color",
+                      modifiers: [["darker", 3]],
+                    }}
+                    colors={{ scheme: "blues" }}
+                    nodeOpacity={0.7}
+                    borderColor={{
+                      from: "color",
+                      modifiers: [["darker", 0.7]],
+                    }}
+                    tooltip={({ node }) => (
+                      <div
+                        style={{
+                          padding: 12,
+                          background: "#fff",
+                          border: "1px solid #ccc",
+                          borderRadius: "4px",
+                        }}
+                      >
+                        <strong>{node.data.name}</strong>:{" "}
+                        {chartView === "sales"
+                          ? `${node.value.toLocaleString()}원`
+                          : `${node.value}개`}
+                      </div>
+                    )}
+                  />
+                </div>
+              </div>
             </div>
           )}
         </div>

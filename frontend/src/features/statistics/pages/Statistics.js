@@ -151,7 +151,7 @@ export default function Statistics() {
                 날짜 선택
               </h2>
               <Datepicker
-                language="ko-KR"
+                language="en"
                 labelTodayButton="오늘"
                 labelClearButton="초기화"
                 title={`선택된 날짜: ${getFormattedDateDisplay()}`}
