@@ -18,10 +18,9 @@ import ExpiringItemsPage from "./features/dashboard/pages/ExpiringItemsPage";
 import DisposalAnalyze from "./features/disposal/pages/DisposalAnalyze";
 import DispoalList from "./features/disposal/pages/DisposalPage";
 import OrderingPage from "./features/ordering/pages/OrderingPage";
+
 import SalesReport from "./features/sales_analysis/pages/SalesReport";
 
-import SalesComparison from "./features/statistics/pages/SalesComparison";
-import Statistics from "./features/statistics/pages/Statistics";
 import LoginPage from "./features/member/pages/LoginPage";
 import SignUpPage from "./features/member/pages/SignupPage";
 
@@ -58,16 +57,6 @@ const router = createBrowserRouter([
         // 회원가입
         path: "/signup",
         element: <SignUpPage />,
-      },
-      {
-        // 매출 조회
-        path: "/statistics",
-        element: <Statistics />,
-      },
-      {
-        // 매출 비교
-        path: "/salesDiff",
-        element: <SalesComparison />,
       },
       {
         // 매출 분석
