@@ -1,9 +1,9 @@
 import Products from "../components/Products";
 
-export default function ProductsPage({ onAddToCart }) {
+export default function ProductsPage() {
   return (
-    <section className="max-w-7xl mx-auto px-4 mb-10 py-10">
-      <Products onAddToCart={onAddToCart} isFullPage={true} />
-    </section>
+    <div className="container mx-auto py-6 pb-24">
+      <Products isFullPage={true} />
+    </div>
   );
 }

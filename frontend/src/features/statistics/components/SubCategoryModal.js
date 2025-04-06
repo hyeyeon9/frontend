@@ -1,5 +1,8 @@
 import { useMemo } from "react";
 import { useSortBy, useTable } from "react-table";
+import subCategoryMapping from "../../../components/subCategoryMapping";
+
+const SubCategory = subCategoryMapping;
 
 export default function SubCategoryModal({
   isOpen,
@@ -16,11 +19,18 @@ export default function SubCategoryModal({
     return value.toLocaleString();
   };
 
+  // 소분류의 categoryId -> name 매핑
+  const getSubCategoryName = (categoryId) => {
+    const subCategory = SubCategory.find((c) => c.id === categoryId);
+    return subCategory ? subCategory.name : "알 수 없음";
+  };
+
   const columns = useMemo(
     () => [
       {
         Header: "소분류",
         accessor: "subCategoryId",
+        Cell: ({ value }) => getSubCategoryName(value),
       },
       {
         Header: "판매횟수",

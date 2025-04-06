@@ -6,6 +6,9 @@ import {
 } from "../api/HttpStatService";
 import { Spinner } from "flowbite-react";
 import SubCategoryModal from "./SubCategoryModal";
+import categoryMapping from "../../../components/categoryMapping"; // 대분류 매핑 데이터
+
+const MainCategory = categoryMapping;
 
 export default function MonthlyCategoryTable({ month }) {
   const [salesData, setSalesData] = useState([]);
@@ -66,12 +69,19 @@ export default function MonthlyCategoryTable({ month }) {
     return value.toLocaleString();
   };
 
+  // categoryId -> categoryName 매핑
+  const getCategoryName = (categoryId) => {
+    const category = MainCategory.find((c) => c.id === categoryId);
+    return category ? category.sub : "알 수 없음";
+  };
+
   // react table 렌더링
   const columns = useMemo(
     () => [
       {
         Header: "대분류",
         accessor: "categoryId",
+        Cell: ({ value }) => getCategoryName(value),
       },
       {
         Header: "판매횟수",
