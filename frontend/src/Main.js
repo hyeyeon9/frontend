@@ -26,7 +26,6 @@ import LoginPage from "./features/member/pages/LoginPage";
 import SignUpPage from "./features/member/pages/SignupPage";
 
 import GoodsEdit from "./features/goods/pages/GoodsEdit";
-import SmartChatBot from "./components/SmartChatBot";
 
 import ShopHome from "./features/shop/pages/ShopHome";
 import CartPage from "./features/shop/pages/CartPage";
@@ -36,7 +35,7 @@ import { CheckoutPage } from "./features/shop/feature/payments/Checkout";
 import { SuccessPage } from "./features/shop/feature/payments/Success";
 import { FailPage } from "./features/shop/feature/payments/Fail";
 import PayLayout from "./pages/PayLayout";
-
+import ChatBot from "./components/ChatBot";
 
 const router = createBrowserRouter([
   {

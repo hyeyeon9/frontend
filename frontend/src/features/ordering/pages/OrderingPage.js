@@ -31,6 +31,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  CheckSquare,
 } from "lucide-react";
 
 import * as XLSX from "xlsx";
@@ -73,7 +74,16 @@ function OrderingPage() {
   const [inventoryItem, setInventoryItem] = useState(0);
   const [average, setAverage] = useState(0);
 
-  const [orderDateFilter, setOrderDateFilter] = useState("");
+
+  const getTodayString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const [orderDateFilter, setOrderDateFilter] = useState(getTodayString());
 
   // 날짜 포맷팅 함수 추가 (요일 포함)
   const formatDateWithDay = (date) => {
@@ -604,7 +614,7 @@ function OrderingPage() {
             발주 진행중
           </span>
         );
-      case "발주 완료":
+      case "발주완료":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
             <CheckCircle className="w-3 h-3 mr-1" />
@@ -766,26 +776,50 @@ function OrderingPage() {
   const [showPreviousOrdersModal, setShowPreviousOrdersModal] = useState(false);
   const [previousOrders, setPreviousOrders] = useState([]);
   const [selectedPreviousOrders, setSelectedPreviousOrders] = useState({});
+  const [selectedDayFilter, setSelectedDayFilter] = useState("all");
 
   // Add this function to load previous orders
   const loadPreviousOrders = async () => {
     try {
-      // You can filter to only show completed orders
+      // 최근 일주일 전 날짜 계산
+      const today = new Date();
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(today.getDate() - 7);
+
+      // 완료된 주문만 필터링
       const completedOrders = orders.filter(
-        (order) => order.status === "입고완료" || order.status === "발주완료"
+        (order) =>
+          (order.status === "입고완료" || order.status === "발주완료") &&
+          new Date(order.scheduledTime) >= oneWeekAgo
       );
 
-      // Group orders by date
-      const groupedOrders = {};
+      // 요일별로 주문 그룹화 (0: 일요일, 1: 월요일, ..., 6: 토요일)
+      const dayGroups = {
+        월: [],
+        화: [],
+        수: [],
+        목: [],
+        금: [],
+        토: [],
+        일: [],
+      };
+
+      const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+
       completedOrders.forEach((order) => {
-        const date = order.scheduledTime.split("T")[0];
-        if (!groupedOrders[date]) {
-          groupedOrders[date] = [];
+        const orderDate = new Date(order.scheduledTime);
+        const dayIndex = orderDate.getDay(); // 0: 일요일, 1: 월요일, ...
+        const dayName = dayNames[dayIndex];
+
+        if (dayGroups[dayName]) {
+          dayGroups[dayName].push(order);
         }
-        groupedOrders[date].push(order);
       });
 
-      setPreviousOrders(Object.entries(groupedOrders));
+      // 요일별 그룹을 배열로 변환
+      const groupedByDay = Object.entries(dayGroups);
+
+      setPreviousOrders(groupedByDay);
       setShowPreviousOrdersModal(true);
     } catch (error) {
       console.error("이전 발주 불러오기 실패", error);
@@ -832,6 +866,43 @@ function OrderingPage() {
     setSelectedItems(newSelectedItems);
     setShowPreviousOrdersModal(false);
     setSelectedPreviousOrders({});
+  };
+
+  // Add function to select all previous orders for a specific day
+  const selectAllPreviousOrdersForDay = (dateOrders) => {
+    const newSelectedOrders = { ...selectedPreviousOrders };
+
+    // 현재 해당 요일의 모든 주문이 선택되어 있는지 확인
+    const allSelected = dateOrders.every(
+      (order) => selectedPreviousOrders[order.orderId]
+    );
+
+    // 모두 선택되어 있으면 선택 해제, 아니면 모두 선택
+    dateOrders.forEach((order) => {
+      newSelectedOrders[order.orderId] = !allSelected;
+    });
+
+    setSelectedPreviousOrders(newSelectedOrders);
+  };
+
+  // Function to filter orders by day of week
+  const filterOrdersByDay = (orders, dayFilter) => {
+    if (dayFilter === "all") return orders;
+
+    const dayMap = {
+      월: 1,
+      화: 2,
+      수: 3,
+      목: 4,
+      금: 5,
+      토: 6,
+      일: 0,
+    };
+
+    return orders.filter((order) => {
+      const date = new Date(order.scheduledTime);
+      return date.getDay() === dayMap[dayFilter];
+    });
   };
 
   return (
@@ -1014,16 +1085,15 @@ function OrderingPage() {
                   </button>
                 </div>
                 <div>
-                <button
-                onClick={loadPreviousOrders}
-                className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm"
-              >
-                <History className="w-3.5 h-3.5 mr-1.5" />
-                이전 발주 보기
-              </button>
+                  <button
+                    onClick={loadPreviousOrders}
+                    className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm"
+                  >
+                    <History className="w-3.5 h-3.5 mr-1.5" />
+                    이전 발주 보기
+                  </button>
                 </div>
               </div>
-
             </div>
 
             {/* 메인 콘텐츠 영역 */}
@@ -1993,6 +2063,76 @@ function OrderingPage() {
 
             {/* 모달 내용 */}
             <div className="p-6 max-h-[70vh] overflow-y-auto">
+              {/* 요일별 필터 추가 */}
+              <div className="mb-4">
+                <div className="flex items-center mb-2">
+                  <Calendar className="h-4 w-4 text-gray-500 mr-2" />
+                  <h4 className="font-medium text-gray-700">요일별 보기</h4>
+                </div>
+                <div className="flex bg-gray-100 rounded-lg p-1 mb-4">
+                  <button
+                    onClick={() => setSelectedDayFilter("all")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      selectedDayFilter === "all"
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    전체
+                  </button>
+                  <button
+                    onClick={() => setSelectedDayFilter("월")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      selectedDayFilter === "월"
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    월요일
+                  </button>
+                  <button
+                    onClick={() => setSelectedDayFilter("화")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      selectedDayFilter === "화"
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    화요일
+                  </button>
+                  <button
+                    onClick={() => setSelectedDayFilter("수")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      selectedDayFilter === "수"
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    수요일
+                  </button>
+                  <button
+                    onClick={() => setSelectedDayFilter("목")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      selectedDayFilter === "목"
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    목요일
+                  </button>
+                  <button
+                    onClick={() => setSelectedDayFilter("금")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      selectedDayFilter === "금"
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    금요일
+                  </button>
+                </div>
+              </div>
+
               {previousOrders.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <Package className="h-12 w-12 mx-auto mb-2 text-gray-300" />
@@ -2000,81 +2140,123 @@ function OrderingPage() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {previousOrders.map(([date, dateOrders]) => (
-                    <div
-                      key={date}
-                      className="border border-gray-200 rounded-lg overflow-hidden"
-                    >
-                      <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 text-gray-500 mr-2" />
-                          <h4 className="font-medium text-gray-700">
-                            {new Date(date).toLocaleDateString("ko-KR", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                              weekday: "long",
-                            })}
-                          </h4>
-                          <span className="ml-2 bg-blue-100 text-blue-700 text-xs font-bold rounded-full px-2 py-0.5">
-                            {dateOrders.length}개
-                          </span>
-                        </div>
-                      </div>
+                  {previousOrders.map(([dayName, dayOrders]) => {
+                    // 요일별 필터링 적용
+                    const filteredDayOrders =
+                      selectedDayFilter === "all"
+                        ? dayOrders
+                        : dayName === selectedDayFilter
+                        ? dayOrders
+                        : [];
 
-                      <div className="divide-y divide-gray-100">
-                        {dateOrders.map((order) => (
-                          <div
-                            key={order.orderId}
-                            className="p-4 hover:bg-gray-50 transition-colors"
-                          >
+                    if (
+                      selectedDayFilter !== "all" &&
+                      dayName !== selectedDayFilter
+                    ) {
+                      return null; // 선택한 요일이 아니면 표시하지 않음
+                    }
+
+                    return (
+                      <div
+                        key={dayName}
+                        className="border border-gray-200 rounded-lg overflow-hidden"
+                      >
+                        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                          <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <input
-                                type="checkbox"
-                                checked={
-                                  selectedPreviousOrders[order.orderId] || false
+                              <Calendar className="h-4 w-4 text-gray-500 mr-2" />
+                              <h4 className="font-medium text-gray-700">
+                                {dayName}요일
+                              </h4>
+                              <span className="ml-2 bg-blue-100 text-blue-700 text-xs font-bold rounded-full px-2 py-0.5">
+                                {dayOrders.length}개
+                              </span>
+                            </div>
+                            {dayOrders.length > 0 && (
+                              <button
+                                onClick={() =>
+                                  selectAllPreviousOrdersForDay(dayOrders)
                                 }
-                                onChange={() =>
-                                  handleSelectPreviousOrder(order.orderId)
-                                }
-                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded mr-4"
-                              />
+                                className="flex items-center px-2 py-1 text-xs bg-indigo-50 text-indigo-600 rounded hover:bg-indigo-100 transition-colors"
+                              >
+                                <CheckSquare className="w-3 h-3 mr-1" />
+                                {dayOrders.every(
+                                  (order) =>
+                                    selectedPreviousOrders[order.orderId]
+                                )
+                                  ? "전체 해제"
+                                  : "전체 선택"}
+                              </button>
+                            )}
+                          </div>
+                        </div>
 
-                              <div className="flex items-center flex-1">
-                                <div className="flex-shrink-0 h-12 w-12">
-                                  <img
-                                    className="h-12 w-12 rounded-md object-cover border border-gray-200"
-                                    src={
-                                      `${
-                                        order.goodsImage || "/placeholder.svg"
-                                      }` || "/placeholder.svg"
+                        <div className="divide-y divide-gray-100">
+                          {dayOrders.length === 0 ? (
+                            <div className="p-6 text-center text-gray-500">
+                              <p>해당 요일에 발주 내역이 없습니다.</p>
+                            </div>
+                          ) : (
+                            dayOrders.map((order) => (
+                              <div
+                                key={order.orderId}
+                                className="p-4 hover:bg-gray-50 transition-colors"
+                              >
+                                <div className="flex items-center">
+                                  <input
+                                    type="checkbox"
+                                    checked={
+                                      selectedPreviousOrders[order.orderId] ||
+                                      false
                                     }
-                                    alt={order.goodsName}
+                                    onChange={() =>
+                                      handleSelectPreviousOrder(order.orderId)
+                                    }
+                                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded mr-4"
                                   />
-                                </div>
-                                <div className="ml-4 flex-1">
-                                  <div className="flex justify-between">
-                                    <div className="text-sm font-medium text-gray-900">
-                                      {order.goodsName}
+
+                                  <div className="flex items-center flex-1">
+                                    <div className="flex-shrink-0 h-12 w-12">
+                                      <img
+                                        className="h-12 w-12 rounded-md object-cover border border-gray-200"
+                                        src={
+                                          `${
+                                            order.goodsImage ||
+                                            "/placeholder.svg"
+                                          }` || "/placeholder.svg"
+                                        }
+                                        alt={order.goodsName}
+                                      />
                                     </div>
-                                    <div className="text-sm font-semibold text-indigo-600">
-                                      {order.orderQuantity}개
+                                    <div className="ml-4 flex-1">
+                                      <div className="flex justify-between">
+                                        <div className="text-sm font-medium text-gray-900">
+                                          {order.goodsName}
+                                        </div>
+                                        <div className="text-sm font-semibold text-indigo-600">
+                                          {order.orderQuantity}개
+                                        </div>
+                                      </div>
+                                      <div className="flex justify-between mt-1">
+                                        <div className="text-xs text-gray-500">
+                                          주문번호: #{order.orderId}
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                          {new Date(
+                                            order.scheduledTime
+                                          ).toLocaleDateString("ko-KR")}
+                                        </div>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="flex justify-between mt-1">
-                                    <div className="text-xs text-gray-500">
-                                      주문번호: #{order.orderId}
-                                    </div>
-                                    <div>{getStatusBadge(order.status)}</div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                        ))}
+                            ))
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

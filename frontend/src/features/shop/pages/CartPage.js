@@ -70,12 +70,18 @@ export default function CartPage() {
 
   // 장바구니 아이템 결제하기
   const handlePayment = async () => {
+    console.log("장바구니 아이템",cartItems);
     try {
       const order = {
         member: null,
         finalPrice: calculateTotal(),
         orderSummary: `${cartItems[0].name} 외 ${cartItems.length - 1}건`,
         paymentStatus: 0,
+        orderItems: cartItems.map(item => ({
+          goodsId: item.id,            // 상품 ID
+          saleAmount: item.quantity,   // 수량
+          salePrice: item.price        // 개별 가격
+        }))
       };
 
       // 주문 후 toss 결제 url 받아오기

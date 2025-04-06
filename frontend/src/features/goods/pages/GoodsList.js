@@ -457,8 +457,7 @@ function GoodsList() {
                               {item.discountRate && (
                                 <div className="text-xs text-red-500">
                                   {Math.floor(
-                                    item.goods_price *
-                                      (1 - item.discountRate / 100)
+                                    item.goods_price
                                   ).toLocaleString()}
                                   원
                                 </div>
