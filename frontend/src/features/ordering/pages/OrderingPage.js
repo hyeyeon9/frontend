@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import {
   fetchConfirmArrival,
@@ -32,6 +30,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CheckSquare,
+  Bell,
 } from "lucide-react";
 
 import * as XLSX from "xlsx";
@@ -74,6 +73,13 @@ function OrderingPage() {
   const [inventoryItem, setInventoryItem] = useState(0);
   const [average, setAverage] = useState(0);
 
+  // State to track if we've loaded items from localStorage
+  const [hasLoadedFromStorage, setHasLoadedFromStorage] = useState(false);
+  // State to show notification about items from expiring page
+  const [showExpiringNotification, setShowExpiringNotification] =
+    useState(false);
+  // Count of items loaded from expiring page
+  const [expiringItemsCount, setExpiringItemsCount] = useState(0);
 
   const getTodayString = () => {
     const today = new Date();
@@ -95,6 +101,41 @@ function OrderingPage() {
     )}월 ${String(date.getDate()).padStart(2, "0")}일 (${dayNames[dayIndex]})`;
   };
 
+  // 로컬스토리지에서 유통기한 임박 상품 가져오기
+  useEffect(() => {
+    if (!hasLoadedFromStorage && goodsList.length > 0) {
+      const storedItems = localStorage.getItem("selectedExpiringItems");
+
+      if (storedItems) {
+        try {
+          const parsedItems = JSON.parse(storedItems);
+
+          if (parsedItems.length > 0) {
+            const newSelectedItems = { ...selectedItems };
+
+            parsedItems.forEach((item) => {
+              // Find the corresponding item in goodsList
+              const goodsId = item.goodsId.toString();
+              newSelectedItems[goodsId] = { quantity: "1" }; // Default quantity to 1
+            });
+
+            setSelectedItems(newSelectedItems);
+            setExpiringItemsCount(parsedItems.length);
+            setShowExpiringNotification(true);
+
+            // Clear localStorage after loading
+            localStorage.removeItem("selectedExpiringItems");
+          }
+        } catch (error) {
+          console.error("Error parsing stored items:", error);
+        }
+      }
+
+      setHasLoadedFromStorage(true);
+    }
+  }, [goodsList, hasLoadedFromStorage, selectedItems]);
+
+  // 재고 리스트 가져오기
   useEffect(() => {
     async function getInventoryList() {
       try {
@@ -110,7 +151,7 @@ function OrderingPage() {
     getInventoryList();
   }, []);
 
-  // 리스트 가져오기
+  // 발주 리스트 가져오기
   useEffect(() => {
     async function getOrdersList() {
       try {
@@ -325,6 +366,7 @@ function OrderingPage() {
 
       alert("모든 발주가 등록되었습니다.");
       setSelectedItems({}); // 초기화
+      setShowExpiringNotification(false);
 
       // 발주 리스트 새로고침
       const updatedOrders = await fetchOrders();
@@ -390,7 +432,7 @@ function OrderingPage() {
 
   const daysLeft = average > 0 ? Math.floor(stock / average) : "N/A";
 
-  // 다음 입고까지 7일이라고 가정할떄, 7일치 평균개수 - 남은 재고 수  만큼 발주해라고 추천
+  // 다음 입고까지 1일이라고 가정할떄, 1일치 평균개수 - 남은 재고 수  만큼 발주해라고 추천
   const recommendedOrder = Math.ceil(Math.max(0, average * 1 - stock));
 
   // 이전 발주 수량 적용 함수
@@ -948,6 +990,29 @@ function OrderingPage() {
 
         {activeTab === "manage" && (
           <>
+            {/* 유통기한 임박 상품 알림 */}
+            {showExpiringNotification && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 flex items-center justify-between">
+                <div className="flex items-center">
+                  <Bell className="h-5 w-5 text-amber-600 mr-3" />
+                  <div>
+                    <h3 className="font-medium text-amber-800">
+                      유통기한 임박 상품 알림
+                    </h3>
+                    <p className="text-amber-700 text-sm">
+                      유통기한 임박 페이지에서 선택한 {expiringItemsCount}개
+                      상품이 발주 목록에 추가되었습니다.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowExpiringNotification(false)}
+                  className="text-amber-600 hover:text-amber-800"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            )}
             {/* 검색 및 필터 영역 */}
             <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
@@ -1221,20 +1286,6 @@ function OrderingPage() {
                                     className="w-20 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-center disabled:bg-gray-100 disabled:text-gray-400"
                                     placeholder="수량"
                                   />
-
-                                  {selectedItems[item.goods_id] &&
-                                    latestOrderQuantities[item.goods_id] && (
-                                      <button
-                                        onClick={() =>
-                                          applyLatestQuantity(item.goods_id)
-                                        }
-                                        className="flex items-center px-2 py-1 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors"
-                                        title="이전 발주 수량 적용"
-                                      >
-                                        <History className="w-3 h-3 mr-1" />
-                                        {latestOrderQuantities[item.goods_id]}개
-                                      </button>
-                                    )}
                                 </div>
 
                                 {selectedItems[item.goods_id] &&
@@ -1254,20 +1305,6 @@ function OrderingPage() {
                                         </span>
                                         추천
                                       </button>
-                                      <div className="ml-2 text-xs text-gray-500 flex items-center">
-                                        <span className="inline-flex items-center mr-2">
-                                          <span className="font-medium text-indigo-600 mr-1">
-                                            {average.toFixed(1)}개
-                                          </span>
-                                          일평균
-                                        </span>
-                                        <span className="inline-flex items-center">
-                                          <span className="font-medium text-indigo-600 mr-1">
-                                            {daysLeft}
-                                          </span>
-                                          일치
-                                        </span>
-                                      </div>
                                     </div>
                                   )}
                               </div>
