@@ -258,7 +258,7 @@ function DisposalAnalyze() {
                                     ? "bg-orange-500"
                                     : "bg-yellow-500"
                               }`}
-                              style={{ width: `${Math.min(100, item.disposalRate * 2)}%` }}
+                              style={{ width: `${Math.min(100, item.disposalRate)}%` }}
                             ></div>
                           </div>
                         </div>
