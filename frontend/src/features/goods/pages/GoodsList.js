@@ -23,6 +23,7 @@ function GoodsList() {
     async function getGoodsList() {
       try {
         const data = await fetchGoodsList();
+        console.log("data",data);
         setGoodsList(data);
         setFilteredList(data); // 초기엔 전체 목록
       } catch (error) {
@@ -451,15 +452,24 @@ function GoodsList() {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-semibold text-indigo-600">
-                                {Number(item.goods_price).toLocaleString()}원
-                              </div>
-                              {item.discountRate && (
-                                <div className="text-xs text-red-500">
-                                  {Math.floor(
-                                    item.goods_price
-                                  ).toLocaleString()}
-                                  원
+                              {/* 할인 중인 경우 */}
+                              {item.discountRate ? (
+                                <>
+                                  <div className="text-sm text-gray-500 line-through">
+                                    {Number(
+                                      item.originalPrice
+                                    ).toLocaleString()}
+                                    원
+                                  </div>
+                                  <div className="text-sm font-semibold text-red-600">
+                                    {Number(item.goods_price).toLocaleString()}
+                                    원
+                                  </div>
+                                </>
+                              ) : (
+                                // 할인 아닌 경우
+                                <div className="text-sm font-semibold text-indigo-600">
+                                  {Number(item.goods_price).toLocaleString()}원
                                 </div>
                               )}
                             </td>
