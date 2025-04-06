@@ -428,7 +428,6 @@ export default function DashBoard() {
             console.warn("알 수 없는 chartMode:", chartMode);
             return;
         }
-        console.log("targetData: ", data.data);
         setTargetData(data.data);
       } catch (error) {
         console.error("차트 데이터 가져오기 실패:", error);

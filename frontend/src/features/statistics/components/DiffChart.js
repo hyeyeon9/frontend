@@ -1,5 +1,3 @@
-"use client";
-
 import { ResponsiveLine } from "@nivo/line";
 import { memo, useMemo } from "react";
 

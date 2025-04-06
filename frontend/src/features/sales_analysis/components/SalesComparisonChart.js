@@ -41,9 +41,10 @@ export default function SalesComparisonChart({
     });
 
     // 정렬 & 상위 10개 선택
-    return Object.values(productMap)
-      .sort((a, b) => b.현재 + b.이전 - (a.현재 + a.이전))
-      .slice(0, 10);
+    return Object.values(productMap).sort(
+      (a, b) => b.현재 + b.이전 - (a.현재 + a.이전)
+    );
+    // .slice(0, 10)
   }, [previousData, currentData, chartView]);
 
   // 이전 데이터와 현재 데이터를 분리한 트리맵 데이터 생성

@@ -6,14 +6,17 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
+  BarChart2,
 } from "lucide-react";
 import { Button, Spinner } from "flowbite-react";
 import { fetchGetAlertListByTrend } from "../api/HttpSalesAnalysisService";
 import ReportTable from "../components/ReportTable";
 import TimeSelector from "../components/TimeSelector";
 import ReportDetailModal from "../components/ReportDetailModal";
+import SalesComparison from "../../statistics/pages/SalesComparison";
 
 export default function SalesReport() {
+  const [activeTab, setActiveTab] = useState("report"); // 기본값: 리포트
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedMode, setSelectedMode] = useState(1); // 기본값을 전주 동요일 대비(1)로 설정
   const [salesData, setSalesData] = useState([]);
@@ -270,136 +273,173 @@ export default function SalesReport() {
 
   return (
     <div className="bg-gray-50 min-h-screen p-6 max-w-7xl mx-auto">
-      <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-        <div className="flex items-center mb-4">
-          <TrendingUp className="h-5 w-5 mr-2 text-indigo-600" />
-          <h1 className="text-xl font-bold text-gray-800">이상 매출 조회</h1>
-        </div>
-
-        {/* 컴팩트한 컨트롤 영역 */}
-        <div className="flex flex-col gap-4">
-          {/* 첫 번째 줄: 날짜 선택 */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigateDate(-1)}
-              className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-
-            <div className="relative">
-              <button
-                onClick={() => setShowDatePicker(!showDatePicker)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                <Calendar className="h-4 w-4 text-gray-500" />
-                <span className="font-medium">
-                  {formatDateWithDay(selectedDate)}
-                </span>
-              </button>
-              {renderCustomDatePicker()}
-            </div>
-
-            <button
-              onClick={() => navigateDate(1)}
-              className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-
-            <div className="ml-auto">
-              <Button
-                color="light"
-                onClick={toggleViewMode}
-                className="text-sm"
-              >
-                {viewMode === "time" ? "테이블 뷰로 보기" : "시간별 뷰로 보기"}
-              </Button>
-            </div>
-          </div>
-
-          {/* 두 번째 줄: 조회 모드 버튼 */}
-          <div className="flex flex-wrap gap-2">
-            {modes.map((mode) => (
-              <Button
-                key={mode.value}
-                color={selectedMode === mode.value ? "blue" : "light"}
-                onClick={() => handleModeChange(mode.value)}
-                size="sm"
-                className="flex-grow md:flex-grow-0"
-              >
-                {mode.label}
-              </Button>
-            ))}
-          </div>
+      {/* 탭 네비게이션 추가 */}
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex gap-6 text-2xl font-bold text-gray-800">
+          <button
+            className={`flex items-center ${
+              activeTab === "report"
+                ? "text-indigo-600 border-b-2 border-indigo-600"
+                : "text-gray-400 hover:text-indigo-600"
+            } pb-1`}
+            onClick={() => setActiveTab("report")}
+          >
+            <TrendingUp className="h-5 w-5 mr-2" />
+            매출 레포트
+          </button>
+          <button
+            className={`flex items-center ${
+              activeTab === "comparison"
+                ? "text-indigo-600 border-b-2 border-indigo-600"
+                : "text-gray-400 hover:text-indigo-600"
+            } pb-1`}
+            onClick={() => setActiveTab("comparison")}
+          >
+            <BarChart2 className="h-5 w-5 mr-2" />
+            매출 비교
+          </button>
         </div>
       </div>
 
-      {/* 로딩 상태 */}
-      {loading && (
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6 flex justify-center items-center h-64">
-          <Spinner size="xl" />
-        </div>
-      )}
+      {/* 탭 컨텐츠 */}
+      {activeTab === "report" ? (
+        <>
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div className="flex items-center mb-4">
+              <TrendingUp className="h-5 w-5 mr-2 text-indigo-600" />
+              <h1 className="text-xl font-bold text-gray-800">매출 레포트</h1>
+            </div>
 
-      {/* 데이터 없음 상태 */}
-      {!loading && salesData.length === 0 && (
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6 flex flex-col justify-center items-center h-64 text-gray-500">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-12 w-12 mb-2 text-gray-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-          </svg>
-          <p>조회된 매출 데이터가 없습니다.</p>
-        </div>
-      )}
+            {/* 컴팩트한 컨트롤 영역 */}
+            <div className="flex flex-col gap-4">
+              {/* 첫 번째 줄: 날짜 선택 */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigateDate(-1)}
+                  className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
 
-      {/* 시간별 뷰 */}
-      {!loading && salesData.length > 0 && viewMode === "time" && (
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800 flex items-center">
-              <Clock className="h-5 w-5 mr-2 text-indigo-600" />
-              시간대별 매출 현황
-            </h2>
-            <div className="text-sm font-medium px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full">
-              {getSelectedModeLabel()}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowDatePicker(!showDatePicker)}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                  >
+                    <Calendar className="h-4 w-4 text-gray-500" />
+                    <span className="font-medium">
+                      {formatDateWithDay(selectedDate)}
+                    </span>
+                  </button>
+                  {renderCustomDatePicker()}
+                </div>
+
+                <button
+                  onClick={() => navigateDate(1)}
+                  className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+
+                <div className="ml-auto">
+                  <Button
+                    color="light"
+                    onClick={toggleViewMode}
+                    className="text-sm"
+                  >
+                    {viewMode === "time"
+                      ? "테이블 뷰로 보기"
+                      : "시간별 뷰로 보기"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* 두 번째 줄: 조회 모드 버튼 */}
+              <div className="flex flex-wrap gap-2">
+                {modes.map((mode) => (
+                  <Button
+                    key={mode.value}
+                    color={selectedMode === mode.value ? "blue" : "light"}
+                    onClick={() => handleModeChange(mode.value)}
+                    size="sm"
+                    className="flex-grow md:flex-grow-0"
+                  >
+                    {mode.label}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
 
-          <TimeSelector
-            salesData={salesData}
-            selectedHour={selectedHour}
-            onTimeSelect={handleTimeSelect}
-          />
-        </div>
-      )}
+          {/* 로딩 상태 */}
+          {loading && (
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-6 flex justify-center items-center h-64">
+              <Spinner size="xl" />
+            </div>
+          )}
 
-      {/* 테이블 뷰 */}
-      {!loading && salesData.length > 0 && viewMode === "table" && (
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6 overflow-x-auto">
-          <ReportTable salesData={salesData} onRowClick={handleOpenModal} />
-        </div>
-      )}
+          {/* 데이터 없음 상태 */}
+          {!loading && salesData.length === 0 && (
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-6 flex flex-col justify-center items-center h-64 text-gray-500">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12 mb-2 text-gray-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <p>조회된 매출 데이터가 없습니다.</p>
+            </div>
+          )}
 
-      {/* 상세 정보 영역 (시간별 뷰에서만 표시) */}
-      {showDetailView && selectedTimeData && viewMode === "time" && (
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <ReportDetailModal
-            selectedAlert={selectedTimeData}
-            isInline={true}
-            closeModal={() => setShowDetailView(false)}
-          />
-        </div>
+          {/* 시간별 뷰 */}
+          {!loading && salesData.length > 0 && viewMode === "time" && (
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+                  <Clock className="h-5 w-5 mr-2 text-indigo-600" />
+                  시간대별 매출 현황
+                </h2>
+                <div className="text-sm font-medium px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full">
+                  {getSelectedModeLabel()}
+                </div>
+              </div>
+
+              <TimeSelector
+                salesData={salesData}
+                selectedHour={selectedHour}
+                onTimeSelect={handleTimeSelect}
+              />
+            </div>
+          )}
+
+          {/* 테이블 뷰 */}
+          {!loading && salesData.length > 0 && viewMode === "table" && (
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-6 overflow-x-auto">
+              <ReportTable salesData={salesData} onRowClick={handleOpenModal} />
+            </div>
+          )}
+
+          {/* 상세 정보 영역 (시간별 뷰에서만 표시) */}
+          {showDetailView && selectedTimeData && viewMode === "time" && (
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+              <ReportDetailModal
+                selectedAlert={selectedTimeData}
+                isInline={true}
+                closeModal={() => setShowDetailView(false)}
+              />
+            </div>
+          )}
+        </>
+      ) : (
+        <SalesComparison />
       )}
     </div>
   );

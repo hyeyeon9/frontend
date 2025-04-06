@@ -192,7 +192,7 @@ export default function Sidebar() {
                           ></path>
                         </svg>
                       </div>
-                      이상매출알림
+                      매출 레포트
                     </Link>
                   </nav>
                 </div>
