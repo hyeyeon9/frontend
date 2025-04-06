@@ -18,10 +18,9 @@ import ExpiringItemsPage from "./features/dashboard/pages/ExpiringItemsPage";
 import DisposalAnalyze from "./features/disposal/pages/DisposalAnalyze";
 import DispoalList from "./features/disposal/pages/DisposalPage";
 import OrderingPage from "./features/ordering/pages/OrderingPage";
+
 import SalesReport from "./features/sales_analysis/pages/SalesReport";
 
-import SalesComparison from "./features/statistics/pages/SalesComparison";
-import Statistics from "./features/statistics/pages/Statistics";
 import LoginPage from "./features/member/pages/LoginPage";
 import SignUpPage from "./features/member/pages/SignupPage";
 
@@ -36,6 +35,7 @@ import { SuccessPage } from "./features/shop/feature/payments/Success";
 import { FailPage } from "./features/shop/feature/payments/Fail";
 import PayLayout from "./pages/PayLayout";
 import ChatBot from "./components/ChatBot";
+import Statistics from "./features/statistics/pages/Statistics";
 
 const router = createBrowserRouter([
   {
@@ -60,14 +60,9 @@ const router = createBrowserRouter([
         element: <SignUpPage />,
       },
       {
-        // 매출 조회
+        // 매출 통계
         path: "/statistics",
         element: <Statistics />,
-      },
-      {
-        // 매출 비교
-        path: "/salesDiff",
-        element: <SalesComparison />,
       },
       {
         // 매출 분석

@@ -121,3 +121,13 @@ const getCategoryName = (categoryId) => {
   // 순환 참조 문제를 방지하기 위해 간단하게 구현
   return `카테고리 ${categoryId}`;
 };
+
+/**
+ * 장바구니 업데이트 후 이벤트 발생시키기
+ * 다른 컴포넌트에서 장바구니 변경을 감지할 수 있도록 커스텀 이벤트 발생
+ */
+export const dispatchCartUpdateEvent = () => {
+  // 커스텀 이벤트 생성 및 발생
+  const event = new Event("storage-cart-updated");
+  window.dispatchEvent(event);
+};

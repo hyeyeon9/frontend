@@ -120,7 +120,7 @@ export default function Statistics() {
                   }`}
                   onClick={() => handleTimeModeChange("daily")}
                 >
-                  일간
+                  시간별
                 </button>
                 <button
                   className={`flex-1 px-4 py-2 text-sm font-medium ${
@@ -130,7 +130,7 @@ export default function Statistics() {
                   }`}
                   onClick={() => handleTimeModeChange("monthly")}
                 >
-                  월간
+                  일간
                 </button>
                 <button
                   className={`flex-1 px-4 py-2 text-sm font-medium ${
@@ -140,7 +140,7 @@ export default function Statistics() {
                   }`}
                   onClick={() => handleTimeModeChange("yearly")}
                 >
-                  연간
+                  월간
                 </button>
               </div>
             </div>

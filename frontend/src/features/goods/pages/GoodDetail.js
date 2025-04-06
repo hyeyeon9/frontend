@@ -34,7 +34,7 @@ function GoodsDetail() {
   // 할인된 가격 계산
   const calculateDiscountedPrice = () => {
     if (!goods || !isDiscounting) return goods?.goods_price;
-    return Math.floor(goods.goods_price * (1 - goods.discountRate / 100));
+    return goods?.goods_price;
   };
 
   return (
@@ -160,7 +160,7 @@ function GoodsDetail() {
                         <div className="flex items-baseline mt-1">
                           {isDiscounting && (
                             <span className="text-lg line-through text-gray-400 mr-2">
-                              {goods.goods_price.toLocaleString()}원
+                              {goods.originalPrice.toLocaleString()}원
                             </span>
                           )}
                           <span className="text-3xl font-bold text-indigo-700">
@@ -206,10 +206,7 @@ function GoodsDetail() {
                         </div>
                         <div className="mt-1 text-sm text-amber-600">
                           <span className="font-semibold">
-                            {(
-                              goods.goods_price - calculateDiscountedPrice()
-                            ).toLocaleString()}
-                            원
+                            {goods.goods_price.toLocaleString()}원
                           </span>{" "}
                           절약 가능
                         </div>

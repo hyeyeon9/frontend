@@ -1,6 +1,8 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ArrowUpDown, Filter, Search, ShoppingCart } from "lucide-react";
+import { ArrowUpDown, Filter, Search, RefreshCw } from "lucide-react";
 import {
   Card,
   Badge,
@@ -11,6 +13,8 @@ import {
 } from "flowbite-react";
 import { fetchGetPagedGoods } from "../api/HttpShopService";
 import categoryMapping from "../../../components/categoryMapping";
+import { addItemToCart, getCartItemCount } from "../utils/CartUtils";
+import { fetchGoodsDetail } from "../../goods/api/HttpGoodsService";
 
 // 메인 카테고리 목록 추출
 const mainCategories = [...new Set(categoryMapping.map((cat) => cat.main))];
@@ -26,6 +30,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
   const [selectedMainCategory, setSelectedMainCategory] = useState("전체");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cartCount, setCartCount] = useState(0);
 
   // 필터링 상태
   const [sortBy, setSortBy] = useState("");
@@ -38,6 +43,27 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const pageSize = 12; // 고정된 페이지 크기
+
+  // 장바구니 아이템 수 상태 추가
+  const [cartCountState, setCartCountState] = useState(getCartItemCount());
+
+  // 컴포넌트 마운트 시 장바구니 개수 로드
+  useEffect(() => {
+    setCartCount(getCartItemCount());
+
+    // 세션 스토리지 변경 이벤트 리스너 추가
+    const handleStorageChange = () => {
+      setCartCount(getCartItemCount());
+    };
+
+    // 커스텀 이벤트 리스너 등록
+    window.addEventListener("storage-cart-updated", handleStorageChange);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener("storage-cart-updated", handleStorageChange);
+    };
+  }, []);
 
   // 카테고리 파라미터가 변경될 때 선택된 카테고리 업데이트
   useEffect(() => {
@@ -144,21 +170,29 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
   };
 
   // 장바구니에 상품 추가 - 이벤트 객체 사용하지 않고 직접 productId 전달
-  const handleAddToCart = (event, productId) => {
+  const handleAddToCart = async (event, productId) => {
     if (event) {
       event.stopPropagation(); // 이벤트 객체가 있을 경우에만 stopPropagation 호출
     }
 
-    // 장바구니에 추가
-    if (onAddToCart) {
-      onAddToCart(productId);
-    } else {
-      console.log(`상품 ID ${productId}를 장바구니에 추가했습니다.`);
-    }
+    try {
+      // 상품 상세 정보 가져오기
+      const productDetail = await fetchGoodsDetail(productId);
 
-    // 홈페이지에서는 장바구니로 이동하지 않음
-    if (!isHomePage) {
-      navigate("/shop/cart");
+      // 장바구니에 추가
+      addItemToCart(productDetail, 1);
+
+      // 장바구니 개수 업데이트
+      setCartCount(getCartItemCount());
+
+      // 부모 컴포넌트의 onAddToCart가 있으면 호출
+      if (onAddToCart) {
+        onAddToCart(productId, 1);
+      }
+
+      console.log(`Added product ${productId} to cart`);
+    } catch (error) {
+      console.error("장바구니에 상품을 추가하는 중 오류 발생:", error);
     }
   };
 
@@ -195,16 +229,15 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
     }));
   };
 
-  // 필터 적용 핸들러
-  const applyFilters = () => {
-    setShowFilterDropdown(false);
-  };
-
   // 필터 초기화 핸들러
   const resetFilters = () => {
-    setSortBy("popularity");
+    setSearchQuery("");
+    setSortBy("");
     setPriceRange({ min: "", max: "" });
     setInStockOnly(false);
+    setSelectedCategory("");
+    setSelectedMainCategory("전체");
+    setCurrentPage(1);
   };
 
   // 홈페이지에서는 간소화된 UI 표시
@@ -237,12 +270,11 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
           <div className="flex flex-wrap gap-2 mb-6">
             {filteredSubCategories.map((category) => (
               <Button
-                outline
                 key={category.id}
                 color={
                   selectedCategory === category.id.toString() ? "blue" : "light"
                 }
-                size="xs"
+                size="sm"
                 onClick={() => handleSubCategorySelect(category.id)}
               >
                 {category.sub}
@@ -257,7 +289,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {products.map((product) => (
               <Card
                 key={product.goods_id}
@@ -268,12 +300,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
               >
                 <div className="relative">
                   <img
-                    src={
-                      product.goods_image ||
-                      "/placeholder.svg?height=150&width=150" ||
-                      "/placeholder.svg" ||
-                      "/placeholder.svg"
-                    }
+                    src={product.goods_image}
                     alt={product.goods_name}
                     className="object-cover w-full h-40 rounded-t-lg"
                   />
@@ -327,7 +354,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
 
   // 전체 페이지 버전
   return (
-    <div className="container mx-auto">
+    <div className="max-w-7xl mx-auto px-4">
       {/* 헤더 영역 */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <h1 className="text-2xl font-bold">{getSelectedCategoryName()}</h1>
@@ -354,6 +381,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
               {sortBy === "price-low" && "가격 낮은순"}
               {sortBy === "price-high" && "가격 높은순"}
               {sortBy === "name" && "이름순"}
+              {!sortBy && "정렬"}
             </Button>
 
             <Dropdown
@@ -415,6 +443,21 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
                   <span className="text-sm">재고 있는 상품만 보기</span>
                 </label>
               </div>
+
+              <Dropdown.Divider />
+
+              {/* 필터 초기화 버튼 */}
+              <div className="px-4 py-2">
+                <Button
+                  color="light"
+                  size="sm"
+                  onClick={resetFilters}
+                  className="w-full flex items-center justify-center"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  필터 초기화
+                </Button>
+              </div>
             </Dropdown>
           </div>
         </div>
@@ -450,7 +493,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
               color={
                 selectedCategory === category.id.toString() ? "blue" : "light"
               }
-              size="xs"
+              size="sm"
               onClick={() => handleSubCategorySelect(category.id)}
             >
               {category.sub}
@@ -466,7 +509,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
         </div>
       ) : products.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
               <Card
                 key={product.goods_id}
@@ -477,12 +520,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
               >
                 <div className="relative">
                   <img
-                    src={
-                      product.goods_image ||
-                      "/placeholder.svg?height=200&width=200" ||
-                      "/placeholder.svg" ||
-                      "/placeholder.svg"
-                    }
+                    src={product.goods_image}
                     alt={product.goods_name}
                     className="object-cover w-full h-60 rounded-t-lg"
                   />
@@ -550,14 +588,7 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
                     onClick={(e) => handleAddToCart(e, product.goods_id)}
                     disabled={product.goods_stock <= 0}
                   >
-                    {product.goods_stock > 0 ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <ShoppingCart size={18} />
-                        <span>장바구니 담기</span>
-                      </div>
-                    ) : (
-                      "품절"
-                    )}
+                    {product.goods_stock > 0 ? "장바구니 담기" : "품절"}
                   </Button>
                 </div>
               </Card>
@@ -580,6 +611,25 @@ export default function Products({ onAddToCart, isHomePage, isFullPage }) {
         <div className="text-center py-12">
           <h3 className="text-lg font-medium">상품을 찾을 수 없습니다</h3>
           <p className="text-gray-500">검색어나 필터 조건을 변경해보세요</p>
+          <Button color="light" onClick={resetFilters} className="mt-4">
+            필터 초기화
+          </Button>
+        </div>
+      )}
+
+      {/* 하단 장바구니 위젯 - 전체 화면 모드일 때만 표시 */}
+      {isFullPage && (
+        <div className="sticky bottom-0 bg-white border-t p-4 z-10">
+          <div className="flex justify-between max-w-7xl mx-auto">
+            <Button
+              color="blue"
+              size="lg"
+              className="w-full"
+              onClick={() => navigate("/shop/cart")}
+            >
+              장바구니 보기 {cartCount > 0 && `(${cartCount})`}
+            </Button>
+          </div>
         </div>
       )}
     </div>
