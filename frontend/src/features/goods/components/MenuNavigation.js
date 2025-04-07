@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Link, NavLink, useLocation } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 function MenuNavigation() {
-  const location = useLocation()
-  const [selectedCategory, setSelectedCategory] = useState("")
-  const [subCategories, setSubCategories] = useState([])
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const location = useLocation();
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [subCategories, setSubCategories] = useState([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const url = location.pathname.split("/")
-    const category = url[2]
+    const url = location.pathname.split("/");
+    const category = url[2];
 
-    console.log("category", category)
+    console.log("category", category);
 
-    setSelectedCategory(category)
+    setSelectedCategory(category);
 
     if (category === "food") {
       setSubCategories([
@@ -25,13 +25,16 @@ function MenuNavigation() {
           name: "베이커리 & 샌드위치",
           path: "/categories/food/bakerySandwich",
         },
-        { name: "냉장 & 냉동식품", path: "/categories/food/refrigeratedFrozen" },
+        {
+          name: "냉장 & 냉동식품",
+          path: "/categories/food/refrigeratedFrozen",
+        },
         { name: "과자 & 스낵", path: "/categories/food/snacks" },
         {
           name: "아이스크림 & 디저트",
           path: "/categories/food/icecreamDessert",
         },
-      ])
+      ]);
     } else if (category === "drink") {
       setSubCategories([
         { name: "커피 & 차", path: "/categories/drink/coffeeTea" },
@@ -39,7 +42,7 @@ function MenuNavigation() {
         { name: "주스 & 건강음료", path: "/categories/drink/juiceHealth" },
         { name: "유제품 & 두유", path: "/categories/drink/dairySoymilk" },
         { name: "주류", path: "/categories/drink/alcohol" },
-      ])
+      ]);
     } else if (category === "household") {
       setSubCategories([
         { name: "위생용품", path: "/categories/household/hygieneProducts" },
@@ -49,7 +52,7 @@ function MenuNavigation() {
           path: "/categories/household/beautyCosmetics",
         },
         { name: "의약 & 건강", path: "/categories/household/medicineHealth" },
-      ])
+      ]);
     } else if (category === "digital") {
       setSubCategories([
         {
@@ -57,21 +60,38 @@ function MenuNavigation() {
           path: "/categories/digital/electronicsAccessories",
         },
         { name: "문구류", path: "/categories/digital/stationery" },
-      ])
+      ]);
     } else if (category === "/" || category === "findAll") {
-      setSubCategories([])
+      setSubCategories([]);
     }
-  }, [location])
+  }, [location]);
 
   // 카테고리 아이콘 매핑
   const categoryIcons = {
     findAll: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M4 6h16M4 12h16M4 18h16"
+        />
       </svg>
     ),
     food: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -81,7 +101,13 @@ function MenuNavigation() {
       </svg>
     ),
     drink: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -91,7 +117,13 @@ function MenuNavigation() {
       </svg>
     ),
     household: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -101,7 +133,13 @@ function MenuNavigation() {
       </svg>
     ),
     digital: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -110,19 +148,17 @@ function MenuNavigation() {
         />
       </svg>
     ),
-  }
+  };
 
   return (
-    <div className="sticky top-0 z-50">
+    <div className="sticky top-0 z-[50]">
       {/* 메인 네비게이션 */}
       <nav className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <Link to="/" className="text-xl font-bold text-indigo-600">
-                  무인매장
-                </Link>
+                <p className="text-xl font-bold text-indigo-600">무인매장</p>
               </div>
             </div>
 
@@ -141,7 +177,12 @@ function MenuNavigation() {
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 ) : (
                   <svg
@@ -151,7 +192,12 @@ function MenuNavigation() {
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
                   </svg>
                 )}
               </button>
@@ -316,8 +362,7 @@ function MenuNavigation() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default MenuNavigation
-
+export default MenuNavigation;
