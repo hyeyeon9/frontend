@@ -11,6 +11,7 @@ import { format, getDay } from "date-fns";
 import DiffChart from "../components/DiffChart";
 import DailySalesTable from "../components/DailySalesTable";
 import AdditionalInfoPanel from "../components/AdditionalInfoPanel";
+import SaleSummary from "../components/SaleSummary";
 
 // 날짜 포매팅 함수
 function formatDateTo(date) {
@@ -85,6 +86,18 @@ export default function SalesComparison() {
   const formatDateWithDay = (date) => {
     const dayIndex = getDay(date);
     return `${format(date, "yyyy년 MM월 dd일")} (${dayNames[dayIndex]})`;
+  };
+
+  // 날짜(요일) 포맷으로 변환
+  const formatDateWithWeekDay = (dateString) => {
+    const [year, month, day] = dateString.split("-").map(Number);
+    const date = new Date(year, month - 1, day); // 문자열 파싱 후 안정적인 생성
+
+    const dayOfWeek = date.toLocaleDateString("ko-KR", {
+      weekday: "short", // "월", "화", ...
+    });
+
+    return `${dateString} (${dayOfWeek})`;
   };
 
   // 커스텀 날짜 선택기 렌더링
@@ -329,7 +342,7 @@ export default function SalesComparison() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                {formattedDate1} 시간대별 매출
+                {formatDateWithWeekDay(formattedDate1)} 시간대별 매출
               </h2>
               {loading ? (
                 <div className="flex justify-center items-center h-40">
@@ -341,7 +354,7 @@ export default function SalesComparison() {
             </div>
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                {formattedDate2} 시간대별 매출
+                {formatDateWithWeekDay(formattedDate2)} 시간대별 매출
               </h2>
               {loading ? (
                 <div className="flex justify-center items-center h-40">
@@ -356,15 +369,12 @@ export default function SalesComparison() {
 
         {/* 3단 영역 (비워둠) */}
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            추가 정보
-          </h2>
           <div className="lg:col-span-1">
-            <AdditionalInfoPanel
+            <SaleSummary
               salesData1={salesData1}
               salesData2={salesData2}
-              date1={formattedDate1}
-              date2={formattedDate2}
+              date1={formatDateWithWeekDay(formattedDate1)}
+              date2={formatDateWithWeekDay(formattedDate2)}
             />
           </div>
         </div>
