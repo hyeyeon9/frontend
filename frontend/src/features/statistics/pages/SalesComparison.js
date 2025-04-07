@@ -1,16 +1,9 @@
+import { format, getDay } from "date-fns";
+import { BarChart2, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { fetchGetHourlySales } from "../api/HttpStatService";
-import {
-  Calendar,
-  TrendingUp,
-  BarChart2,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { format, getDay } from "date-fns";
-import DiffChart from "../components/DiffChart";
 import DailySalesTable from "../components/DailySalesTable";
-import AdditionalInfoPanel from "../components/AdditionalInfoPanel";
+import DiffChart from "../components/DiffChart";
 import SaleSummary from "../components/SaleSummary";
 
 // 날짜 포매팅 함수

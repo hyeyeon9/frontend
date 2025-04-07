@@ -1,13 +1,13 @@
+import { Datepicker } from "flowbite-react";
+import { BarChart2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Calendar, BarChart2, Clock } from "lucide-react";
-import { Datepicker, TabItem, Tabs } from "flowbite-react";
 
-import DailySalesTable from "../components/DailySalesTable";
-import MonthlySalesTable from "../components/MonthlySalesTable";
-import YearlySalesTable from "../components/YearlySalesTable";
 import DailyCategoryTable from "../components/DailyCategoryTable";
+import DailySalesTable from "../components/DailySalesTable";
 import MonthlyCategoryTable from "../components/MonthlyCategoryTable";
+import MonthlySalesTable from "../components/MonthlySalesTable";
 import YearlyCategoryTable from "../components/YearlyCategoryTable";
+import YearlySalesTable from "../components/YearlySalesTable";
 
 export default function Statistics() {
   // 상태: 시간 모드 + 조회 기준 모드

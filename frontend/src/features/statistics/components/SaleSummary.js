@@ -1,11 +1,4 @@
-import {
-  Minus,
-  MinusIcon,
-  TrendingDown,
-  TrendingDownIcon,
-  TrendingUp,
-  TrendingUpIcon,
-} from "lucide-react";
+import { MinusIcon, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 
 export default function SaleSummary({ salesData1, salesData2, date1, date2 }) {
   const sumSales = (data) => data.reduce((acc, cur) => acc + cur.dailyPrice, 0);
