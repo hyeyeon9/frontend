@@ -22,8 +22,7 @@ function GoodsEdit() {
   const [originalPrice, setOriginalPrice] = useState(0);
   const [discountPeriod, setDiscountPeriod] = useState("7");
 
-  const location = useLocation(); // useNavigate로 받아온 state 가져오기
-  const isDiscounting = location.state?.isDiscounting || false;
+  const isDiscounting = goods?.discountRate !== null && goods?.discountEndAt !== null;
 
   useEffect(() => {
     async function getGoodsDetail() {

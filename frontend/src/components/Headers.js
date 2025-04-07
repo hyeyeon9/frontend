@@ -7,7 +7,7 @@ export default function Headers() {
   // console.log("현재 user 값:", user);
 
   return (
-    <header className="sticky top-0 z-50 w-full">
+    <header className="fixed top-0 z-[100] w-full">
       <nav className="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
         {/* Mobile Header */}
         <div className="md:hidden flex items-center justify-between">
