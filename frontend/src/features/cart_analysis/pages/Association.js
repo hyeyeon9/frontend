@@ -1,12 +1,14 @@
-"use client"
-
-import { useEffect, useState } from "react"
-import { fetchAllAssociationRules, fetchAllAssociationTimeRules, fetchWeekSales } from "../api/HttpCartAnalysisService"
-import AssociationTable from "../components/AssociationTable"
-import HeatmapChart from "../components/HeatmapChart"
-import { useTime } from "../../../contexts/TimeContext"
-import LineChart from "../components/LineChart "
-import { categoryMap } from "../components/categoryMap"
+import { useEffect, useState } from "react";
+import {
+  fetchAllAssociationRules,
+  fetchAllAssociationTimeRules,
+  fetchWeekSales,
+} from "../api/HttpCartAnalysisService";
+import AssociationTable from "../components/AssociationTable";
+import HeatmapChart from "../components/HeatmapChart";
+import { useTime } from "../../../contexts/TimeContext";
+import LineChart from "../components/LineChart ";
+import { categoryMap } from "../components/categoryMap";
 import {
   BarChart2,
   Calendar,
@@ -25,151 +27,158 @@ import {
   Sunset,
   Moon,
   Sun,
-} from "lucide-react"
+} from "lucide-react";
 
 function getTimePeriod(time) {
-  const hour = time.split(":")[0]
+  const hour = time.split(":")[0];
 
-  if (hour >= 5 && hour < 11) return "아침"
-  if (hour >= 11 && hour < 15) return "점심"
-  if (hour >= 15 && hour < 18) return "한가한 오후"
-  if (hour >= 18 && hour < 23) return "저녁"
-  if (hour >= 23 || hour < 5) return "저녁"
+  if (hour >= 5 && hour < 11) return "아침";
+  if (hour >= 11 && hour < 15) return "점심";
+  if (hour >= 15 && hour < 18) return "한가한 오후";
+  if (hour >= 18 && hour < 23) return "저녁";
+  if (hour >= 23 || hour < 5) return "저녁";
 }
 
 // 시간대별 아이콘 매핑
 function getTimePeriodIcon(timePeriod) {
   switch (timePeriod) {
     case "아침":
-      return <Sunrise className="h-6 w-6 text-orange-500" />
+      return <Sunrise className="h-6 w-6 text-orange-500" />;
     case "점심":
-      return <Sun className="h-6 w-6 text-yellow-500" />
+      return <Sun className="h-6 w-6 text-yellow-500" />;
     case "한가한 오후":
-      return <Coffee className="h-6 w-6 text-blue-500" />
+      return <Coffee className="h-6 w-6 text-blue-500" />;
     case "저녁":
-      return <Sunset className="h-6 w-6 text-indigo-500" />
+      return <Sunset className="h-6 w-6 text-indigo-500" />;
     default:
-      return <Moon className="h-6 w-6 text-purple-500" />
+      return <Moon className="h-6 w-6 text-purple-500" />;
   }
 }
 
 function Association() {
-  const [rules, setRules] = useState([])
-  const [timeRules, setTimeRules] = useState([])
-  const [searchText, setSearchText] = useState("")
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [rules, setRules] = useState([]);
+  const [timeRules, setTimeRules] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  const { date, time } = useTime()
-  const timePeriod = getTimePeriod(time)
+  const { date, time } = useTime();
+  const timePeriod = getTimePeriod(time);
 
   // 년별, 월별 연관관계 확인을 위한 상태
-  const [period, setPeriod] = useState("")
-  const [month, setMonth] = useState("")
+  const [period, setPeriod] = useState("");
+  const [month, setMonth] = useState("");
 
   // 지지도, 신뢰도, 향상도 조절을 위한 상태
-  const [minSupport, setMinSupport] = useState(0.04)
-  const [minConfidence, setMinConfidence] = useState(0.3)
-  const [minLift, setMinLift] = useState(1.0)
+  const [minSupport, setMinSupport] = useState(0.04);
+  const [minConfidence, setMinConfidence] = useState(0.3);
+  const [minLift, setMinLift] = useState(1.0);
 
-  const [selectedTopRule, setSelectedTopRule] = useState(null)
-  const [activeTab, setActiveTab] = useState("heatmap") // 'heatmap' or 'table'
+  const [selectedTopRule, setSelectedTopRule] = useState(null);
+  const [activeTab, setActiveTab] = useState("heatmap"); // 'heatmap' or 'table'
 
-  const topRules = rules.sort((a, b) => b.confidence - a.confidence).slice(0, 3)
+  const topRules = rules
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, 3);
 
   // 전체상품 연관관계
   useEffect(() => {
-    if (!rules) return
+    if (!rules) return;
 
     async function getAssociationRules() {
       try {
-        setLoading(true)
-        const data = await fetchAllAssociationRules(period, month)
-        setRules(data)
+        setLoading(true);
+        const data = await fetchAllAssociationRules(period, month);
+        setRules(data);
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    getAssociationRules()
-  }, [period, month])
+    getAssociationRules();
+  }, [period, month]);
 
   // 시간대별 연관관계
   useEffect(() => {
-    if (!timeRules) return
+    if (!timeRules) return;
 
     async function getAssociationTimeRules() {
       try {
-        const data = await fetchAllAssociationTimeRules()
-        console.log("시간대별 연관관계", data)
+        const data = await fetchAllAssociationTimeRules();
+        console.log("시간대별 연관관계", data);
         const timeRules = data
           .filter((item) => item.time_period === timePeriod)
           .sort((a, b) => b.confidence - a.confidence)
-          .slice(0, 1)
+          .slice(0, 1);
 
-        setTimeRules(timeRules)
+        setTimeRules(timeRules);
 
-        console.log("탑", timeRules)
+        console.log("탑", timeRules);
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       }
     }
-    getAssociationTimeRules()
-  }, [timePeriod])
+    getAssociationTimeRules();
+  }, [timePeriod]);
 
   useEffect(() => {
-    const now = new Date()
-    const currentYear = now.getFullYear().toString()
-    const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0") // 월은 0~11이니까 +1 필요
+    const now = new Date();
+    const currentYear = now.getFullYear().toString();
+    const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0"); // 월은 0~11이니까 +1 필요
 
-    setPeriod(currentYear)
-    setMonth(currentMonth)
-  }, [])
+    setPeriod(currentYear);
+    setMonth(currentMonth);
+  }, []);
 
   // 전체 연관관계 필터링
   const filteredRules = rules.filter(
-    (rule) => rule.support >= minSupport && rule.confidence >= minConfidence && rule.lift >= minLift,
-  )
+    (rule) =>
+      rule.support >= minSupport &&
+      rule.confidence >= minConfidence &&
+      rule.lift >= minLift
+  );
 
-  const [selectedChartData, setSelectedChartData] = useState([])
-  const [selectedLabel, setSelectedLabel] = useState("")
-  const [expandedRuleIndex, setExpandedRuleIndex] = useState(null)
+  const [selectedChartData, setSelectedChartData] = useState([]);
+  const [selectedLabel, setSelectedLabel] = useState("");
+  const [expandedRuleIndex, setExpandedRuleIndex] = useState(null);
 
   async function handleTopRuleClick(item, index) {
     // 이미 선택된 항목을 다시 클릭하면 닫기
     if (expandedRuleIndex === index) {
-      setExpandedRuleIndex(null)
-      return
+      setExpandedRuleIndex(null);
+      return;
     }
 
-    setSelectedTopRule(item)
-    setExpandedRuleIndex(index)
+    setSelectedTopRule(item);
+    setExpandedRuleIndex(index);
 
-    const rawItems = `${item.itemset_a},${item.itemset_b}`.split(",").map((v) => v.trim())
+    const rawItems = `${item.itemset_a},${item.itemset_b}`
+      .split(",")
+      .map((v) => v.trim());
 
-    const targets = rawItems.filter((name) => categoryMap[name])
-    if (targets.length === 0) return
+    const targets = rawItems.filter((name) => categoryMap[name]);
+    if (targets.length === 0) return;
 
     try {
       const results = await Promise.all(
         targets.map(async (name) => {
-          const { categoryId, subCategoryId } = categoryMap[name]
-          const data = await fetchWeekSales(categoryId, subCategoryId)
+          const { categoryId, subCategoryId } = categoryMap[name];
+          const data = await fetchWeekSales(categoryId, subCategoryId);
           return {
             id: name,
             data: data.map((d) => ({
               x: d.date,
               y: d.totalSales,
             })),
-          }
-        }),
-      )
+          };
+        })
+      );
 
-      setSelectedChartData(results)
-      setSelectedLabel(rawItems.join(" + "))
+      setSelectedChartData(results);
+      setSelectedLabel(rawItems.join(" + "));
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
   }
 
@@ -186,8 +195,10 @@ function Association() {
                 <Info className="h-5 w-5" />
               </button>
               <div className="absolute left-0 top-full mt-2 w-[340px] p-4 bg-white rounded-lg shadow-lg border border-gray-200 hidden group-hover:block z-10">
-                <p className="text-sm
-                text-center text-gray-700 leading-relaxed whitespace-normal">
+                <p
+                  className="text-sm
+                text-center text-gray-700 leading-relaxed whitespace-normal"
+                >
                   "이 상품을 산 고객은 어떤 걸 같이 샀을까?"
                   <br />
                   자주 함께 담기는 상품 조합을 분석해드립니다.
@@ -248,7 +259,9 @@ function Association() {
                     <label className="text-sm font-medium text-gray-700">
                       지지도 (Support) ≥ {(minSupport * 100).toFixed(1)}%
                     </label>
-                    <span className="text-xs text-gray-500">{(minSupport * 100).toFixed(1)}%</span>
+                    <span className="text-xs text-gray-500">
+                      {(minSupport * 100).toFixed(1)}%
+                    </span>
                   </div>
                   <input
                     type="range"
@@ -256,7 +269,9 @@ function Association() {
                     max="0.2"
                     step="0.02"
                     value={minSupport}
-                    onChange={(e) => setMinSupport(Number.parseFloat(e.target.value))}
+                    onChange={(e) =>
+                      setMinSupport(Number.parseFloat(e.target.value))
+                    }
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                   />
                   <div className="flex justify-between text-xs text-gray-500">
@@ -270,7 +285,9 @@ function Association() {
                     <label className="text-sm font-medium text-gray-700">
                       신뢰도 (Confidence) ≥ {(minConfidence * 100).toFixed(0)}%
                     </label>
-                    <span className="text-xs text-gray-500">{(minConfidence * 100).toFixed(0)}%</span>
+                    <span className="text-xs text-gray-500">
+                      {(minConfidence * 100).toFixed(0)}%
+                    </span>
                   </div>
                   <input
                     type="range"
@@ -278,7 +295,9 @@ function Association() {
                     max="0.8"
                     step="0.05"
                     value={minConfidence}
-                    onChange={(e) => setMinConfidence(Number.parseFloat(e.target.value))}
+                    onChange={(e) =>
+                      setMinConfidence(Number.parseFloat(e.target.value))
+                    }
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                   />
                   <div className="flex justify-between text-xs text-gray-500">
@@ -289,8 +308,12 @@ function Association() {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-700">향상도 (Lift) ≥ {minLift.toFixed(1)}</label>
-                    <span className="text-xs text-gray-500">{minLift.toFixed(1)}</span>
+                    <label className="text-sm font-medium text-gray-700">
+                      향상도 (Lift) ≥ {minLift.toFixed(1)}
+                    </label>
+                    <span className="text-xs text-gray-500">
+                      {minLift.toFixed(1)}
+                    </span>
                   </div>
                   <input
                     type="range"
@@ -298,7 +321,9 @@ function Association() {
                     max="3"
                     step="0.1"
                     value={minLift}
-                    onChange={(e) => setMinLift(Number.parseFloat(e.target.value))}
+                    onChange={(e) =>
+                      setMinLift(Number.parseFloat(e.target.value))
+                    }
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                   />
                   <div className="flex justify-between text-xs text-gray-500">
@@ -392,7 +417,10 @@ function Association() {
                       데이터를 불러오는 중 오류가 발생했습니다.
                     </div>
                   ) : (
-                    <AssociationTable data={filteredRules} filteringText={searchText} />
+                    <AssociationTable
+                      data={filteredRules}
+                      filteringText={searchText}
+                    />
                   )}
                 </div>
               )}
@@ -418,10 +446,14 @@ function Association() {
               </div>
 
               <div className="p-4 flex items-center">
-                <div className="bg-indigo-100 p-3 rounded-full mr-4">{getTimePeriodIcon(timePeriod)}</div>
+                <div className="bg-indigo-100 p-3 rounded-full mr-4">
+                  {getTimePeriodIcon(timePeriod)}
+                </div>
                 <div className="flex-1">
                   <div className="flex items-center ">
-                    <h3 className="text-lg font-bold text-gray-800">{timePeriod}</h3>
+                    <h3 className="text-lg font-bold text-gray-800">
+                      {timePeriod}
+                    </h3>
                     <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
                       현재
                     </span>
@@ -431,25 +463,41 @@ function Association() {
                     <div className="mt-2">
                       <div className="flex items-center mt-1">
                         {timeRules.map((item, idx) => (
-                          <div key={idx} className="flex items-center bg-gray-100 rounded-lg p-3 w-70">
+                          <div
+                            key={idx}
+                            className="flex items-center bg-gray-100 rounded-lg p-3 w-70"
+                          >
                             <div className="flex flex-col items-center mr-3 bg-white p-2 rounded-md shadow-sm">
-                              <span className="text-xs text-gray-500 w-20">추천 1</span>
-                              <span className="font-medium text-indigo-600">{item.itemset_a}</span>
+                              <span className="text-xs text-gray-500 w-20">
+                                추천 1
+                              </span>
+                              <span className="font-medium text-indigo-600">
+                                {item.itemset_a}
+                              </span>
                             </div>
-                            <div className="flex items-center text-gray-400 mx-1 mr-4">+</div>
+                            <div className="flex items-center text-gray-400 mx-1 mr-4">
+                              +
+                            </div>
                             <div className="flex flex-col items-center bg-white p-2 rounded-md shadow-sm">
-                              <span className="text-xs text-gray-500 w-20">추천 2</span>
-                              <span className="font-medium text-indigo-600">{item.itemset_b}</span>
+                              <span className="text-xs text-gray-500 w-20">
+                                추천 2
+                              </span>
+                              <span className="font-medium text-indigo-600">
+                                {item.itemset_b}
+                              </span>
                             </div>
                           </div>
                         ))}
                       </div>
                       <div className="mt-3 text-xs text-gray-500 flex items-center">
-                        <Info className="h-3 w-3 mr-1" />이 시간대에 가장 많이 함께 구매되는 상품입니다
+                        <Info className="h-3 w-3 mr-1" />이 시간대에 가장 많이
+                        함께 구매되는 상품입니다
                       </div>
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500 mt-1">이 시간대의 추천 상품이 없습니다.</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      이 시간대의 추천 상품이 없습니다.
+                    </p>
                   )}
                 </div>
               </div>
@@ -463,7 +511,9 @@ function Association() {
               </h2>
 
               {topRules.length === 0 ? (
-                <div className="text-center text-gray-500 py-4">추천 상품 조합이 없습니다.</div>
+                <div className="text-center text-gray-500 py-4">
+                  추천 상품 조합이 없습니다.
+                </div>
               ) : (
                 <div className="space-y-3">
                   {topRules.map((item, idx) => (
@@ -481,7 +531,9 @@ function Association() {
                             <div className="bg-indigo-100 text-indigo-700 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mr-2">
                               {idx + 1}
                             </div>
-                            <h3 className="font-medium text-gray-800">추천 조합</h3>
+                            <h3 className="font-medium text-gray-800">
+                              추천 조합
+                            </h3>
                           </div>
                           <div className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
                             신뢰도: {(item.confidence * 100).toFixed(1)}%
@@ -492,7 +544,9 @@ function Association() {
                           <span className="font-medium">{item.itemset_a}</span>
                           <ChevronDown
                             className={`h-4 w-4 mx-2 transform text-gray-400 transition-transform ${
-                              expandedRuleIndex === idx ? "rotate-180" : "rotate-270"
+                              expandedRuleIndex === idx
+                                ? "rotate-180"
+                                : "rotate-270"
                             }`}
                           />
                           <span className="font-medium">{item.itemset_b}</span>
@@ -500,15 +554,19 @@ function Association() {
                       </div>
 
                       {/* 판매 추이 차트 - 선택된 항목 아래에 표시 */}
-                      {expandedRuleIndex === idx && selectedChartData.length > 0 && (
-                        <div className="mt-2 p-4 bg-white border border-indigo-100 rounded-lg shadow-sm animate-fadeIn">
-                          <h3 className="text-sm font-medium text-gray-700 flex items-center mb-3">
-                            <LineChartIcon className="h-4 w-4 mr-1 text-indigo-500" />
-                            판매 추이
-                          </h3>
-                          <LineChart chartData={selectedChartData} label={selectedLabel} />
-                        </div>
-                      )}
+                      {expandedRuleIndex === idx &&
+                        selectedChartData.length > 0 && (
+                          <div className="mt-2 p-4 bg-white border border-indigo-100 rounded-lg shadow-sm animate-fadeIn">
+                            <h3 className="text-sm font-medium text-gray-700 flex items-center mb-3">
+                              <LineChartIcon className="h-4 w-4 mr-1 text-indigo-500" />
+                              판매 추이
+                            </h3>
+                            <LineChart
+                              chartData={selectedChartData}
+                              label={selectedLabel}
+                            />
+                          </div>
+                        )}
                     </div>
                   ))}
                 </div>
@@ -520,8 +578,8 @@ function Association() {
                   <h3 className="font-medium">점주님을 위한 팁</h3>
                 </div>
                 <p className="text-sm text-yellow-600">
-                  자주 함께 구매되는 상품들을 가까이 진열하면 매출 증가에 도움이 됩니다. 상품을 클릭하면 최근 판매
-                  추이를 확인할 수 있습니다.
+                  자주 함께 구매되는 상품들을 가까이 진열하면 매출 증가에 도움이
+                  됩니다. 상품을 클릭하면 최근 판매 추이를 확인할 수 있습니다.
                 </p>
               </div>
             </div>
@@ -546,8 +604,7 @@ function Association() {
         }
       `}</style>
     </div>
-  )
+  );
 }
 
-export default Association
-
+export default Association;

@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { fetchGoodsByCategory } from "../api/HttpGoodsService";
 import { Link, useParams } from "react-router-dom";
