@@ -64,8 +64,8 @@ function Association() {
   const timePeriod = getTimePeriod(time)
 
   // 년별, 월별 연관관계 확인을 위한 상태
-  const [period, setPeriod] = useState("2025")
-  const [month, setMonth] = useState("3")
+  const [period, setPeriod] = useState("")
+  const [month, setMonth] = useState("")
 
   // 지지도, 신뢰도, 향상도 조절을 위한 상태
   const [minSupport, setMinSupport] = useState(0.04)
@@ -117,6 +117,15 @@ function Association() {
     }
     getAssociationTimeRules()
   }, [timePeriod])
+
+  useEffect(() => {
+    const now = new Date()
+    const currentYear = now.getFullYear().toString()
+    const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0") // 월은 0~11이니까 +1 필요
+
+    setPeriod(currentYear)
+    setMonth(currentMonth)
+  }, [])
 
   // 전체 연관관계 필터링
   const filteredRules = rules.filter(
@@ -172,6 +181,19 @@ function Association() {
           <h1 className="text-2xl font-bold text-gray-800 flex items-center">
             <ShoppingCart className="h-6 w-6 mr-2 text-indigo-600" />
             장바구니 분석
+            <div className="group relative ml-2">
+              <button className="text-gray-400 hover:text-indigo-600 transition-colors">
+                <Info className="h-5 w-5" />
+              </button>
+              <div className="absolute left-0 top-full mt-2 w-[340px] p-4 bg-white rounded-lg shadow-lg border border-gray-200 hidden group-hover:block z-10">
+                <p className="text-sm
+                text-center text-gray-700 leading-relaxed whitespace-normal">
+                  "이 상품을 산 고객은 어떤 걸 같이 샀을까?"
+                  <br />
+                  자주 함께 담기는 상품 조합을 분석해드립니다.
+                </p>
+              </div>
+            </div>
           </h1>
         </div>
 
@@ -469,7 +491,9 @@ function Association() {
                         <div className="flex items-center text-gray-700">
                           <span className="font-medium">{item.itemset_a}</span>
                           <ChevronDown
-                            className={`h-4 w-4 mx-2 transform text-gray-400 transition-transform ${expandedRuleIndex === idx ? "rotate-180" : "rotate-270"}`}
+                            className={`h-4 w-4 mx-2 transform text-gray-400 transition-transform ${
+                              expandedRuleIndex === idx ? "rotate-180" : "rotate-270"
+                            }`}
                           />
                           <span className="font-medium">{item.itemset_b}</span>
                         </div>
@@ -508,8 +532,14 @@ function Association() {
       {/* 애니메이션을 위한 CSS */}
       <style jsx>{`
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
         .animate-fadeIn {
           animation: fadeIn 0.3s ease-out forwards;

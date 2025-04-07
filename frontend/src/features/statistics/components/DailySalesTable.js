@@ -104,7 +104,7 @@ export default function DailySalesTable({ date }) {
             {...getTableProps()}
             className="w-full table-fixed border-collapse text-sm"
           >
-            <thead className="sticky top-0 z-10">
+            <thead className="sticky top-0 z-5">
               {headerGroups.map((headerGroup, idx) => (
                 <tr
                   {...headerGroup.getHeaderGroupProps()}

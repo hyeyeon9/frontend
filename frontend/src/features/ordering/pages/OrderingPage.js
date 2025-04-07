@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   fetchConfirmArrival,
   fetchLatest,
@@ -31,6 +31,8 @@ import {
   ChevronRight,
   CheckSquare,
   Bell,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 
 import * as XLSX from "xlsx";
@@ -70,7 +72,9 @@ function OrderingPage() {
   const [selectedOrders, setSelectedOrders] = useState({});
   const [selectAllChecked, setSelectAllChecked] = useState(false);
 
-  const [inventoryItem, setInventoryItem] = useState(0);
+  // 새로운 상태 추가: 각 상품별 재고 및 추천 정보 저장
+  const [productRecommendations, setProductRecommendations] = useState({});
+
   const [average, setAverage] = useState(0);
 
   // State to track if we've loaded items from localStorage
@@ -91,6 +95,44 @@ function OrderingPage() {
 
   const [orderDateFilter, setOrderDateFilter] = useState(getTodayString());
 
+  // 상품별 추천 정보 가져오기 함수
+  async function fetchProductRecommendation(goodsId) {
+    try {
+      // 재고 정보 가져오기
+      const inventoryItem = inventoryList.find((i) => i.goodsId === goodsId);
+
+      // 판매 데이터 가져오기
+      const salesData = await fetchWeekSales(goodsId);
+
+      // 평균 판매량 계산
+      const total = salesData.reduce((sum, item) => sum + item.amount, 0);
+      const avgSales = total / 7;
+
+      // 재고 정보
+      const stock = inventoryItem?.stockQuantity || 0;
+
+      // 재고 소진 예상 일수
+      const daysLeft = avgSales > 0 ? Math.floor(stock / avgSales) : "N/A";
+
+      // 추천 발주량 (1일치 평균 판매량 - 현재 재고)
+      const recommendedOrder = Math.ceil(Math.max(0, avgSales * 1 - stock));
+
+      // 추천 정보 저장
+      setProductRecommendations((prev) => ({
+        ...prev,
+        [goodsId]: {
+          inventoryItem,
+          avgSales,
+          stock,
+          daysLeft,
+          recommendedOrder,
+        },
+      }));
+    } catch (error) {
+      console.error("상품 추천 정보 가져오기 실패", error);
+    }
+  }
+
   // 날짜 포맷팅 함수 추가 (요일 포함)
   const formatDateWithDay = (date) => {
     const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
@@ -103,7 +145,11 @@ function OrderingPage() {
 
   // 로컬스토리지에서 유통기한 임박 상품 가져오기
   useEffect(() => {
-    if (!hasLoadedFromStorage && goodsList.length > 0) {
+    if (
+      !hasLoadedFromStorage &&
+      goodsList.length > 0 &&
+      inventoryList.length > 0
+    ) {
       const storedItems = localStorage.getItem("selectedExpiringItems");
 
       if (storedItems) {
@@ -113,15 +159,28 @@ function OrderingPage() {
           if (parsedItems.length > 0) {
             const newSelectedItems = { ...selectedItems };
 
+            // 각 상품에 대해 추천 정보 가져오기 위한 Promise 배열
+            const recommendationPromises = [];
+
             parsedItems.forEach((item) => {
               // Find the corresponding item in goodsList
               const goodsId = item.goodsId.toString();
               newSelectedItems[goodsId] = { quantity: "1" }; // Default quantity to 1
+
+              // 각 상품에 대한 추천 정보 가져오기 Promise 추가
+              recommendationPromises.push(
+                fetchProductRecommendation(item.goodsId)
+              );
             });
 
             setSelectedItems(newSelectedItems);
             setExpiringItemsCount(parsedItems.length);
             setShowExpiringNotification(true);
+
+            // 모든 추천 정보 가져오기 Promise 실행
+            Promise.all(recommendationPromises).catch((error) =>
+              console.error("유통기한 임박 상품 추천 정보 가져오기 실패", error)
+            );
 
             // Clear localStorage after loading
             localStorage.removeItem("selectedExpiringItems");
@@ -133,7 +192,7 @@ function OrderingPage() {
 
       setHasLoadedFromStorage(true);
     }
-  }, [goodsList, hasLoadedFromStorage, selectedItems]);
+  }, [goodsList, inventoryList, hasLoadedFromStorage, selectedItems]);
 
   // 재고 리스트 가져오기
   useEffect(() => {
@@ -367,6 +426,7 @@ function OrderingPage() {
       alert("모든 발주가 등록되었습니다.");
       setSelectedItems({}); // 초기화
       setShowExpiringNotification(false);
+      setProductRecommendations({}); // 추천 정보도 초기화
 
       // 발주 리스트 새로고침
       const updatedOrders = await fetchOrders();
@@ -392,14 +452,24 @@ function OrderingPage() {
     getGoodsList();
   }, []);
 
-  // 발주할 상품 선택
+  // 발주할 상품 선택 및 추천 정보 가져오기
   async function handleSelectItem(goodsId) {
     setSelectedItems((prev) => {
       const updated = { ...prev };
       if (updated[goodsId]) {
         delete updated[goodsId];
+
+        // 선택 해제 시 해당 상품의 추천 정보도 삭제
+        setProductRecommendations((prev) => {
+          const updated = { ...prev };
+          delete updated[goodsId];
+          return updated;
+        });
       } else {
-        updated[goodsId] = { quantity: "" };
+        updated[goodsId] = { quantity: "1" }; // 기본값을 1로 설정
+
+        // 선택 시 해당 상품의 추천 정보 가져오기
+        fetchProductRecommendation(goodsId);
       }
       return updated;
     });
@@ -414,26 +484,10 @@ function OrderingPage() {
         ...prev,
         [goodsId]: latestQuantity,
       }));
-
-      const data = await fetchWeekSales(goodsId);
-      // 추천 발수량 계산
-      const total = data.reduce((sum, item) => sum + item.amount, 0);
-      setAverage(total / 7);
-
-      const inventoryItem = inventoryList.find((i) => i.goodsId === goodsId); // 선택한 상품의 재고 정보
-
-      setInventoryItem(inventoryItem);
     } catch (e) {
       console.error("⚠️ 발주 수량 불러오기 실패", e.message);
     }
   }
-
-  const stock = inventoryItem?.stockQuantity || 0;
-
-  const daysLeft = average > 0 ? Math.floor(stock / average) : "N/A";
-
-  // 다음 입고까지 1일이라고 가정할떄, 1일치 평균개수 - 남은 재고 수  만큼 발주해라고 추천
-  const recommendedOrder = Math.ceil(Math.max(0, average * 1 - stock));
 
   // 이전 발주 수량 적용 함수
   function applyLatestQuantity(goodsId) {
@@ -441,6 +495,44 @@ function OrderingPage() {
     if (latestQuantity) {
       handleQuantityChange(goodsId, latestQuantity);
     }
+  }
+
+  // 추천 발주량 적용 함수
+  function applyRecommendedQuantity(goodsId) {
+    const recommendation = productRecommendations[goodsId];
+    if (recommendation && recommendation.recommendedOrder) {
+      handleQuantityChange(goodsId, recommendation.recommendedOrder.toString());
+    }
+  }
+
+  // 수량 증가 함수
+  function increaseQuantity(goodsId) {
+    setSelectedItems((prev) => {
+      const currentQuantity = parseInt(prev[goodsId]?.quantity || "0");
+      return {
+        ...prev,
+        [goodsId]: {
+          ...prev[goodsId],
+          quantity: (currentQuantity + 1).toString(),
+        },
+      };
+    });
+  }
+
+  // 수량 감소 함수
+  function decreaseQuantity(goodsId) {
+    setSelectedItems((prev) => {
+      const currentQuantity = parseInt(prev[goodsId]?.quantity || "0");
+      if (currentQuantity <= 1) return prev; // 최소값은 1
+
+      return {
+        ...prev,
+        [goodsId]: {
+          ...prev[goodsId],
+          quantity: (currentQuantity - 1).toString(),
+        },
+      };
+    });
   }
 
   function handleQuantityChange(goodsId, quantity) {
@@ -459,8 +551,14 @@ function OrderingPage() {
 
     if (isChecked) {
       filteredInventory.forEach((item) => {
-        newSelections[item.goods_id] = { quantity: "" };
+        newSelections[item.goods_id] = { quantity: "1" }; // 기본값을 1로 설정
+
+        // 모든 선택된 상품에 대해 추천 정보 가져오기
+        fetchProductRecommendation(item.goods_id);
       });
+    } else {
+      // 선택 해제 시 추천 정보도 초기화
+      setProductRecommendations({});
     }
 
     setSelectedItems(isChecked ? newSelections : {});
@@ -902,6 +1000,9 @@ function OrderingPage() {
           ...prev,
           [goodsId]: order.orderQuantity,
         }));
+
+        // 선택된 상품의 추천 정보 가져오기
+        fetchProductRecommendation(order.goodsId);
       }
     });
 
@@ -1115,40 +1216,46 @@ function OrderingPage() {
               </div>
 
               {/* 재고 상태 필터 */}
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-gray-500" />
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setStatusFilter("")}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                      statusFilter === ""
-                        ? "bg-white text-indigo-700 shadow-sm"
-                        : "text-gray-600 hover:bg-gray-200"
-                    }`}
-                  >
-                    전체
-                  </button>
-                  <button
-                    onClick={() => setStatusFilter("정상")}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                      statusFilter === "정상"
-                        ? "bg-white text-green-700 shadow-sm"
-                        : "text-gray-600 hover:bg-gray-200"
-                    }`}
-                  >
-                    정상
-                  </button>
-                  <button
-                    onClick={() => setStatusFilter("재고부족")}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                      statusFilter === "재고부족"
-                        ? "bg-white text-red-700 shadow-sm"
-                        : "text-gray-600 hover:bg-gray-200"
-                    }`}
-                  >
-                    재고부족
-                  </button>
+              <div className="flex justify-between items-center gap-2">
+                {/* 왼쪽 필터 섹션 */}
+                <div className="flex items-center gap-2">
+                  {/* 아이콘과 버튼 그룹을 동일한 flex 안에서 정렬 */}
+                  <Filter className="h-4 w-4 text-gray-500" />
+                  <div className="flex bg-gray-100 rounded-lg p-1">
+                    <button
+                      onClick={() => setStatusFilter("")}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                        statusFilter === ""
+                          ? "bg-white text-indigo-700 shadow-sm"
+                          : "text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      전체
+                    </button>
+                    <button
+                      onClick={() => setStatusFilter("정상")}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                        statusFilter === "정상"
+                          ? "bg-white text-green-700 shadow-sm"
+                          : "text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      정상
+                    </button>
+                    <button
+                      onClick={() => setStatusFilter("재고부족")}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                        statusFilter === "재고부족"
+                          ? "bg-white text-red-700 shadow-sm"
+                          : "text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      재고부족
+                    </button>
+                  </div>
                 </div>
+
+                {/* 오른쪽 버튼 */}
                 <div>
                   <button
                     onClick={loadPreviousOrders}
@@ -1289,19 +1396,23 @@ function OrderingPage() {
                                 </div>
 
                                 {selectedItems[item.goods_id] &&
-                                  item.goods_id === inventoryItem?.goodsId && (
+                                  productRecommendations[item.goods_id] && (
                                     <div className="flex items-center">
                                       <button
                                         onClick={() =>
-                                          handleQuantityChange(
-                                            item.goods_id,
-                                            recommendedOrder.toString()
+                                          applyRecommendedQuantity(
+                                            item.goods_id
                                           )
                                         }
                                         className="flex items-center text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md px-2 py-1 hover:bg-indigo-100 transition-colors"
                                       >
                                         <span className="font-bold mr-1">
-                                          {recommendedOrder}개
+                                          {
+                                            productRecommendations[
+                                              item.goods_id
+                                            ].recommendedOrder
+                                          }
+                                          개
                                         </span>
                                         추천
                                       </button>
@@ -1317,8 +1428,8 @@ function OrderingPage() {
                 )}
               </div>
 
-              {/* 발주 장바구니 */}
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              {/* 발주 장바구니 - 스크롤에 따라 움직이는 스티키 컴포넌트 */}
+              <div className="sticky top-6 self-start bg-white rounded-xl shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex justify-between items-center">
                     <h3 className="text-lg font-semibold text-gray-800 flex items-center">
@@ -1367,29 +1478,29 @@ function OrderingPage() {
                                 <div className="font-medium text-gray-800 text-sm">
                                   {product.goods_name}
                                 </div>
-                                <div className="flex items-center text-xs">
-                                  {data.quantity ? (
-                                    <span className="text-indigo-600 font-medium">
-                                      {data.quantity}개
+                                <div className="flex items-center mt-1">
+                                  {/* 수량 조절 버튼 */}
+                                  <div className="flex items-center border border-gray-300 rounded-md">
+                                    <button
+                                      onClick={() => decreaseQuantity(goodsId)}
+                                      className="px-2 py-1 text-gray-500 hover:bg-gray-100"
+                                      disabled={
+                                        !data.quantity ||
+                                        parseInt(data.quantity) <= 1
+                                      }
+                                    >
+                                      <ChevronDown className="h-4 w-4" />
+                                    </button>
+                                    <span className="px-2 py-1 text-sm font-medium text-gray-700 min-w-[30px] text-center">
+                                      {data.quantity || 0}
                                     </span>
-                                  ) : (
-                                    <span className="text-gray-500">
-                                      수량 미지정
-                                    </span>
-                                  )}
-
-                                  {latestOrderQuantities[goodsId] &&
-                                    !data.quantity && (
-                                      <button
-                                        onClick={() =>
-                                          applyLatestQuantity(goodsId)
-                                        }
-                                        className="ml-2 flex items-center text-xs text-blue-600 hover:text-blue-800"
-                                      >
-                                        <RefreshCw className="w-3 h-3 mr-1" />
-                                        이전 {latestOrderQuantities[goodsId]}개
-                                      </button>
-                                    )}
+                                    <button
+                                      onClick={() => increaseQuantity(goodsId)}
+                                      className="px-2 py-1 text-gray-500 hover:bg-gray-100"
+                                    >
+                                      <ChevronUp className="h-4 w-4" />
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -1416,7 +1527,10 @@ function OrderingPage() {
 
                   <div className="space-y-3">
                     <button
-                      onClick={() => setSelectedItems({})}
+                      onClick={() => {
+                        setSelectedItems({});
+                        setProductRecommendations({});
+                      }}
                       className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors flex items-center justify-center"
                       disabled={Object.keys(selectedItems).length === 0}
                     >
@@ -1997,7 +2111,7 @@ function OrderingPage() {
                 onClick={() => confirmArrival(selectedOrderId)}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
               >
-                <CheckCircle className="h-4 w-4 mr-2" />
+                <CheckCircle className="w-4 h-4 mr-2" />
                 검수 확인
               </button>
             </div>
@@ -2005,10 +2119,10 @@ function OrderingPage() {
         </div>
       )}
 
-      {/* Batch Inspection Confirmation Modal */}
+      {/* 검수 확인 모달 */}
       {showBatchInspectionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg max-w-md w-full mx-4 shadow-xl overflow-hidden">
+          <div className="bg-white rounded-lg w-[500px] h-[600px] shadow-xl overflow-hidden">
             {/* Modal Header */}
             <div className="bg-blue-50 p-6 border-b border-blue-100">
               <div className="flex items-center">
@@ -2019,8 +2133,8 @@ function OrderingPage() {
               </div>
             </div>
 
-            {/* Modal Content */}
-            <div className="p-6">
+            {/* Modal Content - 내용 영역에 고정 높이와 스크롤 설정 */}
+            <div className="p-6 max-h-[400px] overflow-y-auto">
               <div className="mb-4">
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
@@ -2079,9 +2193,9 @@ function OrderingPage() {
       {/* 이전 발주 모달 */}
       {showPreviousOrdersModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full mx-4 shadow-xl overflow-hidden">
+          <div className="bg-white rounded-lg w-[900px] h-[700px] shadow-xl overflow-hidden flex flex-col">
             {/* 모달 헤더 */}
-            <div className="bg-blue-50 p-6 border-b border-blue-100">
+            <div className="bg-blue-50 p-6 border-b border-blue-100 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <History className="h-6 w-6 text-blue-600 mr-3" />
@@ -2098,8 +2212,8 @@ function OrderingPage() {
               </div>
             </div>
 
-            {/* 모달 내용 */}
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            {/* 모달 내용 - 고정 크기에 스크롤 가능하도록 설정 */}
+            <div className="p-6 overflow-y-auto flex-grow">
               {/* 요일별 필터 추가 */}
               <div className="mb-4">
                 <div className="flex items-center mb-2">
@@ -2166,6 +2280,26 @@ function OrderingPage() {
                     }`}
                   >
                     금요일
+                  </button>
+                  <button
+                    onClick={() => setSelectedDayFilter("토")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      selectedDayFilter === "토"
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    토요일
+                  </button>
+                  <button
+                    onClick={() => setSelectedDayFilter("일")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      selectedDayFilter === "일"
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    일요일
                   </button>
                 </div>
               </div>
@@ -2259,6 +2393,8 @@ function OrderingPage() {
                                         src={
                                           `${
                                             order.goodsImage ||
+                                            "/placeholder.svg" ||
+                                            "/placeholder.svg" ||
                                             "/placeholder.svg"
                                           }` || "/placeholder.svg"
                                         }
@@ -2299,7 +2435,7 @@ function OrderingPage() {
             </div>
 
             {/* 모달 푸터 */}
-            <div className="bg-gray-50 p-4 border-t border-gray-100 flex justify-between">
+            <div className="bg-gray-50 p-4 border-t border-gray-100 flex justify-between flex-shrink-0">
               <div className="text-sm text-gray-600">
                 {Object.values(selectedPreviousOrders).filter(Boolean).length}개
                 선택됨

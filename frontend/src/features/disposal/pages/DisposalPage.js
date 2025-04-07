@@ -3,7 +3,18 @@ import { useSortBy, useTable } from "react-table";
 import { fetchDisposalByDate } from "../api/HttpDisposalService";
 import { FormatDate } from "../components/FormatDate";
 import { Link } from "react-router-dom";
-import { AlertTriangle, BarChart, Calendar, CheckCircle, ChevronDown, Clock, Filter, Info, Trash2, X } from 'lucide-react';
+import {
+  AlertTriangle,
+  BarChart,
+  Calendar,
+  CheckCircle,
+  ChevronDown,
+  Clock,
+  Filter,
+  Info,
+  Trash2,
+  X,
+} from "lucide-react";
 import { fetchExpiringItems } from "../../inventory/api/HttpInventoryService";
 
 export function getToday() {
@@ -73,7 +84,7 @@ function DisposalList() {
     setLoadingPending(true);
     try {
       const expiringItems = await fetchExpiringItems();
-      
+
       const today = new Date();
       // 유통기한이 1일인 애들만 가져오기
       const filtered = expiringItems.filter((item) => {
@@ -81,7 +92,7 @@ function DisposalList() {
         const diff = (expDate - today) / (1000 * 60 * 60 * 24);
         return diff >= 0 && diff < 1;
       });
-      
+
       setPendingList(filtered);
       setShowModal(true);
     } catch (error) {
@@ -119,14 +130,6 @@ function DisposalList() {
         Header: "폐기이유",
         accessor: "disposal_reason",
         Cell: ({ value }) => {
-          if (value === "유통기한 만료") {
-            return (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                <Clock className="w-3 h-3 mr-1" />
-                수동 폐기
-              </span>
-            );
-          }
           return value;
         },
       },
@@ -145,15 +148,15 @@ function DisposalList() {
     const now = new Date();
     const expDate = new Date(expirationDate);
     const diffMs = expDate - now;
-    
+
     // 시간, 분 계산
     const hours = Math.floor(diffMs / (1000 * 60 * 60));
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours <= 0 && minutes <= 0) {
       return "만료됨";
     }
-    
+
     return `${hours}시간 ${minutes}분`;
   };
 
@@ -161,8 +164,8 @@ function DisposalList() {
   const formatExpirationDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
@@ -202,42 +205,6 @@ function DisposalList() {
                   className="border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
-
-              {/* <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-gray-500" />
-                <div className="flex bg-gray-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setFilterType("all")}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                      filterType === "all" 
-                        ? "bg-white text-indigo-700 shadow-sm" 
-                        : "text-gray-600 hover:bg-gray-200"
-                    }`}
-                  >
-                    전체
-                  </button>
-                  <button
-                    onClick={() => setFilterType("auto")}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                      filterType === "auto" 
-                        ? "bg-white text-indigo-700 shadow-sm" 
-                        : "text-gray-600 hover:bg-gray-200"
-                    }`}
-                  >
-                    자동
-                  </button>
-                  <button
-                    onClick={() => setFilterType("manual")}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                      filterType === "manual" 
-                        ? "bg-white text-indigo-700 shadow-sm" 
-                        : "text-gray-600 hover:bg-gray-200"
-                    }`}
-                  >
-                    수동
-                  </button>
-                </div>
-              </div> */}
             </div>
 
             <div className="flex items-center gap-4">
@@ -248,7 +215,7 @@ function DisposalList() {
                 </div>
               )}
 
-              <button 
+              <button
                 onClick={handleOpenPendingModal}
                 className="relative px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center"
                 disabled={loadingPending}
@@ -373,7 +340,8 @@ function DisposalList() {
                 </button>
               </div>
               <p className="text-sm text-gray-500 mt-2">
-                유통기한이 24시간 이내로 남은 상품 목록입니다. 총 {pendingList.length}개 항목이 있습니다.
+                유통기한이 24시간 이내로 남은 상품 목록입니다. 총{" "}
+                {pendingList.length}개 항목이 있습니다.
               </p>
             </div>
 
@@ -390,17 +358,19 @@ function DisposalList() {
                     <div className="col-span-3">유통기한</div>
                     <div className="col-span-2 text-right">남은 시간</div>
                   </div>
-                  
+
                   {pendingList.map((item) => {
                     const timeRemaining = getTimeRemaining(item.expirationDate);
-                    const isUrgent = timeRemaining.includes("시간") && parseInt(timeRemaining.split("시간")[0]) < 6;
-                    
+                    const isUrgent =
+                      timeRemaining.includes("시간") &&
+                      parseInt(timeRemaining.split("시간")[0]) < 6;
+
                     return (
                       <div
                         key={item.batchId}
                         className={`grid grid-cols-12 items-center p-4 rounded-lg border ${
-                          isUrgent 
-                            ? "border-red-200 bg-red-50" 
+                          isUrgent
+                            ? "border-red-200 bg-red-50"
                             : "border-gray-200 bg-white hover:bg-gray-50"
                         } transition-colors`}
                       >
@@ -409,24 +379,31 @@ function DisposalList() {
                             {item.goodsName}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            입고코드: <span className="font-mono">{item.batchId}</span>
+                            입고코드:{" "}
+                            <span className="font-mono">{item.batchId}</span>
                           </div>
                         </div>
-                        
+
                         <div className="col-span-2 text-center">
-                          <span className="font-medium text-gray-800">{item.stockQuantity}개</span>
+                          <span className="font-medium text-gray-800">
+                            {item.stockQuantity}개
+                          </span>
                         </div>
-                        
+
                         <div className="col-span-3">
-                          <span className="text-gray-700">{formatExpirationDate(item.expirationDate)}</span>
+                          <span className="text-gray-700">
+                            {formatExpirationDate(item.expirationDate)}
+                          </span>
                         </div>
-                        
+
                         <div className="col-span-2 text-right">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            isUrgent 
-                              ? "bg-red-100 text-red-800" 
-                              : "bg-gray-100 text-gray-800"
-                          }`}>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              isUrgent
+                                ? "bg-red-100 text-red-800"
+                                : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
                             {timeRemaining}
                           </span>
                         </div>
@@ -436,7 +413,7 @@ function DisposalList() {
                 </div>
               )}
             </div>
-            
+
             <div className="p-6 border-t border-gray-200 bg-gray-50 flex justify-end">
               <button
                 onClick={() => setShowModal(false)}

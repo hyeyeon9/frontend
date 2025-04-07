@@ -7,7 +7,6 @@ import categoryMapping from "../../../components/categoryMapping";
 import { addItemToCart } from "../utils/CartUtils";
 import { fetchRecommendations, fetchSubName } from "../api/HttpShopService";
 
-
 export default function ProductDetailPage({ onAddToCart }) {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -159,7 +158,7 @@ export default function ProductDetailPage({ onAddToCart }) {
   }
 
   return (
-    <div className="container mx-auto py-6 px-4">
+    <div className="max-w-7xl mx-auto px-4 mb-10">
       {/* 장바구니 추가 알림 */}
       {showAddedAlert && (
         <Alert

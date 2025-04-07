@@ -70,3 +70,11 @@ export async function fetchGetYearlySubCategory(year, category) {
   );
   return response;
 }
+
+// 주어진 날짜 사이의 시간별 평균 매출 데이터
+export async function fetchGetAverageSales(startDate, endDate) {
+  const response = await instance.get(
+    `/salesHourlyAverage/${startDate}/${endDate}`
+  );
+  return response;
+}
