@@ -5,6 +5,7 @@ import { fetchGoodsList } from "../api/HttpGoodsService";
 import { Link } from "react-router-dom";
 import MenuNavigation from "../components/MenuNavigation";
 import { FormatDate } from "../../disposal/components/FormatDate";
+import { Tag, X } from "lucide-react";
 
 function GoodsList() {
   const [goodsList, setGoodsList] = useState([]);
@@ -19,11 +20,12 @@ function GoodsList() {
   });
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'grid'
 
+  // 상품 리스트 가져오기
   useEffect(() => {
     async function getGoodsList() {
       try {
         const data = await fetchGoodsList();
-        console.log("data",data);
+        console.log("data", data);
         setGoodsList(data);
         setFilteredList(data); // 초기엔 전체 목록
       } catch (error) {
@@ -35,6 +37,29 @@ function GoodsList() {
     getGoodsList();
   }, []);
 
+  const [discountItems, setDiscountItems] = useState([]);
+  const [showExpiringNotification, setShowExpiringNotification] =
+  useState(false);
+
+  // 유통기한에서 넘어온 할인추천 상품
+  useEffect(() => {
+    const storedItems = localStorage.getItem("selectedForDiscount");
+    if (storedItems) {
+      try {
+        const parsed = JSON.parse(storedItems);
+        setDiscountItems(parsed);
+
+        // 로컬스토리지 지우기
+        localStorage.removeItem("selectedForDiscount");
+      } catch (error) {
+        console.log(error.message);
+      }finally{
+        setShowExpiringNotification(true);
+      }
+    }
+  }, []);
+
+  // 검색 구현
   function handleQuery(e) {
     const value = e.target.value;
     setQuery(value);
@@ -89,6 +114,34 @@ function GoodsList() {
     <>
       <MenuNavigation />
       <div className="p-6 bg-gray-100 min-h-screen">
+        {showExpiringNotification&& discountItems.length > 0 && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 flex items-center justify-between">
+            <div className="flex items-center">
+              <Tag className="h-5 w-5 text-amber-600 mr-3" />
+              <div>
+                <h3 className="font-medium text-amber-800">
+                  유통기한 임박 할인 제안
+                </h3>
+                <p className="text-amber-700 text-sm">
+                  유통기한 임박 페이지에서 선택한{" "}
+                  <span className="font-semibold">
+                    {" "}
+                    {discountItems
+                      .map((item) => item.goodsName)
+                      .join(", ")}{" "}
+                  </span>
+                  상품에 대해 할인 적용을 추천합니다.
+                </p>
+              </div>
+            </div>
+            <button
+            onClick={() => setShowExpiringNotification(false)}
+             className="text-amber-600 hover:text-amber-800">
+            <X className="h-5 w-5" />
+            </button>
+          </div>
+        )}
+
         <div className="max-w-7xl mx-auto">
           {/* 헤더 및 검색 영역 */}
           <div className="bg-white p-6 rounded-xl shadow-md mb-6">
