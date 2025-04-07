@@ -67,9 +67,9 @@ export default function ChatWidget() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-[50]">
       {isOpen && (
-        <div className="w-80 sm:w-96 h-[500px] shadow-xl flex flex-col rounded-2xl overflow-hidden border-0 bg-white">
+        <div className="w-80 sm:w-96 max-w-full h-[500px] shadow-xl flex flex-col rounded-2xl overflow-hidden border-0 bg-white">
           {/* 헤더 */}
           <div className="bg-blue-600 text-white py-3 px-4">
             <div className="flex justify-between items-center">

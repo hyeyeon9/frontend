@@ -52,7 +52,7 @@ export default function Sidebar() {
                ? "translate-x-0"
                : "-translate-x-full lg:translate-x-0"
            } 
-           w-[80vw] sm:w-[15rem] lg:w-[18vw] max-w-[18rem] flex-shrink-0 overflow-y-auto
+           lg:w-[12rem] sm:w-[12rem] w-[40vw] flex-shrink-0 overflow-y-auto
            bg-white shadow-xl rounded-r-xl lg:rounded-xl dark:bg-gray-800 dark:text-white`}
       >
         <div className="p-3 mb-2 flex justify-between items-center">
