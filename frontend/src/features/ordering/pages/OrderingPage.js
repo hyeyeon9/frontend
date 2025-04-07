@@ -2193,9 +2193,9 @@ function OrderingPage() {
       {/* 이전 발주 모달 */}
       {showPreviousOrdersModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full mx-4 shadow-xl overflow-hidden">
+          <div className="bg-white rounded-lg w-[900px] h-[700px] shadow-xl overflow-hidden flex flex-col">
             {/* 모달 헤더 */}
-            <div className="bg-blue-50 p-6 border-b border-blue-100">
+            <div className="bg-blue-50 p-6 border-b border-blue-100 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <History className="h-6 w-6 text-blue-600 mr-3" />
@@ -2212,8 +2212,8 @@ function OrderingPage() {
               </div>
             </div>
 
-            {/* 모달 내용 */}
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            {/* 모달 내용 - 고정 크기에 스크롤 가능하도록 설정 */}
+            <div className="p-6 overflow-y-auto flex-grow">
               {/* 요일별 필터 추가 */}
               <div className="mb-4">
                 <div className="flex items-center mb-2">
@@ -2280,6 +2280,26 @@ function OrderingPage() {
                     }`}
                   >
                     금요일
+                  </button>
+                  <button
+                    onClick={() => setSelectedDayFilter("토")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      selectedDayFilter === "토"
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    토요일
+                  </button>
+                  <button
+                    onClick={() => setSelectedDayFilter("일")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      selectedDayFilter === "일"
+                        ? "bg-white text-indigo-700 shadow-sm"
+                        : "text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    일요일
                   </button>
                 </div>
               </div>
@@ -2374,6 +2394,7 @@ function OrderingPage() {
                                           `${
                                             order.goodsImage ||
                                             "/placeholder.svg" ||
+                                            "/placeholder.svg" ||
                                             "/placeholder.svg"
                                           }` || "/placeholder.svg"
                                         }
@@ -2414,7 +2435,7 @@ function OrderingPage() {
             </div>
 
             {/* 모달 푸터 */}
-            <div className="bg-gray-50 p-4 border-t border-gray-100 flex justify-between">
+            <div className="bg-gray-50 p-4 border-t border-gray-100 flex justify-between flex-shrink-0">
               <div className="text-sm text-gray-600">
                 {Object.values(selectedPreviousOrders).filter(Boolean).length}개
                 선택됨
