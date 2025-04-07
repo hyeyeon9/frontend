@@ -56,10 +56,10 @@ const DiffChart = memo(function DiffChart({
   }
 
   return (
-    <div className="h-full w-full py-4 px-2">
+    <div className="h-full w-full p-2">
       <ResponsiveLine
         data={chartData}
-        margin={{ top: 50, right: 50, bottom: 50, left: 70 }}
+        margin={{ top: 40, right: 20, bottom: 50, left: 70 }}
         xScale={{ type: "point" }}
         yScale={{
           type: "linear",

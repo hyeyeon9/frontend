@@ -70,7 +70,7 @@ export default function UserHeader() {
           </div>
         ) : (
           <div className="hidden md:flex ml-4 items-center">
-            <Link
+            {/* <Link
               to="/login"
               className="px-3 py-2 rounded-md text-sm font-medium"
             >
@@ -78,7 +78,7 @@ export default function UserHeader() {
             </Link>
             <Button color="blue" as={Link} to="/signup" className="ml-4">
               회원가입
-            </Button>
+            </Button> */}
           </div>
         )}
 

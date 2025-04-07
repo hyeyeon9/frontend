@@ -1867,7 +1867,7 @@ function OrderingPage() {
 
       {/* 발주 확인 모달 */}
       {showConfirmModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2000]">
           <div className="bg-white rounded-lg max-w-md w-full mx-4 shadow-xl overflow-hidden">
             {/* 모달 헤더 */}
             <div className="bg-indigo-50 p-6 border-b border-indigo-100">
@@ -1978,7 +1978,7 @@ function OrderingPage() {
 
       {/* 엑셀 내보내기 확인 모달 */}
       {showExcelModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2000]">
           <div className="bg-white rounded-lg max-w-md w-full mx-4 shadow-xl overflow-hidden">
             {/* 모달 헤더 */}
             <div className="bg-green-50 p-6 border-b border-green-100">
@@ -2053,7 +2053,7 @@ function OrderingPage() {
 
       {/* 검수 확인 모달 */}
       {showInspectionModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2000]">
           <div className="bg-white rounded-lg max-w-md w-full mx-4 shadow-xl overflow-hidden">
             {/* 모달 헤더 */}
             <div className="bg-blue-50 p-6 border-b border-blue-100">
@@ -2121,7 +2121,7 @@ function OrderingPage() {
 
       {/* 검수 확인 모달 */}
       {showBatchInspectionModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2000]">
           <div className="bg-white rounded-lg w-[500px] h-[600px] shadow-xl overflow-hidden">
             {/* Modal Header */}
             <div className="bg-blue-50 p-6 border-b border-blue-100">
@@ -2192,7 +2192,7 @@ function OrderingPage() {
 
       {/* 이전 발주 모달 */}
       {showPreviousOrdersModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2000]">
           <div className="bg-white rounded-lg w-[900px] h-[700px] shadow-xl overflow-hidden flex flex-col">
             {/* 모달 헤더 */}
             <div className="bg-blue-50 p-6 border-b border-blue-100 flex-shrink-0">

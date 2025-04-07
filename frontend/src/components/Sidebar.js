@@ -26,7 +26,7 @@ export default function Sidebar() {
       {/* Mobile Toggle Button - Fixed at the top left corner */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="fixed top-4 left-4 z-[1000] lg:hidden bg-white p-2 rounded-lg shadow-md"
+        className="fixed top-3 left-4 z-[1000] lg:hidden bg-white p-2 rounded-lg shadow-md"
         aria-label="Toggle sidebar"
       >
         {isMobileOpen ? (
@@ -46,14 +46,14 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`fixed lg:sticky top-14 left-0 z-[80] h-screen transition-all duration-300 ease-in-out
-                   ${
-                     isMobileOpen
-                       ? "translate-x-0"
-                       : "-translate-x-full lg:translate-x-0"
-                   } 
-                   w-[80vw] sm:w-[15rem] lg:w-[18vw] max-w-[18rem] flex-shrink-0 overflow-y-auto
-                   bg-white shadow-xl rounded-r-xl lg:rounded-xl dark:bg-gray-800 dark:text-white`}
+        className={`fixed top-12 left-0 z-[80] h-screen transition-all duration-300 ease-in-out
+           ${
+             isMobileOpen
+               ? "translate-x-0"
+               : "-translate-x-full lg:translate-x-0"
+           } 
+           lg:w-[12rem] sm:w-[12rem] w-[40vw] flex-shrink-0 overflow-y-auto
+           bg-white shadow-xl rounded-r-xl lg:rounded-xl dark:bg-gray-800 dark:text-white`}
       >
         <div className="p-3 mb-2 flex justify-between items-center">
           <h5 className="block lg:hidden font-sans text-lg antialiased font-semibold leading-snug tracking-normal text-blue-gray-900 dark:text-white">

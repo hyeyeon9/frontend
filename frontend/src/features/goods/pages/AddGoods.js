@@ -1,7 +1,14 @@
-
-import { useState } from "react"
-import { fetchFileUpload } from "../api/HttpGoodsService"
-import { AlertCircle, Check, Image, Info, Package, Upload, X } from "lucide-react"
+import { useState } from "react";
+import { fetchFileUpload } from "../api/HttpGoodsService";
+import {
+  AlertCircle,
+  Check,
+  Image,
+  Info,
+  Package,
+  Upload,
+  X,
+} from "lucide-react";
 
 const categories = [
   { id: 1, first_name: "식품", second_name: "즉석식품" },
@@ -21,7 +28,7 @@ const categories = [
   { id: 15, first_name: "생활용품", second_name: "의약 & 건강" },
   { id: 16, first_name: "디지털 & 문구", second_name: "전자기기 & 액세서리" },
   { id: 17, first_name: "디지털 & 문구", second_name: "문구류" },
-]
+];
 
 const subCategories = [
   { sub_category_id: 1, category_id: 1, sub_category_name: "삼각김밥" },
@@ -92,128 +99,135 @@ const subCategories = [
   { sub_category_id: 66, category_id: 17, sub_category_name: "포스트잇" },
   { sub_category_id: 67, category_id: 17, sub_category_name: "테이프" },
   { sub_category_id: 68, category_id: 17, sub_category_name: "스티커" },
-]
+];
 
 function AddGoods() {
-  const [goodsId, setGoodsId] = useState("")
-  const [goodsName, setGoodsName] = useState("")
-  const [goodsPrice, setGoodsPrice] = useState("")
-  const [goodsDescription, setGoodsDescription] = useState("")
-  const [goodsStock, setGoodsStock] = useState("")
-  const [goodsImage, setGoodsImage] = useState(null)
-  const [selectedFirstName, setSelectedFirstName] = useState("")
-  const [selectedSecondName, setSelectedSecondName] = useState("")
-  const [categoryId, setCategoryId] = useState("")
-  const [subCategoryId, setSubCategoryId] = useState("")
-  const [previewUrl, setPreviewUrl] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitSuccess, setSubmitSuccess] = useState(false)
-  const [submitError, setSubmitError] = useState(null)
-  const [dragActive, setDragActive] = useState(false)
+  const [goodsId, setGoodsId] = useState("");
+  const [goodsName, setGoodsName] = useState("");
+  const [goodsPrice, setGoodsPrice] = useState("");
+  const [goodsDescription, setGoodsDescription] = useState("");
+  const [goodsStock, setGoodsStock] = useState("");
+  const [goodsImage, setGoodsImage] = useState(null);
+  const [selectedFirstName, setSelectedFirstName] = useState("");
+  const [selectedSecondName, setSelectedSecondName] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [subCategoryId, setSubCategoryId] = useState("");
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [dragActive, setDragActive] = useState(false);
 
-  const uniqueFirstNames = [...new Set(categories.map((c) => c.first_name))]
-  const filteredSecondNames = categories.filter((c) => c.first_name === selectedFirstName)
+  const uniqueFirstNames = [...new Set(categories.map((c) => c.first_name))];
+  const filteredSecondNames = categories.filter(
+    (c) => c.first_name === selectedFirstName
+  );
 
   // 이미지 선택 핸들러
   const handleFileChange = (e) => {
-    const file = e.target.files[0]
+    const file = e.target.files[0];
     if (file) {
-      handleFile(file)
+      handleFile(file);
     }
-  }
+  };
 
   // 파일 처리 함수
   const handleFile = (file) => {
     if (file.type.startsWith("image/")) {
-      setGoodsImage(file)
-      setPreviewUrl(URL.createObjectURL(file))
+      setGoodsImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
     } else {
-      alert("이미지 파일만 업로드 가능합니다.")
+      alert("이미지 파일만 업로드 가능합니다.");
     }
-  }
+  };
 
   // 드래그 앤 드롭 핸들러
   const handleDrag = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
 
     if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true)
+      setDragActive(true);
     } else if (e.type === "dragleave") {
-      setDragActive(false)
+      setDragActive(false);
     }
-  }
+  };
 
   const handleDrop = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0])
+      handleFile(e.dataTransfer.files[0]);
     }
-  }
+  };
 
   // 중분류 선택 시, category_id 설정
   const handleSecondNameChange = (e) => {
-    const selectedName = e.target.value
-    setSelectedSecondName(selectedName)
+    const selectedName = e.target.value;
+    setSelectedSecondName(selectedName);
 
-    const matchedCategory = categories.find((c) => c.first_name === selectedFirstName && c.second_name === selectedName)
-    setCategoryId(matchedCategory ? matchedCategory.id : "")
-    setSubCategoryId("") // 중분류가 변경되면 소분류 초기화
-  }
+    const matchedCategory = categories.find(
+      (c) =>
+        c.first_name === selectedFirstName && c.second_name === selectedName
+    );
+    setCategoryId(matchedCategory ? matchedCategory.id : "");
+    setSubCategoryId(""); // 중분류가 변경되면 소분류 초기화
+  };
 
-  const filteredSubCategories = subCategories.filter((sub) => sub.category_id === Number(categoryId))
+  const filteredSubCategories = subCategories.filter(
+    (sub) => sub.category_id === Number(categoryId)
+  );
 
   // 이미지 제거
   const removeImage = () => {
-    setGoodsImage(null)
-    setPreviewUrl(null)
-  }
+    setGoodsImage(null);
+    setPreviewUrl(null);
+  };
 
   // 폼 초기화
   const resetForm = () => {
-    setGoodsName("")
-    setGoodsPrice("")
-    setGoodsDescription("")
-    setGoodsStock("")
-    setGoodsImage(null)
-    setPreviewUrl(null)
-    setSelectedFirstName("")
-    setSelectedSecondName("")
-    setCategoryId("")
-    setSubCategoryId("")
-    setSubmitSuccess(false)
-    setSubmitError(null)
-  }
+    setGoodsName("");
+    setGoodsPrice("");
+    setGoodsDescription("");
+    setGoodsStock("");
+    setGoodsImage(null);
+    setPreviewUrl(null);
+    setSelectedFirstName("");
+    setSelectedSecondName("");
+    setCategoryId("");
+    setSubCategoryId("");
+    setSubmitSuccess(false);
+    setSubmitError(null);
+  };
 
   // 상품 등록 요청
   async function handleSubmit(e) {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setSubmitSuccess(false)
-    setSubmitError(null)
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitSuccess(false);
+    setSubmitError(null);
 
-    const formData = new FormData()
-    formData.append("category_id", categoryId)
-    formData.append("sub_category_id", subCategoryId)
-    formData.append("goods_name", goodsName)
-    formData.append("goods_price", goodsPrice)
-    formData.append("goods_description", goodsDescription)
-    formData.append("goods_stock", goodsStock)
-    if (goodsImage) formData.append("goods_image", goodsImage)
+    const formData = new FormData();
+    formData.append("category_id", categoryId);
+    formData.append("sub_category_id", subCategoryId);
+    formData.append("goods_name", goodsName);
+    formData.append("goods_price", goodsPrice);
+    formData.append("goods_description", goodsDescription);
+    formData.append("goods_stock", goodsStock);
+    if (goodsImage) formData.append("goods_image", goodsImage);
 
     try {
-      const response = await fetchFileUpload(formData)
-      setSubmitSuccess(true)
+      const response = await fetchFileUpload(formData);
+      setSubmitSuccess(true);
       setTimeout(() => {
-        resetForm()
-      }, 3000)
+        resetForm();
+      }, 3000);
     } catch (err) {
-      setSubmitError(err.message || "상품 등록 중 오류가 발생했습니다.")
+      setSubmitError(err.message || "상품 등록 중 오류가 발생했습니다.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -235,8 +249,12 @@ function AddGoods() {
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Check className="h-8 w-8 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">상품이 성공적으로 등록되었습니다</h2>
-              <p className="text-gray-600 mb-6">새로운 상품이 시스템에 추가되었습니다.</p>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                상품이 성공적으로 등록되었습니다
+              </h2>
+              <p className="text-gray-600 mb-6">
+                새로운 상품이 시스템에 추가되었습니다.
+              </p>
               <button
                 onClick={resetForm}
                 className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
@@ -245,7 +263,11 @@ function AddGoods() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="p-6" encType="multipart/form-data">
+            <form
+              onSubmit={handleSubmit}
+              className="p-6"
+              encType="multipart/form-data"
+            >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* 왼쪽: 이미지 업로드 */}
                 <div>
@@ -266,7 +288,13 @@ function AddGoods() {
                     onDrop={handleDrop}
                     onClick={() => document.getElementById("fileInput").click()}
                   >
-                    <input id="fileInput" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                    <input
+                      id="fileInput"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
 
                     {previewUrl ? (
                       <div className="relative w-full h-full">
@@ -278,8 +306,8 @@ function AddGoods() {
                         <button
                           type="button"
                           onClick={(e) => {
-                            e.stopPropagation()
-                            removeImage()
+                            e.stopPropagation();
+                            removeImage();
                           }}
                           className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
                         >
@@ -289,8 +317,12 @@ function AddGoods() {
                     ) : (
                       <div className="text-center p-6">
                         <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-700 font-medium mb-1">이미지를 드래그하거나 클릭하여 업로드</p>
-                        <p className="text-gray-500 text-sm">JPG, PNG 파일 지원</p>
+                        <p className="text-gray-700 font-medium mb-1">
+                          이미지를 드래그하거나 클릭하여 업로드
+                        </p>
+                        <p className="text-gray-500 text-sm">
+                          JPG, PNG 파일 지원
+                        </p>
                       </div>
                     )}
                   </div>
@@ -340,10 +372,10 @@ function AddGoods() {
                       <select
                         value={selectedFirstName}
                         onChange={(e) => {
-                          setSelectedFirstName(e.target.value)
-                          setSelectedSecondName("")
-                          setCategoryId("")
-                          setSubCategoryId("")
+                          setSelectedFirstName(e.target.value);
+                          setSelectedSecondName("");
+                          setCategoryId("");
+                          setSubCategoryId("");
                         }}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         required
@@ -371,7 +403,10 @@ function AddGoods() {
                       >
                         <option value="">선택하세요</option>
                         {filteredSecondNames.map((category) => (
-                          <option key={category.id} value={category.second_name}>
+                          <option
+                            key={category.id}
+                            value={category.second_name}
+                          >
                             {category.second_name}
                           </option>
                         ))}
@@ -392,7 +427,10 @@ function AddGoods() {
                       >
                         <option value="">선택하세요</option>
                         {filteredSubCategories.map((sub) => (
-                          <option key={sub.sub_category_id} value={sub.sub_category_id}>
+                          <option
+                            key={sub.sub_category_id}
+                            value={sub.sub_category_id}
+                          >
                             {sub.sub_category_name}
                           </option>
                         ))}
@@ -447,7 +485,9 @@ function AddGoods() {
 
                   {/* 상품 설명 */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">상품 설명</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      상품 설명
+                    </label>
                     <textarea
                       value={goodsDescription}
                       onChange={(e) => setGoodsDescription(e.target.value)}
@@ -478,7 +518,9 @@ function AddGoods() {
                       type="submit"
                       disabled={isSubmitting}
                       className={`px-6 py-2 rounded-lg text-white flex items-center ${
-                        isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+                        isSubmitting
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-indigo-600 hover:bg-indigo-700"
                       } transition-colors`}
                     >
                       {isSubmitting ? (
@@ -501,8 +543,7 @@ function AddGoods() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default AddGoods
-
+export default AddGoods;

@@ -272,7 +272,7 @@ export default function SalesReport() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6 max-w-7xl mx-auto">
+    <div className="bg-gray-50 min-h-screen p-6">
       {/* 탭 네비게이션 추가 */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex gap-6 text-2xl font-bold text-gray-800">

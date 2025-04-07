@@ -25,9 +25,16 @@ export default function RootLayout() {
     <div className="flex flex-col h-screen">
       <ScrollToTop />
       <Headers />
-      <div className="flex flex-1">
+      <div className="flex flex-1 pt-14">
         <Sidebar />
-        <main className="flex-1 overflow-auto pt-16">
+        <main
+          className="flex-1 
+                ml-0 
+                lg:ml-[12rem] 
+                max-w-full 
+                lg:p-4 
+                overflow-auto"
+        >
           <Outlet />
           <AdminToShop />
         </main>
