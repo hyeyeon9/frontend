@@ -34,7 +34,11 @@ export function SuccessPage() {
         return;
       }
 
-      // 결제 성공 비즈니스 로직을 구현하세요.
+      // ✅ 메인 창에 메시지 보내기
+      if (window.opener) {
+        window.opener.postMessage({ type: "PAYMENT_SUCCESS" }, "*");
+        window.close(); // 결제창 닫기
+      }
     }
     confirm();
   }, []);

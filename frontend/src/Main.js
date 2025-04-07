@@ -36,6 +36,8 @@ import { FailPage } from "./features/shop/feature/payments/Fail";
 import PayLayout from "./pages/PayLayout";
 import ChatBot from "./components/ChatBot";
 import Statistics from "./features/statistics/pages/Statistics";
+import OrderCompletePage from "./features/shop/pages/OrderCompletePage";
+import DiscountingPage from "./features/shop/pages/DiscountingPage";
 
 const router = createBrowserRouter([
   {
@@ -162,6 +164,16 @@ const router = createBrowserRouter([
         // 장바구니 페이지
         path: "cart",
         element: <CartPage />,
+      },
+      {
+        // 결제 완료 페이지
+        path: "complete",
+        element: <OrderCompletePage />,
+      },
+      {
+        // 할인 상품 페이지
+        path: "discounting",
+        element: <DiscountingPage />,
       },
     ],
   },

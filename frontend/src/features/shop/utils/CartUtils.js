@@ -65,6 +65,7 @@ export const addItemToCart = (product, quantity = 1) => {
 
   // 세션 스토리지에 저장
   saveCartItems(cartItems);
+  dispatchCartUpdateEvent();
 
   return cartItems;
 };
@@ -83,6 +84,7 @@ export const updateCartItemQuantity = (productId, quantity) => {
   );
 
   saveCartItems(updatedItems);
+  dispatchCartUpdateEvent();
 
   return updatedItems;
 };
@@ -98,6 +100,7 @@ export const removeCartItem = (productId) => {
   const updatedItems = cartItems.filter((item) => item.id !== productId);
 
   saveCartItems(updatedItems);
+  dispatchCartUpdateEvent();
 
   return updatedItems;
 };
@@ -131,3 +134,10 @@ export const dispatchCartUpdateEvent = () => {
   const event = new Event("storage-cart-updated");
   window.dispatchEvent(event);
 };
+
+// 장바구니 초기화 하기
+export function clearCart() {
+  sessionStorage.removeItem("shop_cart_items"); // 세션 스토리지에서 제거
+  dispatchCartUpdateEvent(); // 헤더 등에서 카운트 업데이트 되도록 이벤트 발생
+  return [];
+}
