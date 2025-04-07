@@ -2,12 +2,14 @@ import { Outlet } from "react-router-dom";
 import UserHeader from "../components/user/UserHeader";
 import UserFooter from "../components/user/UserFooter";
 import ShopToAdmin from "../components/temp/ShopToAdmin";
+import ScrollToTop from "../components/ScrollToTop";
 
 export default function UserLayout() {
   return (
     <div className="flex flex-col min-w-screen">
+      <ScrollToTop />
       <UserHeader />
-      <main className="flex-1 p-4">
+      <main className="flex flex-1 overflow-auto">
         <Outlet />
         <ShopToAdmin />
       </main>

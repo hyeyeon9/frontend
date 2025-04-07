@@ -54,6 +54,18 @@ export default function ReportDetailModal({
     return `${year}-${month}-${day}`;
   };
 
+  // 날짜(요일) 포맷으로 변환
+  const formatDateWithDay = (dateString) => {
+    const [year, month, day] = dateString.split("-").map(Number);
+    const date = new Date(year, month - 1, day); // 문자열 파싱 후 안정적인 생성
+
+    const dayOfWeek = date.toLocaleDateString("ko-KR", {
+      weekday: "short", // "월", "화", ...
+    });
+
+    return `${dateString} (${dayOfWeek})`;
+  };
+
   // 상품 데이터 로드 함수
   const loadProductData = async () => {
     if (!selectedAlert) return;
@@ -138,7 +150,8 @@ export default function ReportDetailModal({
             <div>
               <p className="text-base text-gray-500 mb-1">날짜 / 시간</p>
               <p className="text-base font-medium">
-                {selectedAlert.alertDate} {selectedAlert.alertHour}시
+                {formatDateWithDay(selectedAlert.alertDate)}{" "}
+                {selectedAlert.alertHour}시
               </p>
             </div>
             <div>
@@ -253,12 +266,15 @@ export default function ReportDetailModal({
                   <SalesComparisonChart
                     previousData={productData.previousData}
                     currentData={productData.currentData}
-                    previousDate={getPreviousDateByTrend(
-                      selectedAlert.alertDate,
-                      selectedAlert.trendBasis
+                    previousDate={formatDateWithDay(
+                      getPreviousDateByTrend(
+                        selectedAlert.alertDate,
+                        selectedAlert.trendBasis
+                      )
                     )}
-                    currentDate={selectedAlert.alertDate}
+                    currentDate={formatDateWithDay(selectedAlert.alertDate)}
                     hourLabel={selectedAlert.alertHour}
+                    trendBasis={selectedAlert.trendBasis}
                   />
 
                   {/* 상품별 비교 영역 */}
@@ -274,13 +290,15 @@ export default function ReportDetailModal({
                             {trendMapping[selectedAlert.trendBasis]?.replace(
                               " 대비",
                               ""
-                            )}{" "}
-                            (
-                            {getPreviousDateByTrend(
-                              selectedAlert.alertDate,
-                              selectedAlert.trendBasis
                             )}
-                            ) {selectedAlert.alertHour}시 판매 기록
+                            {" : "}
+                            {formatDateWithDay(
+                              getPreviousDateByTrend(
+                                selectedAlert.alertDate,
+                                selectedAlert.trendBasis
+                              )
+                            )}{" "}
+                            {selectedAlert.alertHour}시 판매 기록
                           </h4>
                           <p className="text-sm text-gray-500">
                             총 판매액:{" "}
@@ -336,7 +354,8 @@ export default function ReportDetailModal({
                       <div>
                         <div className="mb-4">
                           <h4 className="text-base font-semibold text-gray-700 mb-2">
-                            현재 ({selectedAlert.alertDate}){" "}
+                            현재 {" : "}
+                            {formatDateWithDay(selectedAlert.alertDate)}{" "}
                             {selectedAlert.alertHour}시 판매 기록
                           </h4>
                           <p className="text-sm text-gray-500">
