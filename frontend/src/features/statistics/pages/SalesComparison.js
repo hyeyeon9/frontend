@@ -10,6 +10,7 @@ import {
 import { format, getDay } from "date-fns";
 import DiffChart from "../components/DiffChart";
 import DailySalesTable from "../components/DailySalesTable";
+import AdditionalInfoPanel from "../components/AdditionalInfoPanel";
 
 // 날짜 포매팅 함수
 function formatDateTo(date) {
@@ -358,11 +359,13 @@ export default function SalesComparison() {
           <h2 className="text-lg font-semibold text-gray-800 mb-4">
             추가 정보
           </h2>
-          <div className="flex justify-center items-center h-64 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
-            <p className="text-center">
-              <span className="block mb-2">추가 정보 영역</span>
-              <span className="text-sm">향후 확장 예정</span>
-            </p>
+          <div className="lg:col-span-1">
+            <AdditionalInfoPanel
+              salesData1={salesData1}
+              salesData2={salesData2}
+              date1={formattedDate1}
+              date2={formattedDate2}
+            />
           </div>
         </div>
       </div>
