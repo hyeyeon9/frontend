@@ -27,7 +27,7 @@ export default function RootLayout() {
       <Headers />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 overflow-auto pt-20">
+        <main className="flex-1 overflow-auto pt-16">
           <Outlet />
           <AdminToShop />
         </main>
