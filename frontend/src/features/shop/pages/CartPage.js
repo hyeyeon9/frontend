@@ -1,11 +1,21 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Trash2, ChevronLeft, Plus, Minus } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Trash2,
+  ChevronLeft,
+  Plus,
+  Minus,
+  ShoppingBag,
+  Check,
+} from "lucide-react";
 import { Button, Card, Badge, Alert } from "flowbite-react";
 import {
   getCartItems,
   updateCartItemQuantity,
   removeCartItem,
+  clearCart,
 } from "../utils/CartUtils";
 import { fetchPostOrder } from "../api/HttpShopService";
 
@@ -14,6 +24,7 @@ export default function CartPage() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("success");
+  const navigate = useNavigate();
 
   // 컴포넌트 마운트 시 장바구니 아이템 로드
   useEffect(() => {
@@ -54,10 +65,10 @@ export default function CartPage() {
     setAlertType(type);
     setShowAlert(true);
 
-    // 3초 후 알림 숨기기
+    // 2초 후 알림 숨기기
     setTimeout(() => {
       setShowAlert(false);
-    }, 3000);
+    }, 2000);
   };
 
   // 소계 계산
@@ -70,18 +81,21 @@ export default function CartPage() {
 
   // 장바구니 아이템 결제하기
   const handlePayment = async () => {
-    console.log("장바구니 아이템",cartItems);
+    console.log("장바구니 아이템", cartItems);
     try {
       const order = {
         member: null,
         finalPrice: calculateTotal(),
-        orderSummary: `${cartItems[0].name} 외 ${cartItems.length - 1}건`,
+        orderSummary:
+          cartItems.length > 0
+            ? `${cartItems[0].name} 외 ${cartItems.length - 1}건`
+            : "주문 없음",
         paymentStatus: 0,
-        orderItems: cartItems.map(item => ({
-          goodsId: item.id,            // 상품 ID
-          saleAmount: item.quantity,   // 수량
-          salePrice: item.price        // 개별 가격
-        }))
+        orderItems: cartItems.map((item) => ({
+          goodsId: item.id, // 상품 ID
+          saleAmount: item.quantity, // 수량
+          salePrice: item.price, // 개별 가격
+        })),
       };
 
       // 주문 후 toss 결제 url 받아오기
@@ -100,95 +114,119 @@ export default function CartPage() {
     }
   };
 
-  return (
-    <section className="max-w-7xl mx-auto px-4 mb-10">
-      <div className="container py-6 px-4">
-        {/* 알림 메시지 */}
-        {showAlert && (
-          <Alert
-            color={alertType}
-            className="mb-4 fixed top-4 left-1/2 transform -translate-x-1/2 z-50 shadow-lg"
-          >
-            <span className="font-medium">{alertMessage}</span>
-          </Alert>
-        )}
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data?.type === "PAYMENT_SUCCESS") {
+        clearCart(); // 장바구니 비우기
+        navigate("/shop/complete");
+      }
+    };
 
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  });
+
+  return (
+    <div className="max-w-[430px] mx-auto bg-gray-50 min-h-screen">
+      {/* 알림 메시지 */}
+      {showAlert && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+          <Alert color={alertType} className="shadow-lg">
+            <div className="flex items-center gap-2">
+              {alertType === "success" && <Check className="h-4 w-4" />}
+              <span className="font-medium text-sm">{alertMessage}</span>
+            </div>
+          </Alert>
+        </div>
+      )}
+
+      <div className="p-4">
         <Button
           color="light"
           as={Link}
           to="/shop"
-          className="mb-6 flex items-center"
+          className="mb-4 flex items-center"
+          size="sm"
         >
-          <ChevronLeft className="mr-2 h-4 w-4" />
+          <ChevronLeft className="mr-1 h-4 w-4" />
           쇼핑 계속하기
         </Button>
 
-        <h1 className="text-2xl font-bold mb-6">장바구니</h1>
+        <div className="flex items-center mb-4">
+          <ShoppingBag className="h-5 w-5 text-blue-600 mr-2" />
+          <h1 className="text-xl font-bold">장바구니</h1>
+        </div>
 
         {cartItems.length > 0 ? (
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="md:col-span-2">
+          <div>
+            <div className="mb-4">
               {cartItems.map((item) => (
-                <Card key={item.id} className="mb-4">
-                  <div className="flex flex-col sm:flex-row">
-                    <div className="relative w-full sm:w-24 h-24">
+                <Card key={item.id} className="mb-3">
+                  <div className="flex">
+                    <div className="relative w-20 h-20 flex-shrink-0">
                       <img
                         src={item.image || "/placeholder.svg"}
                         alt={item.name}
-                        className="object-cover w-full h-full rounded-t-lg sm:rounded-l-lg sm:rounded-t-none"
+                        className="object-cover w-full h-full rounded-l-lg"
                       />
-                      <Badge
-                        color="info"
-                        className="absolute top-2 right-2 sm:hidden"
-                      >
-                        {item.category}
-                      </Badge>
+                      {item.discountRate > 0 && (
+                        <Badge
+                          color="failure"
+                          className="absolute top-1 left-1 text-xs px-1 py-0.5"
+                        >
+                          {item.discountRate}%
+                        </Badge>
+                      )}
                     </div>
-                    <div className="p-4 flex-1">
+                    <div className="p-2 flex-1">
                       <div className="flex justify-between">
-                        <div>
-                          <h3 className="font-medium">{item.name}</h3>
+                        <div className="pr-2">
+                          <h3 className="font-medium text-sm line-clamp-1">
+                            {item.name}
+                          </h3>
+                          {item.discountRate > 0 && (
+                            <div className="flex items-center mt-0.5">
+                              <span className="text-gray-500 line-through text-[10px] mr-1">
+                                {item.originalPrice.toLocaleString()}원
+                              </span>
+                              <span className="text-red-600 text-xs font-medium">
+                                {item.price.toLocaleString()}원
+                              </span>
+                            </div>
+                          )}
                         </div>
-                        <span className="font-bold">
-                          ₩{item.price.toLocaleString()}
-                        </span>
+                        <button
+                          onClick={() => removeItem(item.id)}
+                          className="text-gray-400 hover:text-red-500 p-1"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
-                      <div className="flex justify-between items-center mt-4">
-                        <div className="flex items-center">
-                          <Button
-                            color="light"
-                            size="xs"
+                      <div className="flex justify-between items-center mt-2">
+                        <div className="flex items-center border border-gray-200 rounded-md">
+                          <button
+                            className="px-2 py-1 text-gray-500"
                             onClick={() =>
                               updateQuantity(item.id, item.quantity - 1)
                             }
                           >
                             <Minus className="h-3 w-3" />
-                          </Button>
-                          <span className="mx-2 text-sm font-medium w-6 text-center">
+                          </button>
+                          <span className="px-2 py-1 text-xs font-medium w-6 text-center">
                             {item.quantity}
                           </span>
-                          <Button
-                            color="light"
-                            size="xs"
+                          <button
+                            className="px-2 py-1 text-gray-500"
                             onClick={() =>
                               updateQuantity(item.id, item.quantity + 1)
                             }
                           >
                             <Plus className="h-3 w-3" />
-                          </Button>
+                          </button>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <span className="font-bold">
-                            ₩{(item.price * item.quantity).toLocaleString()}
-                          </span>
-                          <Button
-                            color="failure"
-                            size="xs"
-                            onClick={() => removeItem(item.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <span className="font-bold text-sm">
+                          {(item.price * item.quantity).toLocaleString()}원
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -196,63 +234,80 @@ export default function CartPage() {
               ))}
             </div>
 
-            <div>
-              <Card>
-                <h3 className="text-lg font-semibold mb-4">주문 요약</h3>
-                <div className="mb-4">
-                  <div className="grid grid-cols-12 font-medium border-b pb-2 mb-2">
-                    <span className="col-span-7">상품명</span>
-                    <span className="col-span-2 text-center">수량</span>
-                    <span className="col-span-3 text-right">가격</span>
-                  </div>
+            <Card className="mb-20">
+              <h3 className="text-base font-semibold mb-3">주문 요약</h3>
+              <div className="mb-3">
+                <div className="grid grid-cols-12 text-xs font-medium border-b pb-2 mb-2">
+                  <span className="col-span-7">상품명</span>
+                  <span className="col-span-2 text-center">수량</span>
+                  <span className="col-span-3 text-right">가격</span>
+                </div>
 
-                  {cartItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="grid grid-cols-12 py-2 border-b border-gray-100"
-                    >
-                      <span className="col-span-7 pr-2">{item.name}</span>
-                      <span className="col-span-2 text-center">
-                        {item.quantity}
-                      </span>
-                      <span className="col-span-3 text-right">
-                        ₩{(item.price * item.quantity).toLocaleString()}
-                      </span>
-                    </div>
-                  ))}
-
-                  <div className="grid grid-cols-12 py-3 mt-2 font-bold">
-                    <span className="col-span-9">총합</span>
+                {cartItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="grid grid-cols-12 py-2 border-b border-gray-100 text-xs"
+                  >
+                    <span className="col-span-7 pr-2 line-clamp-1">
+                      {item.name}
+                    </span>
+                    <span className="col-span-2 text-center">
+                      {item.quantity}
+                    </span>
                     <span className="col-span-3 text-right">
-                      ₩{calculateTotal().toLocaleString()}
+                      {item.discountRate > 0 ? (
+                        <div>
+                          <span className="line-through text-gray-400 block text-[10px]">
+                            {(
+                              item.originalPrice * item.quantity
+                            ).toLocaleString()}
+                            원
+                          </span>
+                          <span className="text-red-600">
+                            {(item.price * item.quantity).toLocaleString()}원
+                          </span>
+                        </div>
+                      ) : (
+                        <span>
+                          {(item.price * item.quantity).toLocaleString()}원
+                        </span>
+                      )}
                     </span>
                   </div>
+                ))}
+
+                <div className="grid grid-cols-12 py-3 mt-2 font-bold text-sm">
+                  <span className="col-span-9">총합</span>
+                  <span className="col-span-3 text-right">
+                    {calculateTotal().toLocaleString()}원
+                  </span>
                 </div>
-                <Button
-                  color="blue"
-                  className="w-full"
-                  size="lg"
-                  onClick={handlePayment}
-                >
-                  결제하기
-                </Button>
-              </Card>
-            </div>
+              </div>
+              <Button
+                color="blue"
+                className="w-full"
+                size="lg"
+                onClick={handlePayment}
+              >
+                결제하기
+              </Button>
+            </Card>
           </div>
         ) : (
-          <div className="text-center py-12">
+          <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+            <ShoppingBag className="h-12 w-12 mx-auto mb-3 text-gray-300" />
             <h3 className="text-lg font-medium mb-2">
               장바구니가 비어있습니다
             </h3>
-            <p className="text-gray-500 mb-6">
+            <p className="text-gray-500 mb-6 text-sm">
               아직 장바구니에 상품을 추가하지 않으셨습니다.
             </p>
-            <Button as={Link} to="/shop/products">
+            <Button as={Link} to="/shop/products" size="sm">
               쇼핑 시작하기
             </Button>
           </div>
         )}
       </div>
-    </section>
+    </div>
   );
 }

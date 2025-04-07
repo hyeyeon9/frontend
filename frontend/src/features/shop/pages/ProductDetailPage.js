@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ChevronLeft, Minus, Plus, ShoppingCart, Check } from "lucide-react";
-import { Badge, Button, Alert, Spinner } from "flowbite-react";
+import { ChevronLeft, Minus, Plus, ChevronRight } from "lucide-react";
+import { Badge, Button, Spinner } from "flowbite-react";
 import { fetchGoodsDetail } from "../../goods/api/HttpGoodsService";
 import categoryMapping from "../../../components/categoryMapping";
 import { addItemToCart } from "../utils/CartUtils";
@@ -18,6 +20,9 @@ export default function ProductDetailPage({ onAddToCart }) {
 
   const [subName, setSubName] = useState("");
   const [recommendations, setRecommendations] = useState([]);
+
+  // 추천 상품 스크롤 참조
+  const recommendationsRef = useRef(null);
 
   // 개별 상품 데이터 가져오기
   useEffect(() => {
@@ -50,13 +55,6 @@ export default function ProductDetailPage({ onAddToCart }) {
     };
     getSubName();
   }, [product]);
-
-  // 나중에 삭제하기
-  useEffect(() => {
-    if (subName) {
-      console.log("✅ 소분류명:", subName);
-    }
-  }, [subName]);
 
   // 연관상품 들고오기
   useEffect(() => {
@@ -93,10 +91,10 @@ export default function ProductDetailPage({ onAddToCart }) {
     // 알림 표시
     setShowAddedAlert(true);
 
-    // 3초 후 알림 숨기기
+    // 2초 후 알림 숨기기
     setTimeout(() => {
       setShowAddedAlert(false);
-    }, 3000);
+    }, 2000);
   };
 
   // 상품 ID가 변경될 때 수량 초기화
@@ -119,13 +117,24 @@ export default function ProductDetailPage({ onAddToCart }) {
     );
   };
 
+  // 추천 상품 스크롤 함수
+  const scrollRecommendations = (direction) => {
+    if (recommendationsRef.current) {
+      const { current } = recommendationsRef;
+      const scrollAmount = direction === "left" ? -200 : 200;
+      current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
+
   // 로딩 중 표시
   if (loading) {
     return (
-      <div className="container mx-auto py-12 px-4 flex justify-center items-center">
+      <div className="max-w-[430px] mx-auto py-8 px-4 flex justify-center items-center">
         <div className="text-center">
           <Spinner size="xl" />
-          <p className="mt-4 text-gray-600">상품 정보를 불러오는 중입니다...</p>
+          <p className="mt-4 text-gray-600 text-sm">
+            상품 정보를 불러오는 중입니다...
+          </p>
         </div>
       </div>
     );
@@ -134,10 +143,10 @@ export default function ProductDetailPage({ onAddToCart }) {
   // 오류 표시
   if (error) {
     return (
-      <div className="container mx-auto py-12 px-4 text-center">
-        <h1 className="text-2xl font-bold mb-4 text-red-600">오류 발생</h1>
-        <p className="mb-6">{error}</p>
-        <Button as={Link} to="/shop/products">
+      <div className="max-w-[430px] mx-auto py-8 px-4 text-center">
+        <h1 className="text-xl font-bold mb-4 text-red-600">오류 발생</h1>
+        <p className="mb-6 text-sm">{error}</p>
+        <Button as={Link} to="/shop/products" size="sm">
           상품 목록으로 돌아가기
         </Button>
       </div>
@@ -147,10 +156,12 @@ export default function ProductDetailPage({ onAddToCart }) {
   // 상품을 찾을 수 없는 경우
   if (!product) {
     return (
-      <div className="container mx-auto py-12 px-4 text-center">
-        <h1 className="text-2xl font-bold mb-4">상품을 찾을 수 없습니다</h1>
-        <p className="mb-6">요청하신 상품이 존재하지 않거나 삭제되었습니다.</p>
-        <Button as={Link} to="/shop/products">
+      <div className="max-w-[430px] mx-auto py-8 px-4 text-center">
+        <h1 className="text-xl font-bold mb-4">상품을 찾을 수 없습니다</h1>
+        <p className="mb-6 text-sm">
+          요청하신 상품이 존재하지 않거나 삭제되었습니다.
+        </p>
+        <Button as={Link} to="/shop/products" size="sm">
           상품 목록으로 돌아가기
         </Button>
       </div>
@@ -158,20 +169,14 @@ export default function ProductDetailPage({ onAddToCart }) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 mb-10">
+    <div className="max-w-[430px] mx-auto px-4 pb-16 bg-gray-50 min-h-screen">
       {/* 장바구니 추가 알림 */}
       {showAddedAlert && (
-        <Alert
-          color="success"
-          className="mb-4 fixed top-4 left-1/2 transform -translate-x-1/2 z-50 shadow-lg"
-        >
-          <div className="flex items-center gap-2">
-            <Check className="h-4 w-4" />
-            <span className="font-medium">
-              장바구니에 상품이 추가되었습니다!
-            </span>
+        <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-black text-white px-4 py-3 rounded-lg shadow-lg text-center">
+            <p className="text-sm font-medium">장바구니에 상품을 담았어요</p>
           </div>
-        </Alert>
+        </div>
       )}
 
       {/* 뒤로 가기 버튼 */}
@@ -179,157 +184,196 @@ export default function ProductDetailPage({ onAddToCart }) {
         color="light"
         as={Link}
         to="/shop/products"
-        className="mb-6 flex items-center"
+        className="my-3 flex items-center"
+        size="sm"
       >
-        <ChevronLeft className="mr-2 h-4 w-4" />
-        상품 목록으로 돌아가기
+        <ChevronLeft className="mr-1 h-4 w-4" />
+        상품 목록으로
       </Button>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* 상품 이미지 */}
-        <div className="rounded-lg overflow-hidden justify-center items-center flex">
-          <img
-            src={product.goods_image || "/placeholder.svg?height=400&width=400"}
-            alt={product.goods_name}
-            className="w-auto h-auto object-cover"
-          />
-        </div>
+      {/* 상품 이미지 */}
+      <div className="bg-white rounded-lg overflow-hidden mb-4 shadow-sm">
+        <img
+          src={product.goods_image || "/placeholder.svg?height=400&width=400"}
+          alt={product.goods_name}
+          className="w-full h-auto object-cover"
+        />
+      </div>
 
-        {/* 상품 상세 정보 */}
-        <div>
-          <div className="flex items-center mb-2">
-            <Badge color="info">{getCategoryName(product.category_id)}</Badge>
-          </div>
-
-          <h1 className="text-3xl font-bold mt-2">{product.goods_name}</h1>
-
-          {/* 가격 정보 */}
-          <div className="mt-2 mb-4">
-            {isDiscounted(product) ? (
-              <div className="flex items-center">
-                <span className="text-gray-500 line-through mr-2">
-                  ₩{product.originalPrice.toLocaleString()}
-                </span>
-                <span className="text-2xl font-bold text-red-600">
-                  ₩{product.goods_price.toLocaleString()}
-                </span>
-                <Badge color="failure" className="ml-2">
-                  {product.discountRate}% 할인
-                </Badge>
-              </div>
-            ) : (
-              <p className="text-2xl font-bold">
-                ₩{product.goods_price.toLocaleString()}
-              </p>
-            )}
-          </div>
-
-          <p className="text-gray-600 mb-6">
-            {product.goods_description || "상품 설명이 없습니다."}
-          </p>
-
-          {/* 재고 정보 */}
-          <div className="flex items-center mb-6">
-            <span className="text-sm">
-              {product.goods_stock > 0
-                ? `재고 ${product.goods_stock}개 남음`
-                : "품절"}
-            </span>
-          </div>
-
-          {/* 수량 선택기 */}
-          <div className="flex items-center mb-6">
-            <span className="mr-4 font-medium">수량:</span>
-            <Button
-              color="light"
-              size="sm"
-              onClick={decrementQuantity}
-              disabled={quantity <= 1}
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-            <span className="mx-4 text-xl font-medium w-8 text-center">
-              {quantity}
-            </span>
-            <Button
-              color="light"
-              size="sm"
-              onClick={incrementQuantity}
-              disabled={product.goods_stock <= 0}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* 장바구니 추가 버튼 */}
-          <Button
-            color="blue"
-            className="w-full mb-6"
-            size="lg"
-            onClick={addToCart}
-            disabled={product.goods_stock <= 0}
-          >
-            <ShoppingCart className="mr-2 h-5 w-5" />
-            {product.goods_stock > 0
-              ? `장바구니에 담기 - ₩${(
-                  product.goods_price * quantity
-                ).toLocaleString()}`
-              : "품절된 상품입니다"}
-          </Button>
-        </div>
-        <div className="col-span-2 mt-8">
-          <h2 className="text-xl font-bold mb-4">함께 구매하면 좋은 상품</h2>
-
-          {recommendations && recommendations.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {recommendations.slice(0, 3).map((item) => (
-                <Link
-                  key={item.goods_id}
-                  to={`/shop/products/${item.goods_id}`}
-                  className="group"
-                >
-                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
-                    <div className="h-48 overflow-hidden">
-                      <img
-                        src={
-                          item.goods_image ||
-                          "/placeholder.svg?height=400&width=400"
-                        }
-                        alt={item.goods_name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-
-                    <div className="p-4 flex flex-col flex-grow">
-                      <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                        {item.goods_name}
-                      </h3>
-
-                      <div className="mt-auto">
-                        <p className="font-bold text-lg text-blue-700">
-                          ₩
-                          {item.goods_price?.toLocaleString() ||
-                            "가격 정보 없음"}
-                        </p>
-                        <div className="mt-2 flex justify-between items-center">
-                          <Badge color="indigo" className="text-xs">
-                            추천 상품
-                          </Badge>
-                          <span className="text-sm text-gray-500">
-                            지금 구매하기
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500 italic">추천 상품이 없습니다.</p>
+      {/* 상품 상세 정보 */}
+      <div className="bg-white rounded-lg p-4 shadow-sm mb-4">
+        <div className="flex items-center mb-2">
+          <Badge color="info">{getCategoryName(product.category_id)}</Badge>
+          {isDiscounted(product) && (
+            <Badge color="failure" className="ml-2">
+              {product.discountRate}% 할인
+            </Badge>
           )}
         </div>
+
+        <h1 className="text-xl font-bold mt-1 mb-2">{product.goods_name}</h1>
+
+        {/* 가격 정보 */}
+        <div className="mb-3">
+          {isDiscounted(product) ? (
+            <div className="flex items-center">
+              <span className="text-gray-500 line-through mr-2 text-sm">
+                {product.originalPrice.toLocaleString()}원
+              </span>
+              <span className="text-xl font-bold text-red-600">
+                {product.goods_price.toLocaleString()}원
+              </span>
+            </div>
+          ) : (
+            <p className="text-xl font-bold">
+              {product.goods_price.toLocaleString()}원
+            </p>
+          )}
+        </div>
+
+        <p className="text-gray-600 text-sm mb-4">
+          {product.goods_description || "상품 설명이 없습니다."}
+        </p>
+
+        {/* 수량 선택기 */}
+        <div className="flex items-center mb-4">
+          <span className="text-sm font-medium mr-2">수량:</span>
+          <div className="flex items-center">
+            <button
+              onClick={decrementQuantity}
+              disabled={quantity <= 1}
+              className="p-1.5 border border-gray-300 rounded-l-md bg-gray-50 hover:bg-gray-100"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <span className="px-4 py-1.5 border-t border-b border-gray-300 bg-white min-w-[40px] text-center font-medium">
+              {quantity}
+            </span>
+            <button
+              onClick={incrementQuantity}
+              disabled={product.goods_stock <= 0}
+              className="p-1.5 border border-gray-300 rounded-r-md bg-gray-50 hover:bg-gray-100"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* 장바구니 추가 버튼 - 새로운 디자인 */}
+        <button
+          onClick={addToCart}
+          disabled={product.goods_stock <= 0}
+          className={`w-full py-3 px-4 rounded-lg font-medium flex items-center justify-between text-white transition-colors ${
+            product.goods_stock <= 0
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#52c2b8] hover:bg-[#40b4a9]"
+          }`}
+        >
+          {/* 왼쪽 - 수량 + 텍스트 */}
+          <div className="flex items-center">
+            <div className="bg-white text-[#52c2b8] font-bold rounded-full w-6 h-6 flex items-center justify-center mr-2 text-sm">
+              {quantity}
+            </div>
+            <span className="text-base font-semibold">장바구니 담기</span>
+          </div>
+
+          {/* 오른쪽 - 가격 */}
+          <span className="text-base font-semibold">
+            {(product.goods_price * quantity).toLocaleString()}원
+          </span>
+        </button>
       </div>
+
+      {/* 다른 사람들이 함께 구매한 상품 - 가로 스크롤 */}
+      {recommendations && recommendations.length > 0 && (
+        <div className="bg-white rounded-lg p-4 shadow-sm">
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-lg font-bold">
+              다른 사람들이 함께 구매한 상품
+            </h2>
+            <div className="flex gap-1">
+              <button
+                onClick={() => scrollRecommendations("left")}
+                className="p-1 bg-gray-100 rounded-full"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => scrollRecommendations("right")}
+                className="p-1 bg-gray-100 rounded-full"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          <div
+            ref={recommendationsRef}
+            className="flex overflow-x-auto hide-scrollbar gap-3 pb-2"
+          >
+            {recommendations.map((item) => (
+              <div
+                key={item.goods_id}
+                className="flex-shrink-0 w-[140px] bg-white border border-gray-100 rounded-lg overflow-hidden"
+                onClick={() => navigate(`/shop/products/${item.goods_id}`)}
+              >
+                <div className="relative">
+                  <img
+                    src={
+                      item.goods_image ||
+                      "/placeholder.svg?height=200&width=200"
+                    }
+                    alt={item.goods_name}
+                    className="w-full h-28 object-cover"
+                  />
+
+                  {/* 장바구니 추가 버튼 */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addItemToCart(item, 1);
+                      setShowAddedAlert(true);
+                      setTimeout(() => setShowAddedAlert(false), 2000);
+                    }}
+                    className="absolute bottom-2 right-2 w-7 h-7 flex items-center justify-center rounded-full shadow-md bg-white border border-gray-200 text-blue-600 hover:bg-blue-50"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="p-2">
+                  <h3 className="font-medium text-xs line-clamp-2 min-h-[32px]">
+                    {item.goods_name}
+                  </h3>
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="font-bold text-xs text-blue-700">
+                      {item.goods_price?.toLocaleString() + "원" ||
+                        "가격 정보 없음"}
+                    </span>
+                  </div>
+
+                  {/* 재고 정보 표시 */}
+                  {item.goods_stock > 0 && item.goods_stock <= 5 && (
+                    <p className="text-[10px] text-red-500 mt-1">
+                      {item.goods_stock}개 남았어요
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }
