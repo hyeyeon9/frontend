@@ -77,6 +77,15 @@ export default function ExpiringItemsPage() {
     window.location.href = "/orders";
   };
 
+  // 할인 페이지로 이동하는 함수
+  const goToDiscountPage = () => {
+    localStorage.setItem(
+      "selectedForDiscount",
+      JSON.stringify(selectedItems)
+    );
+    window.location.href ="/categories/findAll"
+  };
+
   // 유통기한 긴급/위험/3일 이상 상품으로 필터링
   const urgentItems = items.filter(
     (item) => getDaysUntil(item.expirationDate) <= 1
@@ -128,7 +137,12 @@ export default function ExpiringItemsPage() {
               </p>
               <div className="flex gap-2">
                 <Link to="/categories/findAll">
-                  <button className="text-xs bg-white text-red-700 px-2 py-1 rounded border border-red-300 hover:bg-red-100 transition-colors">
+                  <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToDiscountPage();
+                  }}
+                  className="text-xs bg-white text-red-700 px-2 py-1 rounded border border-red-300 hover:bg-red-100 transition-colors">
                     <Tag className="h-3 w-3 inline mr-1" />
                     할인 적용
                   </button>

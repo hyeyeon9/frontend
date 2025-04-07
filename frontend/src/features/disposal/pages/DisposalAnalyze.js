@@ -1,31 +1,37 @@
-
-
-import { useEffect, useState } from "react"
-import DisposalPieChart from "./DisposalPieChart"
-import { fetchDisposalRate, fetchStats } from "../api/HttpDisposalService"
-import { Link } from "react-router-dom"
-import { Calendar, ChevronLeft, ChevronRight, Info, TrendingUp, AlertTriangle, BarChart } from "lucide-react"
+import { useEffect, useState } from "react";
+import DisposalPieChart from "./DisposalPieChart";
+import { fetchDisposalRate, fetchStats } from "../api/HttpDisposalService";
+import { Link } from "react-router-dom";
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  TrendingUp,
+  AlertTriangle,
+  BarChart,
+} from "lucide-react";
 
 function DisposalAnalyze() {
   // 도넛 그래프를 위한 통계 data
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
 
-  const now = new Date()
-  const [month, setMonth] = useState(now.getMonth() + 1)
-  const [year, setYear] = useState(now.getFullYear())
+  const now = new Date();
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [year, setYear] = useState(now.getFullYear());
 
-  const [topItems, setTopItems] = useState([])
-  const [disposalRates, setDisposalRates] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [topItems, setTopItems] = useState([]);
+  const [disposalRates, setDisposalRates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // 폐기 월별 통계를 위한 함수
   useEffect(() => {
     async function getStats() {
-      setLoading(true)
+      setLoading(true);
       try {
-        const res = await fetchStats(month, year)
-        console.log("년월 폐기",res);
+        const res = await fetchStats(month, year);
+        console.log("년월 폐기", res);
         // 데이터 가공
         const formatted = res
           .map((item) => ({
@@ -33,74 +39,78 @@ function DisposalAnalyze() {
             label: item.subCategoryName,
             value: item.totalQuantity,
           }))
-          .filter((item) => item.value > 0)
+          .filter((item) => item.value > 0);
 
-        setData(formatted)
+        setData(formatted);
 
         const top3 = [...formatted]
           .sort((a, b) => b.value - a.value)
           .slice(0, 3)
-          .map((item) => item.label)
+          .map((item) => item.label);
 
-        setTopItems(top3)
-        console.log("년월 폐기 top3",top3);
+        setTopItems(top3);
+        console.log("년월 폐기 top3", top3);
       } catch (error) {
-        setError(error.message)
+        setError(error.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    getStats()
-  }, [month, year])
+    getStats();
+  }, [month, year]);
 
   // 입고 대비 폐기 비율
   useEffect(() => {
     async function getDisposalRate() {
-      if (topItems.length === 0) return
+      if (topItems.length === 0) return;
 
       try {
-        const response = await fetchDisposalRate(topItems.join(","), month, year)
-        console.log("년월 폐기 비율 response",response);
-        setDisposalRates(response)
+        const response = await fetchDisposalRate(
+          topItems.join(","),
+          month,
+          year
+        );
+        console.log("년월 폐기 비율 response", response);
+        setDisposalRates(response);
       } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
       }
     }
-    getDisposalRate()
-  }, [topItems, month, year])
+    getDisposalRate();
+  }, [topItems, month, year]);
 
   // 이전 달로 이동
   const goToPreviousMonth = () => {
     if (month === 1) {
-      setMonth(12)
-      setYear(year - 1)
+      setMonth(12);
+      setYear(year - 1);
     } else {
-      setMonth(month - 1)
+      setMonth(month - 1);
     }
-  }
+  };
 
   // 다음 달로 이동
   const goToNextMonth = () => {
     if (month === 12) {
-      setMonth(1)
-      setYear(year + 1)
+      setMonth(1);
+      setYear(year + 1);
     } else {
-      setMonth(month + 1)
+      setMonth(month + 1);
     }
-  }
+  };
 
   // 현재 달로 이동
   const goToCurrentMonth = () => {
-    setMonth(now.getMonth() + 1)
-    setYear(now.getFullYear())
-  }
+    setMonth(now.getMonth() + 1);
+    setYear(now.getFullYear());
+  };
 
   // 폐기율에 따른 색상 결정
   const getRateColor = (rate) => {
-    if (rate >= 20) return "text-red-600"
-    if (rate >= 10) return "text-orange-500"
-    return "text-yellow-600"
-  }
+    if (rate >= 20) return "text-red-600";
+    if (rate >= 10) return "text-orange-500";
+    return "text-yellow-600";
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen p-6">
@@ -134,7 +144,10 @@ function DisposalAnalyze() {
             </h2>
 
             <div className="flex items-center space-x-4">
-              <button onClick={goToPreviousMonth} className="p-2 rounded-full hover:bg-gray-100">
+              <button
+                onClick={goToPreviousMonth}
+                className="p-2 rounded-full hover:bg-gray-100"
+              >
                 <ChevronLeft className="h-5 w-5 text-gray-600" />
               </button>
 
@@ -145,7 +158,10 @@ function DisposalAnalyze() {
                   className="border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   {[...Array(2)].map((_, i) => (
-                    <option key={now.getFullYear() - i} value={now.getFullYear() - i}>
+                    <option
+                      key={now.getFullYear() - i}
+                      value={now.getFullYear() - i}
+                    >
                       {now.getFullYear() - i}년
                     </option>
                   ))}
@@ -164,7 +180,10 @@ function DisposalAnalyze() {
                 </select>
               </div>
 
-              <button onClick={goToNextMonth} className="p-2 rounded-full hover:bg-gray-100">
+              <button
+                onClick={goToNextMonth}
+                className="p-2 rounded-full hover:bg-gray-100"
+              >
                 <ChevronRight className="h-5 w-5 text-gray-600" />
               </button>
 
@@ -220,7 +239,9 @@ function DisposalAnalyze() {
                 <div className="h-4 bg-gray-200 rounded w-5/6"></div>
               </div>
             ) : data.length === 0 ? (
-              <div className="text-gray-500 italic">해당 기간에 분석할 데이터가 없습니다.</div>
+              <div className="text-gray-500 italic">
+                해당 기간에 분석할 데이터가 없습니다.
+              </div>
             ) : (
               <div className="space-y-6">
                 <div className="p-4 bg-indigo-50 rounded-lg">
@@ -239,38 +260,55 @@ function DisposalAnalyze() {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="font-medium text-gray-700">입고 대비 폐기율</h4>
+                  <h4 className="font-medium text-gray-700">
+                    입고 대비 폐기율
+                  </h4>
 
                   {disposalRates.length > 0 ? (
                     <div className="space-y-3">
                       {disposalRates.map((item) => (
-                        <div key={item.subName} className="bg-white border border-gray-200 rounded-lg p-3">
+                        <div
+                          key={item.subName}
+                          className="bg-white border border-gray-200 rounded-lg p-3"
+                        >
                           <div className="flex justify-between items-center mb-1">
                             <span className="font-medium">{item.subName}</span>
-                            <span className={`font-bold ${getRateColor(item.disposalRate)}`}>{item.disposalRate}%</span>
+                            <span
+                              className={`font-bold ${getRateColor(
+                                item.disposalRate
+                              )}`}
+                            >
+                              {item.disposalRate}%
+                            </span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
                               className={`h-2 rounded-full ${
-                                item.disposalRate >= 20
+                                item.disposalRate >= 50
                                   ? "bg-red-500"
-                                  : item.disposalRate >= 10
-                                    ? "bg-orange-500"
-                                    : "bg-yellow-500"
+                                  : item.disposalRate >= 30
+                                  ? "bg-yellow-300"
+                                  : "bg-green-500"
                               }`}
-                              style={{ width: `${Math.min(100, item.disposalRate)}%` }}
+                              style={{
+                                width: `${Math.min(100, item.disposalRate)}%`,
+                              }}
                             ></div>
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-gray-500 text-sm">폐기율 데이터를 불러오는 중입니다...</div>
+                    <div className="text-gray-500 text-sm">
+                      폐기율 데이터를 불러오는 중입니다...
+                    </div>
                   )}
                 </div>
 
                 <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <h4 className="font-medium text-yellow-800 mb-2">개선 제안</h4>
+                  <h4 className="font-medium text-yellow-800 mb-2">
+                    개선 제안
+                  </h4>
                   <ul className="text-sm text-yellow-700 space-y-1 list-disc pl-5">
                     <li>재고 및 유통기한 관리 강화</li>
                     <li>발주량 조정 검토</li>
@@ -283,8 +321,7 @@ function DisposalAnalyze() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default DisposalAnalyze
-
+export default DisposalAnalyze;

@@ -437,6 +437,13 @@ export default function DashBoard() {
     fetchDataByType();
   }, [chartMode]);
 
+  const barColor =
+    mergedLowStock.totalStock < 2
+      ? "bg-red-500"
+      : mergedLowStock.totalStock < 5
+      ? "bg-amber-500"
+      : "bg-blue-600";
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* 헤더 */}
@@ -843,19 +850,25 @@ export default function DashBoard() {
             linkTo="/inventory/findAll"
           />
           <div className="space-y-4">
-            {mergedLowStock.slice(0, 3).map((item, index) => (
-              <div key={index} className="flex justify-between items-center">
-                <span className="text-gray-600">{item.goodsName}</span>
-                <div className="flex items-center">
-                  <div className="w-48 h-2 bg-gray-200 rounded-full mr-2">
-                    <div className="h-full bg-blue-600 rounded-full"></div>
+            {mergedLowStock.slice(0, 5).map((item, index) => {
+              const percentage = Math.min(100, item.totalStock * 10);
+              return (
+                <div key={index} className="flex justify-between items-center">
+                  <span className="text-gray-600">{item.goodsName}</span>
+                  <div className="flex items-center">
+                    <div className="w-48 h-2 bg-gray-200 rounded-full mr-2">
+                      <div
+                        className={`h-full ${barColor} rounded-full`}
+                        style={{ width: `${percentage}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-sm font-medium">
+                      {item.totalStock}개
+                    </span>
                   </div>
-                  <span className="text-sm font-medium">
-                    {item.totalStock}개
-                  </span>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
