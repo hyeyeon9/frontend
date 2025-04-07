@@ -7,7 +7,7 @@ function App() {
   return (
     <UserProvider>
       <TimeProvider>
-        <div className="content">
+        <div className="content bg-gray-50">
           <Main />
         </div>
       </TimeProvider>
