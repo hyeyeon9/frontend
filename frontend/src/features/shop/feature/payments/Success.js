@@ -36,6 +36,17 @@ export function SuccessPage() {
 
       // ✅ 메인 창에 메시지 보내기
       if (window.opener) {
+        // ✅ 성공 여부 저장
+        const prev = JSON.parse(
+          window.opener.localStorage.getItem("pendingPayment")
+        );
+        if (prev && prev.id === requestData.orderId) {
+          window.opener.localStorage.setItem(
+            "pendingPayment",
+            JSON.stringify({ ...prev, status: "success" })
+          );
+        }
+
         window.opener.postMessage({ type: "PAYMENT_SUCCESS" }, "*");
         window.close(); // 결제창 닫기
       }

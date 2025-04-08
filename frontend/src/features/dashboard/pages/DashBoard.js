@@ -24,6 +24,7 @@ import {
   fetchGetAverageSales,
   fetchGetHourlySales,
 } from "../../statistics/api/HttpStatService";
+import SseNotification from "../components/SseNotification";
 
 // {prev}일 전 날짜
 function getPreviousDayStringKST(prev) {
@@ -62,7 +63,11 @@ export default function DashBoard() {
   // 알림 관련 상태 추가
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
 
-  const [alertList, setAlertList] = useState([]);
+  const [alertList, setAlertList] = useState(() => {
+    const saved = localStorage.getItem("admin_alerts");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [showAlertDropdown, setShowAlertDropdown] = useState(false);
 
   // 매출 차트 조회모드와 차트 데이터
@@ -265,107 +270,22 @@ export default function DashBoard() {
     </div>
   );
 
-  // 유통기한 임박 알림
+  // alertList 알림 상태창 변경시 마다 저장하기
+  // 바뀔 때만 저장, 초기 빈 배열로 덮어쓰기 방지
+  useEffect(() => {
+    if (alertList.length > 0) {
+      localStorage.setItem("admin_alerts", JSON.stringify(alertList));
+    }
+  }, [alertList]);
+
+  // 초기 랜더링 시에 로컬스토리지에서 알림창 가져오기
   // useEffect(() => {
-  //   async function getExpiringAlerts() {
-  //     try {
-  //       const today = new Date();
-  //       const alerts = [];
-
-  //       expiringItems.forEach((item) => {
-  //         const expDate = new Date(item.expirationDate);
-  //         const timeDiff = expDate - today;
-  //         const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
-  //         if (daysLeft <= 1 && daysLeft > 0) {
-  //           const message = `⏰ '${item.goodsName}' 유통기한이 ${daysLeft}일 남았습니다. 할인 또는 폐기를 고려해주세요.`;
-
-  //           // 중복 메시지 체크
-  //           if (!alertList.some((a) => a.message === message)) {
-  //             alerts.push({
-  //               type: "유통기한임박",
-  //               message,
-  //               time: "방금 전",
-  //               read: false,
-  //             });
-  //           }
-  //         }
-  //       });
-
-  //       if (alerts.length > 0) {
-  //         setAlertList((prev) => [...alerts, ...prev]);
-  //       }
-  //     } catch (error) {
-  //       console.error("유통기한 임박 알림 생성 실패:", error);
-  //     }
+  //   const savedAlerts = localStorage.getItem("admin_alerts");
+  //   if (savedAlerts) {
+  //     setAlertList(JSON.parse(savedAlerts));
   //   }
-
-  //   getExpiringAlerts();
-  // }, [alertList]); // alertList 의존성 추가 (중복 방지)
-
-  // 재고 부족 알림
-  useEffect(() => {
-    if (mergedLowStock.length > 0) {
-      const message = `재고 5개 이하 상품이 ${mergedLowStock.length}개 있습니다. 빠른 발주가 필요해요!`;
-
-      // 같은 메시지가 이미 있는지 확인
-      const isDuplicate = alertList.some((a) => a.message === message);
-
-      if (!isDuplicate) {
-        const lowStockAlert = {
-          type: "재고부족",
-          message,
-          time: "방금 전",
-          read: false,
-        };
-        setAlertList((prev) => [lowStockAlert, ...prev]);
-      }
-    }
-  }, [mergedLowStock, alertList]);
-
-  // 자동 폐기 알림
-  useEffect(() => {
-    async function getAutoDisposalAlerts() {
-      try {
-        const response = await fetchDisposal(); // API 경로
-        console.log("폐기 항목", response);
-
-        // const today = new Date().toISOString().slice(0, 10); // "2025-04-02"
-        // console.log("today", today);
-
-        const autoDisposals = response.filter((item) => {
-          if (item.disposal_reason !== "유통기한 만료") return false;
-          const disposedDateStr = item.disposed_at.slice(0, 10);
-          console.log("disposedDateStr", disposedDateStr);
-          return disposedDateStr === today;
-        });
-
-        console.log("오늘 자동 폐기", autoDisposals);
-
-        if (autoDisposals.length > 0) {
-          const newAlert = {
-            type: "자동폐기",
-            message: `자동 폐기된 상품이 ${autoDisposals.length}개 있습니다.`,
-            time: "방금 전",
-            read: false,
-          };
-
-          setAlertList((prev) => {
-            const isDuplicate = prev.some(
-              (alert) =>
-                alert.type === newAlert.type &&
-                alert.message === newAlert.message
-            );
-            return isDuplicate ? prev : [newAlert, ...prev];
-          });
-        }
-      } catch (e) {
-        console.error("자동 폐기 알림 실패:", e);
-      }
-    }
-
-    getAutoDisposalAlerts();
-  }, []);
+  //   console.log("alertList", alertList);
+  // }, []);
 
   // 매출 차트
   // 조회 모드 변경
@@ -446,6 +366,33 @@ export default function DashBoard() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+      {/* SSE 실시간 알림 리스너 */}
+      <SseNotification
+        onMessage={(msg) => {
+          setAlertList((prevAlerts) => {
+            const isDuplicate = prevAlerts.some(
+              (alert) =>
+                alert.message === msg.message && alert.type === msg.type
+            );
+
+            if (!isDuplicate) {
+              const newAlert = {
+                type: msg.type || "일반",
+                message: msg.message || "새 알림 도착",
+                time: "방금 전",
+                read: false,
+              };
+              const updated = [newAlert, ...prevAlerts];
+
+              localStorage.setItem("admin_alerts", JSON.stringify(updated));
+              return updated;
+            }
+
+            return prevAlerts; // 중복이면 이전 상태 그대로 반환
+          });
+        }}
+      />
+
       {/* 헤더 */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
