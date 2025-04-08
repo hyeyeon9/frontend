@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
 
 const ChatBot = () => {
   const [question, setQuestion] = useState("");
@@ -100,23 +101,50 @@ const ChatBot = () => {
         ref={chatContainerRef}
         className="bg-gray-100 p-4 h-64 overflow-y-auto rounded mb-4"
       >
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`mb-2 ${
-              msg.type === "user" ? "text-right" : "text-left"
-            }`}
-          >
-            <span
-              className={`inline-block p-2 rounded shadow ${
-                msg.type === "user" ? "bg-blue-500 text-white" : "bg-white"
+        {messages.map((msg, idx) => {
+          const cleanText =
+            msg.type === "bot"
+              ? msg.text
+                  .trim()
+                  .replace(/\n+/g, "\n")
+                  // 리스트 블록 끝 + 문장이 붙는 경우 → 한 줄 띄우기
+                  .replace(/(- .+?)\n(?=[^\n-])/g, "$1\n\n")
+              : msg.text;
+
+          return (
+            <div
+              key={idx}
+              className={`mb-2 ${
+                msg.type === "user" ? "text-right" : "text-left"
               }`}
             >
-              {msg.text}
-              {msg.isTyping && <span className="ml-1 animate-pulse">|</span>}
-            </span>
-          </div>
-        ))}
+              <span
+                className={`inline-block p-2 rounded shadow ${
+                  msg.type === "user" ? "bg-blue-500 text-white" : "bg-white"
+                }`}
+                style={{ whiteSpace: "pre-line" }}
+              >
+                {msg.type === "bot" ? (
+                  <ReactMarkdown
+                    components={{
+                      ul: ({ node, ...props }) => (
+                        <ul {...props} className="list-disc pl-5 ml-0" />
+                      ),
+                      li: ({ node, ...props }) => (
+                        <li {...props} className="" /> // ✅ mb-1 제거 (간격 없애기)
+                      ),
+                    }}
+                  >
+                    {cleanText}
+                  </ReactMarkdown>
+                ) : (
+                  msg.text
+                )}
+                {msg.isTyping && <span className="ml-1 animate-pulse">|</span>}
+              </span>
+            </div>
+          );
+        })}
 
         {/* 로딩 표시기 */}
         {isLoading && (
