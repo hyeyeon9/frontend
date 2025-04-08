@@ -446,12 +446,9 @@ function Association() {
               </div>
 
               <div className="p-4 flex items-center">
-                <div className="bg-indigo-100 p-3 rounded-full mr-4">
-                  {getTimePeriodIcon(timePeriod)}
-                </div>
                 <div className="flex-1">
                   <div className="flex items-center ">
-                    <h3 className="text-lg font-bold text-gray-800">
+                    <h3 className="xl:text-xl md:text-lg xl:pl-3 font-bold text-gray-800">
                       {timePeriod}
                     </h3>
                     <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
@@ -460,38 +457,44 @@ function Association() {
                   </div>
 
                   {timeRules.length > 0 ? (
-                    <div className="mt-2">
-                      <div className="flex items-center mt-1">
-                        {timeRules.map((item, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center bg-gray-100 rounded-lg p-3 w-70"
-                          >
-                            <div className="flex flex-col items-center mr-3 bg-white p-2 rounded-md shadow-sm">
-                              <span className="text-xs text-gray-500 w-20">
-                                추천 1
-                              </span>
-                              <span className="font-medium text-indigo-600">
-                                {item.itemset_a}
-                              </span>
+                    <div className="mt-2 xl:pl-3">
+                      {/* 전체 왼쪽 정렬로 변경 */}
+                      <div className="flex flex-col items-start w-full">
+                        <div className="flex gap-6 px-2 mt-1 ">
+                          {timeRules.map((item, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-center bg-gray-100 
+                               rounded-lg p-4 pl-10 pr-10 w-auto"
+                            >
+                              <div className="flex flex-col items-center mr-3 bg-white p-3 rounded-md shadow-sm">
+                                <span className="text-xs text-gray-500 w-20 ">
+                                  추천 1
+                                </span>
+                                <span className="font-medium text-indigo-600">
+                                  {item.itemset_a}
+                                </span>
+                              </div>
+                              <div className="flex items-center text-gray-400 mx-2">
+                                +
+                              </div>
+                              <div className="flex flex-col items-center bg-white p-3 rounded-md shadow-sm">
+                                <span className="text-xs text-gray-500 w-20">
+                                  추천 2
+                                </span>
+                                <span className="font-medium text-indigo-600">
+                                  {item.itemset_b}
+                                </span>
+                              </div>
                             </div>
-                            <div className="flex items-center text-gray-400 mx-1 mr-4">
-                              +
-                            </div>
-                            <div className="flex flex-col items-center bg-white p-2 rounded-md shadow-sm">
-                              <span className="text-xs text-gray-500 w-20">
-                                추천 2
-                              </span>
-                              <span className="font-medium text-indigo-600">
-                                {item.itemset_b}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="mt-3 text-xs text-gray-500 flex items-center">
-                        <Info className="h-3 w-3 mr-1" />이 시간대에 가장 많이
-                        함께 구매되는 상품입니다
+                          ))}
+                        </div>
+
+                        {/* 설명 문구도 왼쪽 정렬로 바꿈 */}
+                        <div className="mt-3 text-sm text-gray-500 flex items-center">
+                          <Info className="h-3 w-3 mr-1" />이 시간대에 가장 많이
+                          함께 구매되는 상품입니다
+                        </div>
                       </div>
                     </div>
                   ) : (

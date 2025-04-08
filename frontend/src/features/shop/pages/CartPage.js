@@ -25,6 +25,7 @@ export default function CartPage() {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("success");
   const navigate = useNavigate();
+  const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
 
   // 컴포넌트 마운트 시 장바구니 아이템 로드
   useEffect(() => {
@@ -79,6 +80,20 @@ export default function CartPage() {
     );
   };
 
+  // message 이벤트에서 성공 시 상태 true로 설정
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data?.type === "PAYMENT_SUCCESS") {
+        setIsPaymentSuccess(true); // ✅ 성공 여부 저장
+        clearCart();
+        navigate("/shop/complete");
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   // 장바구니 아이템 결제하기
   const handlePayment = async () => {
     console.log("장바구니 아이템", cartItems);
@@ -101,6 +116,14 @@ export default function CartPage() {
       // 주문 후 toss 결제 url 받아오기
       const orderId = await fetchPostOrder(order);
 
+      const orderData = {
+        id: orderId,
+        timestamp: Date.now(),
+      };
+
+      // ✅ 임시로 localStorage에 성공 여부 저장
+      localStorage.setItem("pendingPayment", JSON.stringify(orderData));
+
       // toss 결제창 띄우기
       const paymentUrl = `/payment?orderId=${orderId}&amount=${order.finalPrice}&orderSummary=${order.orderSummary}`;
       const paymentWindow = window.open(
@@ -109,18 +132,29 @@ export default function CartPage() {
         "width=500,height=700,resizable=yes,scrollbars=yes"
       );
 
+      // const timer = setInterval(() => {
+      //   if (paymentWindow && paymentWindow.closed) {
+      //     clearInterval(timer);
+
+      //     const pending = JSON.parse(localStorage.getItem("pendingPayment"));
+      //     const isSuccess = pending?.status === "success";
+
+      //     if (!isSuccess) {
+      //       fetch(`http://localhost:8090/app/payment/fail/${orderId}`, {
+      //         method: "DELETE",
+      //       });
+      //       showAlertMessage("결제가 취소되었습니다.", "warning");
+      //     }
+
+      //     // 삭제
+      //     localStorage.removeItem("pendingPayment");
+      //   }
+      // }, 500);
+
       const timer = setInterval(() => {
-        // 창이 닫혓는데 결제 성공 메세지를 못 받은 걍우 => 실패로 간주
         if (paymentWindow && paymentWindow.closed) {
           clearInterval(timer);
-          console.log("결제창이 닫혔습니다. 결제 실패로 처리합니다.");
-
-          // 백엔드에 결제 실패 알리기
-          fetch(`http://localhost:8090/app/payment/fail/${orderId}`, {
-            method: "DELETE",
-          });
-
-          showAlertMessage("결제가 취소되었습니다.", "warning");
+          localStorage.removeItem("pendingPayment");
         }
       }, 500);
     } catch (error) {
@@ -128,18 +162,6 @@ export default function CartPage() {
       showAlertMessage("결제 처리 중 오류가 발생했습니다.", "failure");
     }
   };
-
-  useEffect(() => {
-    const handleMessage = (event) => {
-      if (event.data?.type === "PAYMENT_SUCCESS") {
-        clearCart(); // 장바구니 비우기
-        navigate("/shop/complete");
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  });
 
   return (
     <div className="max-w-[430px] mx-auto bg-gray-50 min-h-screen">
