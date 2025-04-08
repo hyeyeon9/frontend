@@ -32,7 +32,7 @@ source .venv/bin/activate
 
 - 윈도우
 ```bash
-python -m venv .venv
+.venv\Scripts\activate
 ```
 
 ### 3. 필요한 패키지 설치
@@ -41,6 +41,11 @@ pip install -r requirements.txt
 ```
 
 > `requirements.txt`는 `backend` 폴더 내에 위치하고 있습니다.
+
+- 추가 업데이트
+```bash
+pip freeze > requirements.txt
+```
 
 ### 4. 서버 실행
 ```bash

@@ -103,11 +103,26 @@ export default function CartPage() {
 
       // toss 결제창 띄우기
       const paymentUrl = `/payment?orderId=${orderId}&amount=${order.finalPrice}&orderSummary=${order.orderSummary}`;
-      window.open(
+      const paymentWindow = window.open(
         paymentUrl,
         "_blank",
         "width=500,height=700,resizable=yes,scrollbars=yes"
       );
+
+      const timer = setInterval(() => {
+        // 창이 닫혓는데 결제 성공 메세지를 못 받은 걍우 => 실패로 간주
+        if (paymentWindow && paymentWindow.closed) {
+          clearInterval(timer);
+          console.log("결제창이 닫혔습니다. 결제 실패로 처리합니다.");
+
+          // 백엔드에 결제 실패 알리기
+          fetch(`http://localhost:8090/app/payment/fail/${orderId}`, {
+            method: "DELETE",
+          });
+
+          showAlertMessage("결제가 취소되었습니다.", "warning");
+        }
+      }, 500);
     } catch (error) {
       console.error("결제 처리 중 오류 발생:", error);
       showAlertMessage("결제 처리 중 오류가 발생했습니다.", "failure");
