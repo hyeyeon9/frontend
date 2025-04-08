@@ -1,9 +1,12 @@
-import { useUser } from "../features/member/UserContext";
-import Time from "./Time";
-import Weather from "./Weather";
+"use client"
+
+import { useUser } from "../features/member/UserContext"
+import Time from "./Time"
+import Weather from "./Weather"
+import GlobalNotification from "./GlobalNotification"
 
 export default function Headers() {
-  const { user, setUser } = useUser();
+  const { user, setUser } = useUser()
   // console.log("현재 user 값:", user);
 
   return (
@@ -16,31 +19,22 @@ export default function Headers() {
 
           {/* Centered logo */}
           <a href="/" className="flex items-center justify-center">
-            <img
-              src="https://flowbite.com/docs/images/logo.svg"
-              className="mr-3 h-6 sm:h-9"
-              alt="Flowbite Logo"
-            />
-            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-              Daily24
-            </span>
+            <img src="https://flowbite.com/docs/images/logo.svg" className="mr-3 h-6 sm:h-9" alt="Flowbite Logo" />
+            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">Daily24</span>
           </a>
 
-          {/* Weather on right */}
-          <Weather />
+          {/* Weather and Notification on right */}
+          <div className="flex items-center gap-2">
+            <GlobalNotification />
+            <Weather />
+          </div>
         </div>
 
         {/* Desktop Header */}
         <div className="hidden md:flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
           <a href="/" className="flex items-center ml-12 lg:ml-0">
-            <img
-              src="https://flowbite.com/docs/images/logo.svg"
-              className="mr-3 h-6 sm:h-9"
-              alt="Flowbite Logo"
-            />
-            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-              Daily24
-            </span>
+            <img src="https://flowbite.com/docs/images/logo.svg" className="mr-3 h-6 sm:h-9" alt="Flowbite Logo" />
+            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">Daily24</span>
           </a>
           <div className="flex items-center lg:order-2">
             {user && (
@@ -57,11 +51,12 @@ export default function Headers() {
                 </div>
               </>
             )}
+            <GlobalNotification />
             <Time />
             <Weather />
           </div>
         </div>
       </nav>
     </header>
-  );
+  )
 }
