@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 기존 CSS에 추가 */
+
+/* 알림 드롭다운 스타일 */
+.notification-dropdown {
+    position: relative;
+  }
+  
+  /* 모바일 반응형 스타일 */
+  @media (max-width: 640px) {
+    .notification-dropdown .absolute {
+      width: calc(100vw - 32px);
+      max-width: 100%;
+      right: -10px;
+    }
+  }
+  
+  /* 태블릿 반응형 스타일 */
+  @media (min-width: 641px) and (max-width: 1023px) {
+    .notification-dropdown .absolute {
+      width: 320px;
+    }
+  }
+  

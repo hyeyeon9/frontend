@@ -175,7 +175,7 @@ export default function SalesComparisonChart({
                   data={chartData}
                   keys={["이전", "현재"]}
                   indexBy="product"
-                  margin={{ top: 10, right: 120, bottom: 30, left: 120 }}
+                  margin={{ top: 10, right: 100, bottom: 40, left: 120 }}
                   padding={0.3}
                   layout="horizontal" // 가로 방향 차트
                   groupMode="grouped"
@@ -285,13 +285,15 @@ export default function SalesComparisonChart({
                   있습니다.
                 </p>
               </div>
-              <div className="min-h-[300px] sm:h-80 w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              {/* 트리맵 컨테이너 수정 */}
+              <div className="w-full flex flex-col md:flex-row gap-4">
                 {/* 이전 데이터 트리맵 */}
-                <div className="flex flex-col">
+                <div className="w-full md:w-1/2 flex flex-col">
                   <h4 className="text-xs font-medium text-gray-700 mb-2 text-center">
                     {trendMapping[trendBasis]} : {previousDate} {hourLabel}시
                   </h4>
-                  <div className="flex-1 border rounded-lg overflow-hidden">
+                  <div className="h-[250px] md:h-[300px] border rounded-lg overflow-hidden">
                     <ResponsiveTreeMapHtml
                       data={treemapData.previous}
                       identity="name"
@@ -333,11 +335,11 @@ export default function SalesComparisonChart({
                 </div>
 
                 {/* 현재 데이터 트리맵 */}
-                <div className="flex flex-col">
+                <div className="w-full md:w-1/2 flex flex-col">
                   <h4 className="text-xs font-bold text-blue-800 mb-2 text-center">
                     현재 : {currentDate} {hourLabel}시
                   </h4>
-                  <div className="flex-1 border rounded-lg overflow-hidden">
+                  <div className="h-[250px] md:h-[300px] border rounded-lg overflow-hidden">
                     <ResponsiveTreeMapHtml
                       data={treemapData.current}
                       identity="name"

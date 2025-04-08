@@ -1,31 +1,33 @@
-"use client"
-
-import { useState, useEffect, useRef } from "react"
-import { MessageCircle, X, Send, Loader2 } from "lucide-react"
+import { useState, useEffect, useRef } from "react";
+import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 
 export default function ChatWidget() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [question, setQuestion] = useState("")
-  const [messages, setMessages] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
-  const messagesEndRef = useRef(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [question, setQuestion] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+    scrollToBottom();
+  }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleSubmit = async (e) => {
-    if (e) e.preventDefault()
-    if (!question.trim() || isLoading) return
+    if (e) e.preventDefault();
+    if (!question.trim() || isLoading) return;
 
-    const newUserMessage = { type: "user", text: question, timestamp: new Date() }
-    setMessages((prev) => [...prev, newUserMessage])
-    setIsLoading(true)
+    const newUserMessage = {
+      type: "user",
+      text: question,
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, newUserMessage]);
+    setIsLoading(true);
 
     try {
       const res = await fetch("http://localhost:8000/chat/full", {
@@ -34,30 +36,40 @@ export default function ChatWidget() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ question }),
-      })
+      });
 
-      const data = await res.json()
-      setMessages((prev) => [...prev, { type: "bot", text: data.answer, timestamp: new Date() }])
+      const data = await res.json();
+      setMessages((prev) => [
+        ...prev,
+        { type: "bot", text: data.answer, timestamp: new Date() },
+      ]);
     } catch (error) {
-      setMessages((prev) => [...prev, { type: "bot", text: "⚠️ 서버와의 연결에 실패했습니다.", timestamp: new Date() }])
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: "bot",
+          text: "⚠️ 서버와의 연결에 실패했습니다.",
+          timestamp: new Date(),
+        },
+      ]);
     } finally {
-      setIsLoading(false)
-      setQuestion("")
+      setIsLoading(false);
+      setQuestion("");
     }
-  }
+  };
 
   const formatTime = (date) => {
     return date.toLocaleTimeString("ko-KR", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-    })
-  }
+    });
+  };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-[50]">
       {isOpen && (
-        <div className="w-80 sm:w-96 h-[500px] shadow-xl flex flex-col rounded-2xl overflow-hidden border-0 bg-white">
+        <div className="w-80 sm:w-96 max-w-full h-[500px] shadow-xl flex flex-col rounded-2xl overflow-hidden border-0 bg-white">
           {/* 헤더 */}
           <div className="bg-blue-600 text-white py-3 px-4">
             <div className="flex justify-between items-center">
@@ -90,17 +102,23 @@ export default function ChatWidget() {
                 <div
                   key={idx}
                   className={`flex flex-col max-w-[80%] ${
-                    msg.type === "user" ? "ml-auto items-end" : "mr-auto items-start"
+                    msg.type === "user"
+                      ? "ml-auto items-end"
+                      : "mr-auto items-start"
                   }`}
                 >
                   <div
                     className={`px-3 py-2 rounded-2xl shadow-sm ${
-                      msg.type === "user" ? "bg-blue-600 text-white" : "bg-white border border-gray-100"
+                      msg.type === "user"
+                        ? "bg-blue-600 text-white"
+                        : "bg-white border border-gray-100"
                     }`}
                   >
                     {msg.text}
                   </div>
-                  <span className="text-xs text-gray-500 mt-1 px-1">{formatTime(msg.timestamp)}</span>
+                  <span className="text-xs text-gray-500 mt-1 px-1">
+                    {formatTime(msg.timestamp)}
+                  </span>
                 </div>
               ))
             )}
@@ -130,7 +148,11 @@ export default function ChatWidget() {
                 disabled={isLoading || !question.trim()}
                 className="shrink-0 rounded-full bg-blue-600 hover:bg-blue-700 w-10 h-10 flex items-center justify-center text-white"
               >
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
               </button>
             </form>
           </div>
@@ -145,6 +167,5 @@ export default function ChatWidget() {
         <MessageCircle className="h-6 w-6" />
       </button>
     </div>
-  )
+  );
 }
-

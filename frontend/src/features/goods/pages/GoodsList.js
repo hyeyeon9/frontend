@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { fetchGoodsList } from "../api/HttpGoodsService";
 import { Link } from "react-router-dom";
@@ -39,7 +37,7 @@ function GoodsList() {
 
   const [discountItems, setDiscountItems] = useState([]);
   const [showExpiringNotification, setShowExpiringNotification] =
-  useState(false);
+    useState(false);
 
   // 유통기한에서 넘어온 할인추천 상품
   useEffect(() => {
@@ -53,7 +51,7 @@ function GoodsList() {
         localStorage.removeItem("selectedForDiscount");
       } catch (error) {
         console.log(error.message);
-      }finally{
+      } finally {
         setShowExpiringNotification(true);
       }
     }
@@ -114,7 +112,7 @@ function GoodsList() {
     <>
       <MenuNavigation />
       <div className="p-6 bg-gray-100 min-h-screen">
-        {showExpiringNotification&& discountItems.length > 0 && (
+        {showExpiringNotification && discountItems.length > 0 && (
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 flex items-center justify-between">
             <div className="flex items-center">
               <Tag className="h-5 w-5 text-amber-600 mr-3" />
@@ -135,9 +133,10 @@ function GoodsList() {
               </div>
             </div>
             <button
-            onClick={() => setShowExpiringNotification(false)}
-             className="text-amber-600 hover:text-amber-800">
-            <X className="h-5 w-5" />
+              onClick={() => setShowExpiringNotification(false)}
+              className="text-amber-600 hover:text-amber-800"
+            >
+              <X className="h-5 w-5" />
             </button>
           </div>
         )}
