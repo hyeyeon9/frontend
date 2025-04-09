@@ -6,7 +6,7 @@ import ScrollToTop from "../components/ScrollToTop";
 
 export default function UserLayout() {
   return (
-    <div className="flex flex-col min-w-screen">
+    <div className="flex flex-col min-w-screen bg-white">
       <ScrollToTop />
       <UserHeader />
       <main className="flex justify-center overflow-auto p-6">
