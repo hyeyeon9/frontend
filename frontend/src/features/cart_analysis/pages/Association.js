@@ -257,7 +257,8 @@ function Association() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-gray-700">
-                      지지도 (Support) ≥ {(minSupport * 100).toFixed(1)}%
+                      지지도 <span className="lg:hidden xl:inline">(Support)</span> ≥{" "}
+                      {(minSupport * 100).toFixed(1)}%
                     </label>
                     <span className="text-xs text-gray-500">
                       {(minSupport * 100).toFixed(1)}%
@@ -283,7 +284,8 @@ function Association() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-gray-700">
-                      신뢰도 (Confidence) ≥ {(minConfidence * 100).toFixed(0)}%
+                      신뢰도 <span className="lg:hidden xl:inline">(Confidence)</span> ≥{" "}
+                      {(minConfidence * 100).toFixed(0)}%
                     </label>
                     <span className="text-xs text-gray-500">
                       {(minConfidence * 100).toFixed(0)}%
@@ -309,7 +311,8 @@ function Association() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-gray-700">
-                      향상도 (Lift) ≥ {minLift.toFixed(1)}
+                      향상도 <span className="lg:hidden xl:inline">(Lift)</span> ≥{" "}
+                      {minLift.toFixed(1)}
                     </label>
                     <span className="text-xs text-gray-500">
                       {minLift.toFixed(1)}
@@ -447,7 +450,7 @@ function Association() {
 
               <div className="p-4 flex items-center">
                 <div className="flex-1">
-                  <div className="flex items-center ">
+                  <div className="flex items-center">
                     <h3 className="xl:text-xl md:text-lg xl:pl-3 font-bold text-gray-800">
                       {timePeriod}
                     </h3>
@@ -458,31 +461,30 @@ function Association() {
 
                   {timeRules.length > 0 ? (
                     <div className="mt-2 xl:pl-3">
-                      {/* 전체 왼쪽 정렬로 변경 */}
-                      <div className="flex flex-col items-start w-full">
-                        <div className="flex gap-6 px-2 mt-1 ">
+                      <div className="flex flex-col items-start xl:w-full ">
+                        {/* ✅ 조합 카드 영역 */}
+                        <div className="flex flex-wrap md:flex-nowrap gap-4 px-2 mt-1 xl:w-full lg:w-[260px]">
                           {timeRules.map((item, idx) => (
                             <div
                               key={idx}
-                              className="flex items-center bg-gray-100 
-                               rounded-lg p-4 pl-10 pr-10 w-auto"
+                              className="flex items-center bg-gray-100 lg:w-[80px]  -m1-5 lg:p-3 lg:-ml-3 rounded-xl p-4 flex-1"
                             >
-                              <div className="flex flex-col items-center mr-3 bg-white p-3 rounded-md shadow-sm">
-                                <span className="text-xs text-gray-500 w-20 ">
+                              <div className="flex xl:px-10 flex-col items-center mr-3 lg:p-0 xl:p-3 bg-white rounded-md shadow-sm min-w-[100px]">
+                                <span className="text-xs text-gray-500 whitespace-nowrap">
                                   추천 1
                                 </span>
-                                <span className="font-medium text-indigo-600">
+                                <span className="font-medium text-indigo-600 text-base md:text-lg">
                                   {item.itemset_a}
                                 </span>
                               </div>
-                              <div className="flex items-center text-gray-400 mx-2">
+                              <div className="flex items-center lg:m-0 lg:mr-2 text-gray-400 xl:ml-2 xl:mr-4 text-lg font-bold">
                                 +
                               </div>
-                              <div className="flex flex-col items-center bg-white p-3 rounded-md shadow-sm">
-                                <span className="text-xs text-gray-500 w-20">
+                              <div className="flex xl:px-10 flex-col items-center  lg:p-0 bg-white xl:p-3 rounded-md shadow-sm min-w-[100px]">
+                                <span className="text-xs text-gray-500 whitespace-nowrap">
                                   추천 2
                                 </span>
-                                <span className="font-medium text-indigo-600">
+                                <span className="font-medium text-indigo-600 text-base md:text-lg">
                                   {item.itemset_b}
                                 </span>
                               </div>
@@ -490,8 +492,8 @@ function Association() {
                           ))}
                         </div>
 
-                        {/* 설명 문구도 왼쪽 정렬로 바꿈 */}
-                        <div className="mt-3 text-sm text-gray-500 flex items-center">
+                        {/* 설명 문구 */}
+                        <div className="mt-3 text-sm text-gray-500 flex items-center lg:hidden xl:flex">
                           <Info className="h-3 w-3 mr-1" />이 시간대에 가장 많이
                           함께 구매되는 상품입니다
                         </div>
@@ -544,7 +546,9 @@ function Association() {
                         </div>
 
                         <div className="flex items-center text-gray-700">
-                          <span className="font-medium">{item.itemset_a}</span>
+                          <span className="font-medium lg:text-sm lg:w-[110px] xl:text-base xl:w-[200px]">
+                            {item.itemset_a}
+                          </span>
                           <ChevronDown
                             className={`h-4 w-4 mx-2 transform text-gray-400 transition-transform ${
                               expandedRuleIndex === idx
@@ -552,7 +556,9 @@ function Association() {
                                 : "rotate-270"
                             }`}
                           />
-                          <span className="font-medium">{item.itemset_b}</span>
+                          <span className="font-medium lg:text-sm xl:text-base xl:w-[150px] xl:ml-1">
+                            {item.itemset_b}
+                          </span>
                         </div>
                       </div>
 
