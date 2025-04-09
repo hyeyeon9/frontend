@@ -526,7 +526,7 @@ function GoodsList() {
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {FormatDate(item.goods_created_at)}
+                              {FormatDate(item.goods_created_at).substring(0,13)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">

@@ -51,9 +51,10 @@ export default function Headers() {
                 </div>
               </>
             )}
-            <GlobalNotification />
+           
             <Time />
             <Weather />
+            <GlobalNotification />
           </div>
         </div>
       </nav>
