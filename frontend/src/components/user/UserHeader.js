@@ -33,12 +33,12 @@ export default function UserHeader() {
   return (
     <Navbar
       fluid
-      className="border-b shadow-sm sticky top-0 z-[1000] bg-white dark:bg-gray-800"
+      className="border-b shadow-sm sticky px-5 top-0 z-[1000] bg-white dark:bg-gray-800"
     >
       <Navbar.Brand as={Link} to="/shop">
         <img
           src="https://flowbite.com/docs/images/logo.svg"
-          className="mr-3 h-6 sm:h-9"
+          className="mx-3 h-6 sm:h-9"
           alt="Flowbite Logo"
         />
         <span className="self-center text-xl font-semibold whitespace-nowrap">
@@ -46,7 +46,7 @@ export default function UserHeader() {
         </span>
       </Navbar.Brand>
 
-      <div className="flex md:order-2 items-center gap-2">
+      <div className="flex mr-2 md:order-2 items-center gap-2">
         <Link to="/shop/cart" className="p-2 relative">
           <ShoppingCart className="h-6 w-6" />
           {cartCount > 0 && (

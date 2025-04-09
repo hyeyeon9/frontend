@@ -300,7 +300,7 @@ export default function Products({
                   <img
                     src={product.goods_image || "/placeholder.svg"}
                     alt={product.goods_name}
-                    className="object-cover w-full h-28 rounded-t-lg"
+                    className="object-cover w-full max-h-52 rounded-t-lg aspect-square"
                   />
                   {isDiscounted(product) && (
                     <Badge
@@ -376,10 +376,10 @@ export default function Products({
 
   // 전체 페이지 버전
   return (
-    <div className="max-w-[430px] mx-auto">
+    <div className="container sm:px-6">
       {/* 장바구니 추가 알림 */}
       {showCartAlert && addedProduct && (
-        <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-[2000]">
           <div className="bg-black text-white px-4 py-3 rounded-lg shadow-lg text-center">
             <p className="text-sm font-medium">장바구니에 상품을 담았어요</p>
           </div>
@@ -503,7 +503,7 @@ export default function Products({
         </div>
       ) : products.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {products.map((product) => (
               <div
                 key={product.goods_id}
@@ -516,7 +516,7 @@ export default function Products({
                   <img
                     src={product.goods_image || "/placeholder.svg"}
                     alt={product.goods_name}
-                    className="object-cover w-full h-32 rounded-t-lg"
+                    className="object-cover w-full rounded-t-lg aspect-square"
                   />
 
                   {/* 품절 오버레이 */}
@@ -631,18 +631,25 @@ export default function Products({
       )}
 
       {/* 하단 장바구니 위젯 - 전체 화면 모드일 때만 표시 */}
+
       {isFullPage && (
-        <div className="fixed bottom-0 bg-white border-t p-3 z-10 max-w-[430px] w-full">
-          <Button
-            color="blue"
-            size="lg"
-            className="w-full py-2.5 text-base"
-            onClick={() => navigate("/shop/cart")}
-          >
-            <ShoppingBag className="h-5 w-5 mr-2" />
-            장바구니 보기 {cartCount > 0 && `(${cartCount})`}
-          </Button>
-        </div>
+        <>
+          {/* 전체 배경 깔기 */}
+          <div className="fixed bottom-0 left-0 w-full bg-white border-t px-8 z-10">
+            {/* 내용 컨테이너 */}
+            <div className="w-full md:w-1/3 md:ml-auto py-2">
+              <Button
+                color="blue"
+                size="lg"
+                className="w-full text-sm"
+                onClick={() => navigate("/shop/cart")}
+              >
+                <ShoppingBag className="h-5 w-5 mr-2" />
+                장바구니 보기 {cartCount > 0 && `(${cartCount})`}
+              </Button>
+            </div>
+          </div>
+        </>
       )}
 
       <style jsx>{`
