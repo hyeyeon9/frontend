@@ -1,153 +1,164 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
-import ChatWidget from "../../../components/ChatWidget"
-import DisposalToday from "../../disposal/pages/DisposalToday"
-import ExpiringSoonList from "./ExpiringSoonList"
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import ChatWidget from "../../../components/ChatWidget";
+import DisposalToday from "../../disposal/pages/DisposalToday";
+import ExpiringSoonList from "./ExpiringSoonList";
 
-import { fetchDisposalByDate } from "../../disposal/api/HttpDisposalService"
-import { FormatDate } from "../../disposal/components/FormatDate"
-import { fetchExpiringItems, fetchInventoryList } from "../../inventory/api/HttpInventoryService" // 위치 확인 필요
-import { fetchOrders } from "../../ordering/api/HttpOrderingService"
-import { fetchGetTodaySales, fetchGetTodayVisitors } from "../api/DashboardService"
-import DiffChart from "../../statistics/components/DiffChart"
-import { getFormattedDateTime } from "../../../contexts/TimeContext"
-import { fetchGetAverageSales, fetchGetHourlySales } from "../../statistics/api/HttpStatService"
+import { fetchDisposalByDate } from "../../disposal/api/HttpDisposalService";
+import { FormatDate } from "../../disposal/components/FormatDate";
+import {
+  fetchExpiringItems,
+  fetchInventoryList,
+} from "../../inventory/api/HttpInventoryService"; // 위치 확인 필요
+import { fetchOrders } from "../../ordering/api/HttpOrderingService";
+import {
+  fetchGetTodaySales,
+  fetchGetTodayVisitors,
+} from "../api/DashboardService";
+import DiffChart from "../../statistics/components/DiffChart";
+import { getFormattedDateTime } from "../../../contexts/TimeContext";
+import {
+  fetchGetAverageSales,
+  fetchGetHourlySales,
+} from "../../statistics/api/HttpStatService";
 
 // {prev}일 전 날짜
 function getPreviousDayStringKST(prev) {
-  const now = new Date()
-  const kstOffset = 9 * 60 * 60 * 1000 // 9시간
-  const kst = new Date(now.getTime() + kstOffset)
-  kst.setDate(kst.getDate() - prev)
-  return kst.toISOString().slice(0, 10)
+  const now = new Date();
+  const kstOffset = 9 * 60 * 60 * 1000; // 9시간
+  const kst = new Date(now.getTime() + kstOffset);
+  kst.setDate(kst.getDate() - prev);
+  return kst.toISOString().slice(0, 10);
 }
 
 // 한 달 전 날짜
 function getLastMonthSameDayStringKST() {
-  const now = new Date()
-  const kstOffset = 9 * 60 * 60 * 1000
-  const kst = new Date(now.getTime() + kstOffset)
-  kst.setMonth(kst.getMonth() - 1)
-  return kst.toISOString().slice(0, 10)
+  const now = new Date();
+  const kstOffset = 9 * 60 * 60 * 1000;
+  const kst = new Date(now.getTime() + kstOffset);
+  kst.setMonth(kst.getMonth() - 1);
+  return kst.toISOString().slice(0, 10);
 }
 
 export default function DashBoard() {
-  const [currentTime, setCurrentTime] = useState(new Date())
-  const [isLoading, setIsLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState("disposal") // disposal 또는 expiring
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("disposal"); // disposal 또는 expiring
 
-  const [disposalCount, setDisposalCount] = useState(0)
-  const [expiringCount, setExpiringCount] = useState(0)
+  const [disposalCount, setDisposalCount] = useState(0);
+  const [expiringCount, setExpiringCount] = useState(0);
 
-  const [visitors, setVisitors] = useState(0)
-  const [sales, setSales] = useState(0)
-  const [loading, setLoading] = useState(true)
+  const [visitors, setVisitors] = useState(0);
+  const [sales, setSales] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const [orderData, setOrderData] = useState([])
-  const [inventoryList, setInventoryList] = useState([])
+  const [orderData, setOrderData] = useState([]);
+  const [inventoryList, setInventoryList] = useState([]);
 
-  const [expiringItems, setExpiringItems] = useState([])
+  const [expiringItems, setExpiringItems] = useState([]);
 
   // 매출 차트 조회모드와 차트 데이터
-  const [chartMode, setChartMode] = useState("1") // 1: 어제, 2: 일주일 전, 7: 7일 평균, 30: 30일 평균
-  const [targetDate, setTargetDate] = useState("") // 비교할 날짜
-  const [todayData, setTodayData] = useState([]) // 오늘 날짜의 데이터
-  const [targetData, setTargetData] = useState([]) // 비교할 날짜의 데이터
+  const [chartMode, setChartMode] = useState("1"); // 1: 어제, 2: 일주일 전, 7: 7일 평균, 30: 30일 평균
+  const [targetDate, setTargetDate] = useState(""); // 비교할 날짜
+  const [todayData, setTodayData] = useState([]); // 오늘 날짜의 데이터
+  const [targetData, setTargetData] = useState([]); // 비교할 날짜의 데이터
 
   // 오늘 날짜 저장
-  const [today, setToday] = useState(getFormattedDateTime().date)
+  const [today, setToday] = useState(getFormattedDateTime().date);
 
   // 폐기 예정 상품 개수
   useEffect(() => {
     async function getDisposalCount() {
       try {
         // const today = new Date().toISOString().split("T")[0];
-        const data = await fetchDisposalByDate(today)
-        setDisposalCount(data.length)
+        const data = await fetchDisposalByDate(today);
+        setDisposalCount(data.length);
       } catch (error) {
-        console.error("폐기 상품 개수 불러오기 실패:", error)
+        console.error("폐기 상품 개수 불러오기 실패:", error);
       }
     }
 
-    getDisposalCount()
-  }, [today])
+    getDisposalCount();
+  }, [today]);
 
   // 유통기한 임박 상품 불러오기
   useEffect(() => {
     async function getExpiringCount() {
       try {
-        const data = await fetchExpiringItems()
-        console.log("유통기한 임박", data)
-        setExpiringItems(data)
-        setExpiringCount(data.length)
+        const data = await fetchExpiringItems();
+        console.log("유통기한 임박", data);
+        setExpiringItems(data);
+        setExpiringCount(data.length);
       } catch (error) {
-        console.error("유통기한 임박 항목 불러오기 실패:", error)
+        console.error("유통기한 임박 항목 불러오기 실패:", error);
       }
     }
 
-    getExpiringCount()
-  }, [])
+    getExpiringCount();
+  }, []);
 
   // 발주 현황
   useEffect(() => {
     async function getOrdersList() {
       try {
-        const data = await fetchOrders()
-        console.log("발주 리스트", data)
-        const latestData = data.sort((a, b) => b.orderId - a.orderId).slice(0, 3)
+        const data = await fetchOrders();
+        console.log("발주 리스트", data);
+        const latestData = data
+          .sort((a, b) => b.orderId - a.orderId)
+          .slice(0, 3);
 
-        setOrderData(latestData)
+        setOrderData(latestData);
       } catch (e) {
-        console.log(e.message)
+        console.log(e.message);
       }
     }
-    getOrdersList()
-  }, [])
+    getOrdersList();
+  }, []);
 
   useEffect(() => {
     const fetchTodaysData = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const visitorResponse = await fetchGetTodayVisitors()
-        const salesResponse = await fetchGetTodaySales()
-        setVisitors(visitorResponse.data)
-        setSales(salesResponse.data)
+        const visitorResponse = await fetchGetTodayVisitors();
+        const salesResponse = await fetchGetTodaySales();
+        setVisitors(visitorResponse.data);
+        setSales(salesResponse.data);
       } catch (error) {
-        console.error("데이터를 가져오는 데 실패했습니다.", error)
+        console.error("데이터를 가져오는 데 실패했습니다.", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchTodaysData()
-  }, [])
+    };
+    fetchTodaysData();
+  }, []);
 
   // 전체 재고현황 불러오는 메서드 (리스트 변경될 때마다 가져오기)
   useEffect(() => {
     async function getInventoryList() {
       try {
-        setLoading(true)
-        const data = await fetchInventoryList()
-        setInventoryList(data)
+        setLoading(true);
+        const data = await fetchInventoryList();
+        setInventoryList(data);
       } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    getInventoryList()
-  }, [])
+    getInventoryList();
+  }, []);
 
   // 상품명 기준으로 재고 합치기
-  const groupedStock = {}
+  const groupedStock = {};
 
   inventoryList.forEach((item) => {
     if (!groupedStock[item.goodsName]) {
-      groupedStock[item.goodsName] = 0
+      groupedStock[item.goodsName] = 0;
     }
-    groupedStock[item.goodsName] += item.stockQuantity
-  })
+    groupedStock[item.goodsName] += item.stockQuantity;
+  });
 
   // 기준치 이하만 필터링
   const mergedLowStock = Object.entries(groupedStock)
@@ -155,27 +166,34 @@ export default function DashBoard() {
     .map(([name, total]) => ({
       goodsName: name,
       totalStock: total,
-    }))
+    }));
 
   // 시간 업데이트
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 1000)
+      setCurrentTime(new Date());
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
 
   const handleRefresh = () => {
-    setIsLoading(true)
+    setIsLoading(true);
     // 데이터 새로고침 로직
     setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
-  }
+      setIsLoading(false);
+    }, 1000);
+  };
 
   // 대시보드 카드 컴포넌트
-  const DashboardCard = ({ title, value, icon, bgColor, textColor, footer }) => (
+  const DashboardCard = ({
+    title,
+    value,
+    icon,
+    bgColor,
+    textColor,
+    footer,
+  }) => (
     <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start">
         <div>
@@ -188,7 +206,7 @@ export default function DashBoard() {
       </div>
       {footer && <div className="flex items-center mt-4">{footer}</div>}
     </div>
-  )
+  );
 
   // 섹션 헤더 컴포넌트
   const SectionHeader = ({ icon, title, linkTo, linkText = "더 보기" }) => (
@@ -198,88 +216,105 @@ export default function DashBoard() {
         <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
       </div>
       {linkTo && (
-        <Link to={linkTo} className="text-sm text-blue-600 hover:underline flex items-center">
+        <Link
+          to={linkTo}
+          className="text-sm text-blue-600 hover:underline flex items-center"
+        >
           {linkText}
-          <svg className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="h-4 w-4 ml-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </Link>
       )}
     </div>
-  )
+  );
 
   // 매출 차트
   // 조회 모드 변경
   const handleChartModeChange = (e) => {
-    setChartMode(e.target.value)
-  }
+    setChartMode(e.target.value);
+  };
 
   // 오늘의 매출 데이터
   useEffect(() => {
     const fetchTodayData = async () => {
       try {
-        const todaySalesData = await fetchGetHourlySales(today)
-        setTodayData(todaySalesData.data)
+        const todaySalesData = await fetchGetHourlySales(today);
+        setTodayData(todaySalesData.data);
       } catch (error) {
-        console.error("오늘 매출 데이터 가져오기 실패:", error)
+        console.error("오늘 매출 데이터 가져오기 실패:", error);
       }
-    }
-    fetchTodayData()
-  }, [today]) // Add today as a dependency
+    };
+    fetchTodayData();
+  }, [today]); // Add today as a dependency
 
   // 조회 모드에 따른 차트 값 호출
   useEffect(() => {
     const fetchDataByType = async () => {
       try {
-        let targetDate
-        let data
+        let targetDate;
+        let data;
 
         switch (chartMode) {
           case "1": {
             // 어제의 매출 데이터
-            targetDate = getPreviousDayStringKST(1)
-            data = await fetchGetHourlySales(targetDate)
-            setTargetDate(targetDate)
-            break
+            targetDate = getPreviousDayStringKST(1);
+            data = await fetchGetHourlySales(targetDate);
+            setTargetDate(targetDate);
+            break;
           }
           case "2": {
             // 저번 주 같은 요일의 매출 데이터
-            targetDate = getPreviousDayStringKST(7)
-            data = await fetchGetHourlySales(targetDate)
-            setTargetDate(targetDate)
-            break
+            targetDate = getPreviousDayStringKST(7);
+            data = await fetchGetHourlySales(targetDate);
+            setTargetDate(targetDate);
+            break;
           }
           case "7": {
             // 일주일 평균 매출 데이터 가져오기
-            const endDate = getPreviousDayStringKST(1)
-            const startDate = getPreviousDayStringKST(7)
-            data = await fetchGetAverageSales(startDate, endDate)
-            setTargetDate("최근 7일 평균")
-            break
+            const endDate = getPreviousDayStringKST(1);
+            const startDate = getPreviousDayStringKST(7);
+            data = await fetchGetAverageSales(startDate, endDate);
+            setTargetDate("최근 7일 평균");
+            break;
           }
           case "30": {
             // 한달 평균 매출 데이터 가져오기
-            const endDate = getPreviousDayStringKST(1)
-            const startDate = getLastMonthSameDayStringKST()
-            data = await fetchGetAverageSales(startDate, endDate)
-            setTargetDate("최근 한 달 평균")
-            break
+            const endDate = getPreviousDayStringKST(1);
+            const startDate = getLastMonthSameDayStringKST();
+            data = await fetchGetAverageSales(startDate, endDate);
+            setTargetDate("최근 한 달 평균");
+            break;
           }
           default:
-            console.warn("알 수 없는 chartMode:", chartMode)
-            return
+            console.warn("알 수 없는 chartMode:", chartMode);
+            return;
         }
-        setTargetData(data.data)
+        setTargetData(data.data);
       } catch (error) {
-        console.error("차트 데이터 가져오기 실패:", error)
+        console.error("차트 데이터 가져오기 실패:", error);
       }
-    }
+    };
 
-    fetchDataByType()
-  }, [chartMode])
+    fetchDataByType();
+  }, [chartMode]);
 
   const barColor =
-    mergedLowStock.totalStock < 2 ? "bg-red-500" : mergedLowStock.totalStock < 5 ? "bg-amber-500" : "bg-blue-600"
+    mergedLowStock.totalStock < 2
+      ? "bg-red-500"
+      : mergedLowStock.totalStock < 5
+      ? "bg-amber-500"
+      : "bg-blue-600";
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -288,7 +323,12 @@ export default function DashBoard() {
         <div>
           <h1 className="text-2xl font-bold text-gray-800">📊 대시보드</h1>
           <div className="flex items-center text-gray-500 mt-1">
-            <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="h-4 w-4 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -303,7 +343,12 @@ export default function DashBoard() {
                 day: "numeric",
               })}
             </span>
-            <svg className="h-4 w-4 ml-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="h-4 w-4 ml-3 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -346,7 +391,12 @@ export default function DashBoard() {
           bgColor="bg-blue-100"
           textColor="text-blue-600"
           icon={
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -358,8 +408,18 @@ export default function DashBoard() {
           footer={
             <div className="flex items-center">
               <div className="text-green-500 flex items-center">
-                <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                <svg
+                  className="h-4 w-4 mr-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 10l7-7m0 0l7 7m-7-7v18"
+                  />
                 </svg>
                 <span>27.5%</span>
               </div>
@@ -374,7 +434,12 @@ export default function DashBoard() {
           bgColor="bg-red-100"
           textColor="text-red-600"
           icon={
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -392,7 +457,12 @@ export default function DashBoard() {
           bgColor="bg-yellow-100"
           textColor="text-yellow-600"
           icon={
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -410,7 +480,12 @@ export default function DashBoard() {
           bgColor="bg-green-100"
           textColor="text-green-600"
           icon={
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -429,25 +504,34 @@ export default function DashBoard() {
         <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold text-gray-800">매출 추이</h2>
-            <select className="text-sm border rounded-md px-2 py-1" value={chartMode} onChange={handleChartModeChange}>
+            <select
+              className="text-sm border rounded-md px-2 py-1"
+              value={chartMode}
+              onChange={handleChartModeChange}
+            >
               <option value={1}>전일 비교</option>
               <option value={2}>전주 비교</option>
               {/* <option value={7}>7일 평균</option>
               <option value={30}>30일 평균</option> */}
             </select>
           </div>
-          <div className="h-80">
+          <div className="xl:h-96 lg:h-80">
             {todayData.length > 0 && targetData.length > 0 && (
-              <DiffChart todayData={todayData} targetDateData={targetData} date1={today} date2={targetDate} />
+              <DiffChart
+                todayData={todayData}
+                targetDateData={targetData}
+                date1={today}
+                date2={targetDate}
+              />
             )}
           </div>
         </div>
 
         {/* 폐기/유통기한 탭 */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="flex border-b">
+          <div className="flex border-b flex-nowrap overflow-x-auto">
             <button
-              className={`flex-1 py-4 px-6 text-center font-medium ${
+              className={`flex-1 py-3 px-3 md:px-4 min-w-0 whitespace-nowrap text-center font-medium text-sm md:text-base ${
                 activeTab === "disposal"
                   ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600"
                   : "text-gray-500 hover:text-gray-700"
@@ -457,7 +541,7 @@ export default function DashBoard() {
               폐기 처리
             </button>
             <button
-              className={`flex-1 py-4 px-6 text-center font-medium ${
+              className={`flex-1 py-3 px-3 md:px-4 min-w-0 whitespace-nowrap text-center font-medium text-sm md:text-base ${
                 activeTab === "expiring"
                   ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600"
                   : "text-gray-500 hover:text-gray-700"
@@ -468,7 +552,13 @@ export default function DashBoard() {
             </button>
           </div>
 
-          <div className="p-4">{activeTab === "disposal" ? <DisposalToday /> : <ExpiringSoonList />}</div>
+          <div className="p-4">
+            {activeTab === "disposal" ? (
+              <DisposalToday />
+            ) : (
+              <ExpiringSoonList />
+            )}
+          </div>
         </div>
       </div>
 
@@ -478,7 +568,12 @@ export default function DashBoard() {
         <div className="bg-white p-6 rounded-xl shadow-sm">
           <SectionHeader
             icon={
-              <svg className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg
+                className="h-5 w-5 text-green-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -492,18 +587,25 @@ export default function DashBoard() {
           />
           <div className="space-y-4">
             {mergedLowStock.slice(0, 5).map((item, index) => {
-              const percentage = Math.min(100, item.totalStock * 10)
+              const percentage = Math.min(100, item.totalStock * 10);
               return (
                 <div key={index} className="flex justify-between items-center">
-                  <span className="text-gray-600">{item.goodsName}</span>
+                  <span className="text-gray-600 text-sm truncate max-w-[40%]">
+                    {item.goodsName}
+                  </span>
                   <div className="flex items-center">
-                    <div className="w-48 h-2 bg-gray-200 rounded-full mr-2">
-                      <div className={`h-full ${barColor} rounded-full`} style={{ width: `${percentage}%` }}></div>
+                    <div className="w-24 md:w-32 lg:w-40 h-2 bg-gray-200 rounded-full mr-2">
+                      <div
+                        className={`h-full ${barColor} rounded-full`}
+                        style={{ width: `${percentage}%` }}
+                      ></div>
                     </div>
-                    <span className="text-sm font-medium">{item.totalStock}개</span>
+                    <span className="text-sm font-medium w-10 text-right">
+                      {item.totalStock}개
+                    </span>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -512,7 +614,12 @@ export default function DashBoard() {
         <div className="bg-white p-6 rounded-xl shadow-sm">
           <SectionHeader
             icon={
-              <svg className="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg
+                className="h-5 w-5 text-blue-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -534,7 +641,7 @@ export default function DashBoard() {
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     날짜
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                     수량
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -551,7 +658,9 @@ export default function DashBoard() {
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                       {FormatDate(order.orderTime).slice(0, 13)}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{order.orderQuantity}개</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                      {order.orderQuantity}개
+                    </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -572,5 +681,5 @@ export default function DashBoard() {
       {/* 챗봇 */}
       <ChatWidget />
     </div>
-  )
+  );
 }

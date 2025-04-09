@@ -111,7 +111,7 @@ export default function NotificationDropdown({
 
       {/* 알림 드롭다운 */}
       {showAlertDropdown && (
-        <div className="absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-96  bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
           {/* 드롭다운 헤더 */}
           <div className="flex items-center justify-between p-4 border-b">
             <h3 className="font-semibold text-gray-800">알림</h3>
