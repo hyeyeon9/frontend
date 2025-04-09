@@ -287,7 +287,7 @@ export default function Products({
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {products.slice(0, 4).map((product) => (
               <div
                 key={product.goods_id}
@@ -374,7 +374,7 @@ export default function Products({
     );
   }
 
-  // 전체 페이지 버전 (모바일 최적화)
+  // 전체 페이지 버전
   return (
     <div className="max-w-[430px] mx-auto">
       {/* 장바구니 추가 알림 */}
@@ -503,7 +503,7 @@ export default function Products({
         </div>
       ) : products.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 gap-3 mb-16">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {products.map((product) => (
               <div
                 key={product.goods_id}
