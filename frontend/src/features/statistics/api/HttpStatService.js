@@ -97,7 +97,6 @@ export async function fetchGetSalesHistory(
       },
     }
   );
-  console.log(response);
   return response.data;
 }
 
