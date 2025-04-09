@@ -232,7 +232,7 @@ export default function GlobalNotification() {
 
         {/* 읽지 않은 알림 개수 표시 */}
         {unreadCounts.전체 > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+          <span className="absolute -top-1 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
             {unreadCounts.전체}
           </span>
         )}
@@ -280,7 +280,11 @@ export default function GlobalNotification() {
                 {tab}
                 {/* 탭별 읽지 않은 알림 개수 표시 */}
                 {unreadCounts[tab] > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-medium text-white">
+                  <span
+                    className={`absolute -top-1 ${
+                      tab === "폐기" ? "right-0" : "-right-1"
+                    } flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-medium text-white`}
+                  >
                     {unreadCounts[tab]}
                   </span>
                 )}
@@ -316,7 +320,7 @@ export default function GlobalNotification() {
                         <div className="text-lg flex-shrink-0">{icon}</div>
                         <div className="flex-1">
                           <p
-                            className={`text-sm ${
+                            className={`text-[13px] ${
                               !alert.read ? "font-medium" : ""
                             } text-gray-800`}
                           >

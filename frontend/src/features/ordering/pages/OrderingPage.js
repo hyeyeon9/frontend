@@ -1329,7 +1329,7 @@ function OrderingPage() {
                             key={item.goods_id}
                             className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
                           >
-                            <td className="px-6 xl:py-4 whitespace-nowrap lg:px-4">
+                            <td className="xl:px-6 xl:py-4 whitespace-nowrap lg:px-4">
                               <input
                                 type="checkbox"
                                 checked={Boolean(selectedItems[item.goods_id])}
