@@ -288,11 +288,11 @@ function GoodsBySubCategory() {
           {!loading && !error && viewMode === "table" && (
             <div className="bg-white rounded-xl shadow-md overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full table-auto border-collapse">
+              <table className="w-full table-auto border-collapse">
                   <thead>
                     <tr className="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                       <th
-                        className="px-6 py-3 cursor-pointer hover:bg-gray-100"
+                        className="xl:px-6 py-3 lg:px-5 ursor-pointer hover:bg-gray-100"
                         onClick={() => requestSort("goods_id")}
                       >
                         <div className="flex items-center">
@@ -319,9 +319,9 @@ function GoodsBySubCategory() {
                           )}
                         </div>
                       </th>
-                      <th className="px-6 py-3">이미지</th>
+                      <th className="xl:px-6 py-3 lg:px-4 whitespace-nowrap">이미지</th>
                       <th
-                        className="px-6 py-3 cursor-pointer hover:bg-gray-100"
+                        className="xl:px-6 py-3  lg:px-4 cursor-pointer hover:bg-gray-100"
                         onClick={() => requestSort("goods_name")}
                       >
                         <div className="flex items-center">
@@ -349,7 +349,7 @@ function GoodsBySubCategory() {
                         </div>
                       </th>
                       <th
-                        className="px-6 py-3 cursor-pointer hover:bg-gray-100"
+                        className="xl:px-6 py-3 lg:px-4 cursor-pointer hover:bg-gray-100"
                         onClick={() => requestSort("goods_price")}
                       >
                         <div className="flex items-center">
@@ -377,7 +377,7 @@ function GoodsBySubCategory() {
                         </div>
                       </th>
                       <th
-                        className="px-6 py-3 cursor-pointer hover:bg-gray-100"
+                        className="xl:px-6 py-3 lg:px-4 cursor-pointer hover:bg-gray-100"
                         onClick={() => requestSort("goods_created_at")}
                       >
                         <div className="flex items-center">
@@ -405,7 +405,7 @@ function GoodsBySubCategory() {
                         </div>
                       </th>
                       <th
-                        className="px-6 py-3 cursor-pointer hover:bg-gray-100"
+                        className="xl:px-6 py-3 lg:px-4 cursor-pointer hover:bg-gray-100"
                         onClick={() => requestSort("goods_stock")}
                       >
                         <div className="flex items-center">
@@ -453,17 +453,17 @@ function GoodsBySubCategory() {
                             key={item.goods_id}
                             className="hover:bg-gray-50 transition-colors"
                           >
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="xl:px-6 py-4 lg:px-5 whitespace-nowrap text-sm text-gray-500">
                               {item.goods_id}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="xl:px-6 py-4 lg:px-4 whitespace-nowrap">
                               <div className="relative group">
                                 <img
                                   src={
                                     `${item.goods_image}` || "/placeholder.svg"
                                   }
                                   alt={item.goods_name}
-                                  className="w-16 h-16 object-cover rounded-md border border-gray-200 group-hover:border-indigo-300 transition-colors"
+                                  className="xl:w-16 h-16 lg:w-20 object-cover rounded-md border border-gray-200 group-hover:border-indigo-300 transition-colors"
                                 />
                                 {item.discountRate && (
                                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-8 h-8 flex items-center justify-center">
@@ -472,7 +472,7 @@ function GoodsBySubCategory() {
                                 )}
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="xl:px-6 py-4 lg:px-4 whitespace-nowrap">
                               <div className="text-sm font-medium text-gray-900">
                                 {item.goods_name}
                               </div>
@@ -480,26 +480,32 @@ function GoodsBySubCategory() {
                                 카테고리 ID: {item.category_id}
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-semibold text-indigo-600">
-                                {Number(item.goods_price).toLocaleString()}원
-                              </div>
-                              {item.discountRate && (
-                                <div className="text-xs text-red-500">
-                                  {Math.floor(
-                                    item.goods_price *
-                                      (1 - item.discountRate / 100)
-                                  ).toLocaleString()}
-                                  원
+                            <td className="xl:px-6 py-4 lg:px-4 whitespace-nowrap">
+                              {/* 할인 중인 경우 */}
+                              {item.discountRate ? (
+                                <>
+                                  <div className="text-sm text-gray-500 line-through">
+                                    {Number(
+                                      item.originalPrice
+                                    ).toLocaleString()}
+                                    원
+                                  </div>
+                                  <div className="text-sm font-semibold text-red-600">
+                                    {Number(item.goods_price).toLocaleString()}
+                                    원
+                                  </div>
+                                </>
+                              ) : (
+                                // 할인 아닌 경우
+                                <div className="text-sm font-semibold text-indigo-600">
+                                  {Number(item.goods_price).toLocaleString()}원
                                 </div>
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {item.goods_created_at
-                                ? FormatDate(item.goods_created_at)
-                                : "-"}
+                            <td className="xl:px-6 py-4 lg:px-4 whitespace-nowrap text-sm text-gray-500">
+                              {FormatDate(item.goods_created_at).substring(0,13)}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="xl:px-6 py-4 lg:px-4 whitespace-nowrap">
                               <div className="flex items-center">
                                 <span
                                   className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${stockStatus.color}`}
@@ -511,7 +517,7 @@ function GoodsBySubCategory() {
                                 </span>
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <td className="xl:px-6 py-4 lg:px-4 whitespace-nowrap text-sm font-medium">
                               <div className="flex space-x-2">
                                 <Link
                                   to={`/goods/findById/${item.goods_id}`}
