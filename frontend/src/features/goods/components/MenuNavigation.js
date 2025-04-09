@@ -156,7 +156,7 @@ function MenuNavigation() {
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <p className="text-xl font-bold text-indigo-600">무인매장</p>
+                <p className="text-xl font-bold text-indigo-600">상품조회</p>
               </div>
             </div>
 
