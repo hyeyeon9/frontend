@@ -78,3 +78,32 @@ export async function fetchGetAverageSales(startDate, endDate) {
   );
   return response;
 }
+
+// 주어진 날짜의 판매 기록 가져오기 - 판매시간 역순, 페이징 처리
+export async function fetchGetSalesHistory(
+  date,
+  page = 0,
+  size = 20,
+  paymentStatus = 1
+) {
+  const response = await axios.get(
+    `http://localhost:8090/app/salesHistory/findByDate`,
+    {
+      params: {
+        date,
+        page,
+        size,
+        paymentStatus,
+      },
+    }
+  );
+  console.log(response);
+  return response.data;
+}
+
+export async function fetchGetDetailHistroy(orderId) {
+  const response = await axios.get(
+    `http://localhost:8090/app/salesHistory/receipt/${orderId}`
+  );
+  return response.data;
+}
