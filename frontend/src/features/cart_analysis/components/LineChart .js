@@ -21,13 +21,13 @@ const LineChart = ({ chartData, label }) => {
   const isSmallScreen = window.innerWidth <= 1180
 
   return (
-    <div className="w-full h-[200px] md:h-[300px]">
+    <div className="w-full xl:h-[250px] md:h-[200px] ">
       <ResponsiveLine
         data={formattedData}
         margin={
           isSmallScreen
-            ? { top: 10, right: 30, bottom: 30, left: 40 } // 작은 화면용 여백
-            : { top: 20, right: 85, bottom: 50, left: 60 } // 큰 화면용 여백
+            ? { top: 10, right: 15, bottom: 30, left: 25 } // 작은 화면용 여백
+            : { top: 20, right: 83, bottom: 50, left: 60 } // 큰 화면용 여백
         }
         xScale={{ type: "point" }}
         yScale={{

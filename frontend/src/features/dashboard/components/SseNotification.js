@@ -20,9 +20,9 @@ export default function SseNotification({ onMessage }) {
       // 알림 타입 매핑 (기존 타입을 새 탭 카테고리로 변환)
       let mappedType = "일반"
 
-      if (data.type === "유통기한임박" || data.type === "자동폐기") {
+      if ( data.type === "자동폐기") {
         mappedType = "폐기"
-      } else if (data.type === "재고부족") {
+      } else if (data.type === "유통기한임박" || data.type === "재고부족") {
         mappedType = "재고"
       } else if (data.type === "결제완료" || data.type === "결제실패") {
         mappedType = "결제"
