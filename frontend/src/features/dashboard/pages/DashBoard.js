@@ -198,7 +198,7 @@ export default function DashBoard() {
       <div className="flex justify-between items-start">
         <div>
           <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="text-2xl font-bold mt-1">{value}</p>
+          <p className="xl:text-2xl font-bold mt-1 lg:text-xl">{value}</p>
         </div>
         <div className={`${bgColor} p-3 rounded-lg`}>
           <div className={`${textColor}`}>{icon}</div>
