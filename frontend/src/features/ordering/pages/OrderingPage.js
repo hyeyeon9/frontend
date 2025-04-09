@@ -1146,7 +1146,7 @@ function OrderingPage() {
                     onChange={handleCategoryChange}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-no-repeat bg-[right_0.5rem_center] pr-10"
                   >
-                    <option value="">모든 카테고리</option>
+                    <option value="">대분류</option>
                     <option value="식품">식품</option>
                     <option value="음료">음료</option>
                     <option value="생활용품">생활용품</option>
@@ -1159,7 +1159,7 @@ function OrderingPage() {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-no-repeat bg-[right_0.5rem_center] pr-10"
                     disabled={!category}
                   >
-                    <option value="">모든 하위 카테고리</option>
+                    <option value="">중분류</option>
                     {category === "식품" ? (
                       <>
                         <option value="즉석식품">즉석식품</option>
@@ -1290,7 +1290,7 @@ function OrderingPage() {
                     <table className="w-full border-collapse">
                       <thead>
                         <tr className="bg-gray-50 border-b border-gray-200">
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             <input
                               type="checkbox"
                               checked={
@@ -1303,22 +1303,22 @@ function OrderingPage() {
                               className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                             />
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider lg:hidden xl:table-cell">
                             ID
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                             이미지
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             상품명
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             가격
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             재고
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             발주 수량
                           </th>
                         </tr>
@@ -1329,7 +1329,7 @@ function OrderingPage() {
                             key={item.goods_id}
                             className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
                           >
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="xl:px-6 xl:py-4 whitespace-nowrap lg:px-4">
                               <input
                                 type="checkbox"
                                 checked={Boolean(selectedItems[item.goods_id])}
@@ -1337,30 +1337,30 @@ function OrderingPage() {
                                 className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                               />
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap text-sm text-gray-500 lg:hidden xl:table-cell">
                               {item.goods_id}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap w-24">
+
+                            <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap lg:w-32 xl:w-24">
                               <img
-                                src={
-                                  `${item.goods_image || "/placeholder.svg"}` ||
-                                  "/placeholder.svg"
-                                }
+                                src={item.goods_image || "/placeholder.svg"}
                                 alt={item.goods_name}
-                                className="w-16 h-16 object-cover rounded-md border border-gray-200"
+                                className="w-20 h-20 lg:w-24 lg:h-16 xl:w-16 xl:h-16 object-cover rounded-md border border-gray-200"
                               />
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">
+
+                            <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap max-w-[200px] lg:max-w-[220px] xl:max-w-full">
+                              <div className="text-sm font-medium text-gray-900 truncate">
                                 {item.goods_name}
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+
+                            <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-semibold text-indigo-600">
                                 {Number(item.goods_price).toLocaleString()}원
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap">
                               {item.stockStatus === "재고부족" ? (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                   <AlertCircle className="w-3 h-3 mr-1" />
@@ -1373,7 +1373,7 @@ function OrderingPage() {
                                 </span>
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap">
                               <div className="flex flex-col space-y-2 w-full">
                                 <div className="flex items-center space-x-2">
                                   <input
@@ -1390,7 +1390,7 @@ function OrderingPage() {
                                     }
                                     disabled={!selectedItems[item.goods_id]}
                                     min="1"
-                                    className="w-20 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-center disabled:bg-gray-100 disabled:text-gray-400"
+                                    className="w-20 lg:w-16 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-center disabled:bg-gray-100 disabled:text-gray-400"
                                     placeholder="수량"
                                   />
                                 </div>
@@ -1432,21 +1432,28 @@ function OrderingPage() {
               <div className="sticky top-6 self-start bg-white rounded-xl shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-                      <ShoppingCart className="h-5 w-5 mr-2 text-indigo-600" />
+                    <h3 className="xl:text-lg lg:text-base font-semibold text-gray-800 flex items-center">
+                      <ShoppingCart className="xl:h-5 xl:w-5 mr-2  lg:w-4 lg:-ml-2 text-indigo-600" />
                       발주 예정 상품
-                      <span className="ml-2 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full px-2 py-0.5">
+                      <span className="ml-2  bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full px-2 py-0.5">
                         {selectedCount}
                       </span>
                     </h3>
                   </div>
                 </div>
 
-                <div className="p-6 max-h-[50vh] overflow-y-auto">
+                <div className="xl:p-5 max-h-[50vh] overflow-y-auto lg:p-2">
                   {Object.keys(selectedItems).length === 0 ? (
                     <div className="text-center text-gray-500 py-8">
                       <Package className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                      <p>발주할 상품을 선택해주세요</p>
+                      <span className="lg:inline xl:hidden">
+                        발주할 상품을
+                        <br />
+                        선택해주세요
+                      </span>
+                      <span className="xl:inline lg:hidden">
+                        발주할 상품을 선택해주세요
+                      </span>
                     </div>
                   ) : (
                     <ul className="space-y-3">
@@ -1478,12 +1485,12 @@ function OrderingPage() {
                                 <div className="font-medium text-gray-800 text-sm">
                                   {product.goods_name}
                                 </div>
-                                <div className="flex items-center mt-1">
+                                <div className="flex items-center mt-2 ">
                                   {/* 수량 조절 버튼 */}
                                   <div className="flex items-center border border-gray-300 rounded-md">
                                     <button
                                       onClick={() => decreaseQuantity(goodsId)}
-                                      className="px-2 py-1 text-gray-500 hover:bg-gray-100"
+                                      className="px-2  py-1 lg:w-7 text-gray-500 hover:bg-gray-100"
                                       disabled={
                                         !data.quantity ||
                                         parseInt(data.quantity) <= 1
@@ -1496,7 +1503,7 @@ function OrderingPage() {
                                     </span>
                                     <button
                                       onClick={() => increaseQuantity(goodsId)}
-                                      className="px-2 py-1 text-gray-500 hover:bg-gray-100"
+                                      className="px-2  py-1 text-gray-500 hover:bg-gray-100"
                                     >
                                       <ChevronUp className="h-4 w-4" />
                                     </button>
@@ -1506,7 +1513,7 @@ function OrderingPage() {
                             </div>
                             <button
                               onClick={() => handleSelectItem(goodsId)}
-                              className="text-gray-400 hover:text-red-500 transition-colors"
+                              className="text-gray-400 hover:text-red-500 transition-colors self-start"
                             >
                               <X className="h-5 w-5" />
                             </button>
@@ -1606,10 +1613,10 @@ function OrderingPage() {
                     <div className="relative flex-grow">
                       <button
                         onClick={() => setShowDatePicker(!showDatePicker)}
-                        className="w-full flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                        className="w-full flex items-center gap-2 xl:px-4 py-2 lg:px-2 lg:pl-4 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                       >
-                        <Calendar className="h-4 w-4 text-gray-500" />
-                        <span className="font-medium">
+                        <Calendar className="h-4 w-4 text-gray-500 lg:hidden" />
+                        <span className="font-medium lg:text-[15px]">
                           {orderDateFilter
                             ? formatDateWithDay(new Date(orderDateFilter))
                             : formatDateWithDay(new Date())}
@@ -1758,13 +1765,13 @@ function OrderingPage() {
                             className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                           />
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="xl:px-6 py-3 lg:px-4 whitespace-nowrap text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           주문번호
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           상품명
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="xl:px-6 py-3 lg:px-3 whitespace-nowrap text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           수량
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -1773,7 +1780,7 @@ function OrderingPage() {
                             주문시간
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           상태
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -1800,10 +1807,10 @@ function OrderingPage() {
                               }`}
                             />
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          <td className="xl:px-6 py-4 lg:px-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             #{order.orderId}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="xl:px-6 py-4 lg:px-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-10 w-10">
                                 <img
@@ -1823,7 +1830,7 @@ function OrderingPage() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="xl:px-6 py-4 lg:px-3 whitespace-nowrap text-sm text-gray-500">
                             <span className="font-semibold text-indigo-600">
                               {order.orderQuantity}개
                             </span>
@@ -1831,7 +1838,7 @@ function OrderingPage() {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {formatDate(order.scheduledTime)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="xl:px-6 py-4 lg:px-4 whitespace-nowrap">
                             {getStatusBadge(order.status)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -1841,10 +1848,13 @@ function OrderingPage() {
                                   setSelectedOrderId(order.orderId);
                                   setShowInspectionModal(true);
                                 }}
-                                className="px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center"
+                                className="xl:px-3 lg:px-2 lg:pl-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center"
                               >
                                 <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
-                                검수 확인
+                                <span className="lg:hidden xl:inline">
+                                  {" "}
+                                  검수 확인
+                                </span>
                               </button>
                             )}
                             {order.status === "입고완료" && (
