@@ -76,23 +76,25 @@ export default function ShopHome() {
 
       <main className="flex-1 w-full mx-auto">
         {/* 이벤트 배너 */}
-        <section className="px-3 mb-4">
+        <section className="sm:px-3 mb-6">
           <EventBanner />
         </section>
 
         {/* 할인 상품 리스트 */}
-        <section className="px-3 mb-2">
+        <section className="sm:px-3 mb-2">
           <DiscountedProductsList onAddToCart={addToCart} />
         </section>
 
         {/* 인기 상품 리스트 */}
-        <section className="px-3 mb-2">
+        <section className="sm:px-3 mb-2">
           <PopularProductsList onAddToCart={addToCart} />
         </section>
 
         {/* 카테고리별 쇼핑 */}
-        <section className="px-3 mb-16 py-2">
-          <h2 className="text-lg font-bold mb-3">카테고리별 쇼핑</h2>
+        <section className="sm:px-3 mb-16 py-2">
+          <h2 className="text-lg font-bold mb-3 mx-3 sm:mx-0">
+            카테고리별 쇼핑
+          </h2>
           <Products onAddToCart={addToCart} isHomePage={true} />
         </section>
       </main>

@@ -20,7 +20,7 @@ export default function EventBanner() {
 
   return (
     <div className="mb-4">
-      <div className="h-44 rounded-lg overflow-hidden">
+      <div className="h-44 sm:rounded-lg overflow-hidden">
         {/* 4월 할인 이벤트 배너 */}
         <div
           className={`relative  flex h-full items-center justify-center bg-gradient-to-r ${banner.bgColor}`}

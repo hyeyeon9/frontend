@@ -72,7 +72,7 @@ export default function PopularProductsList({ onAddToCart }) {
   };
 
   return (
-    <section className="mb-6">
+    <section className="sm:mb-6">
       {/* 장바구니 추가 알림 */}
       {showCartAlert && addedProduct && (
         <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50">
@@ -83,11 +83,11 @@ export default function PopularProductsList({ onAddToCart }) {
       )}
 
       <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center">
+        <div className="flex items-center ml-3 sm:ml-0">
           <TrendingUp className="h-4 w-4 text-blue-500 mr-1.5" />
           <h2 className="text-lg font-bold">이번 주 인기 상품</h2>
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1 mr-2 sm:mr-0">
           <Button
             color="light"
             size="xs"
@@ -137,17 +137,26 @@ export default function PopularProductsList({ onAddToCart }) {
                   })()}
                 </Badge> */}
 
+                {/* 품절 오버레이 */}
+                {product.goods_stock <= 0 && (
+                  <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+                    <span className="text-white font-bold px-2 py-1 rounded-md bg-red-500 text-xs">
+                      품절
+                    </span>
+                  </div>
+                )}
+
                 {/* 장바구니 추가 버튼 */}
                 <button
-                  onClick={(e) => handleAddToCart(e, product.goodsDTO.goods_id)}
-                  disabled={product.goodsDTO.goods_stock <= 0}
-                  className={`absolute bottom-2 right-2 w-7 h-7 flex items-center justify-center rounded-full shadow-md ${
-                    product.goodsDTO.goods_stock <= 0
+                  onClick={(e) => handleAddToCart(e, product.goods_id)}
+                  disabled={product.goods_stock <= 0}
+                  className={`absolute bottom-1 right-1 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full shadow-md ${
+                    product.goods_stock <= 0
                       ? "bg-gray-300 cursor-not-allowed"
                       : "bg-white border border-gray-200 text-blue-600 hover:bg-blue-50"
                   }`}
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-5 w-5 sm:w-7 sm:h-7" />
                 </button>
               </div>
               <div className="p-2">

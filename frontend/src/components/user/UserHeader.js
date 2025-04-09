@@ -33,7 +33,7 @@ export default function UserHeader() {
   return (
     <Navbar
       fluid
-      className="border-b shadow-sm sticky px-5 top-0 z-[1000] bg-white dark:bg-gray-800"
+      className="border-b sm:shadow-sm sticky sm:px-5 top-0 z-[1000] bg-white dark:bg-gray-800"
     >
       <Navbar.Brand as={Link} to="/shop">
         <img

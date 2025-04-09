@@ -234,7 +234,7 @@ export default function Products({
         {showCartAlert && addedProduct && (
           <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50">
             <div className="bg-black text-white px-4 py-3 rounded-lg shadow-lg text-center">
-              <p className="text-sm font-medium">장바구니에 상품을 담았어요</p>
+              <p className="text-md font-medium">장바구니에 상품을 담았어요</p>
             </div>
           </div>
         )}
@@ -288,7 +288,7 @@ export default function Products({
           </div>
         ) : products.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {products.slice(0, 4).map((product) => (
+            {products.map((product) => (
               <div
                 key={product.goods_id}
                 className={`bg-white rounded-lg shadow-sm overflow-hidden cursor-pointer ${
@@ -300,28 +300,29 @@ export default function Products({
                   <img
                     src={product.goods_image || "/placeholder.svg"}
                     alt={product.goods_name}
-                    className="object-cover w-full max-h-52 rounded-t-lg aspect-square"
+                    className="object-cover w-full rounded-t-lg aspect-square"
                   />
-                  {isDiscounted(product) && (
-                    <Badge
-                      color="failure"
-                      className="absolute top-1 right-1 text-xs px-1.5 py-0.5"
-                    >
-                      {product.discountRate}%
-                    </Badge>
+
+                  {/* 품절 오버레이 */}
+                  {product.goods_stock <= 0 && (
+                    <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+                      <span className="text-white font-bold px-2 py-1 rounded-md bg-red-500 text-xs">
+                        품절
+                      </span>
+                    </div>
                   )}
 
                   {/* 장바구니 추가 버튼 */}
                   <button
                     onClick={(e) => handleAddToCart(e, product.goods_id)}
                     disabled={product.goods_stock <= 0}
-                    className={`absolute bottom-2 right-2 w-7 h-7 flex items-center justify-center rounded-full shadow-md ${
+                    className={`absolute bottom-1 right-1 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full shadow-md ${
                       product.goods_stock <= 0
                         ? "bg-gray-300 cursor-not-allowed"
                         : "bg-white border border-gray-200 text-blue-600 hover:bg-blue-50"
                     }`}
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-5 w-5 sm:w-7 sm:h-7" />
                   </button>
                 </div>
                 <div className="p-2">
@@ -376,7 +377,7 @@ export default function Products({
 
   // 전체 페이지 버전
   return (
-    <div className="container sm:px-6">
+    <div className="container px-0 sm:px-6">
       {/* 장바구니 추가 알림 */}
       {showCartAlert && addedProduct && (
         <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-[2000]">
@@ -435,7 +436,7 @@ export default function Products({
       )}
 
       {/* 상품 개수 및 필터 옵션 */}
-      <div className="flex justify-between items-center mb-3">
+      <div className="flex justify-between items-center mb-3 mx-2">
         <div className="text-sm text-gray-600">
           {totalElements > 0 ? `총 ${totalElements}개 상품` : "상품 없음"}
         </div>
@@ -503,7 +504,7 @@ export default function Products({
         </div>
       ) : products.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {products.map((product) => (
               <div
                 key={product.goods_id}
@@ -550,13 +551,13 @@ export default function Products({
                   <button
                     onClick={(e) => handleAddToCart(e, product.goods_id)}
                     disabled={product.goods_stock <= 0}
-                    className={`absolute bottom-2 right-2 w-7 h-7 flex items-center justify-center rounded-full shadow-md ${
+                    className={`absolute bottom-1 right-1 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full shadow-md ${
                       product.goods_stock <= 0
                         ? "bg-gray-300 cursor-not-allowed"
                         : "bg-white border border-gray-200 text-blue-600 hover:bg-blue-50"
                     }`}
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-5 w-5 sm:w-7 sm:h-7" />
                   </button>
                 </div>
                 <div className="p-2">

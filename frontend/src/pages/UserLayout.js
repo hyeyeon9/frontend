@@ -9,7 +9,7 @@ export default function UserLayout() {
     <div className="flex flex-col min-w-screen bg-white">
       <ScrollToTop />
       <UserHeader />
-      <main className="flex justify-center overflow-auto sm:py-6">
+      <main className="flex justify-center overflow-auto py-0 sm:py-6">
         <Outlet />
         <ShopToAdmin />
       </main>
