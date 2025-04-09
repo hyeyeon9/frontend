@@ -97,9 +97,9 @@ export function CheckoutPage() {
                 orderName: orderSummary,
                 successUrl: window.location.origin + "/payment/success",
                 failUrl: window.location.origin + "/payment/fail",
-                customerEmail: "star970909@gmail.com",
+                customerEmail: "",
                 customerName: "비회원",
-                customerMobilePhone: "01043115966",
+                customerMobilePhone: "",
               });
             } catch (error) {
               // 에러 처리하기

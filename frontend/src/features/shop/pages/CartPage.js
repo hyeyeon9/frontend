@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -103,7 +101,9 @@ export default function CartPage() {
         finalPrice: calculateTotal(),
         orderSummary:
           cartItems.length > 0
-            ? `${cartItems[0].name} 외 ${cartItems.length - 1}건`
+            ? cartItems.length > 1
+              ? `${cartItems[0].name} 외 ${cartItems.length - 1}건`
+              : `${cartItems[0].name}`
             : "주문 없음",
         paymentStatus: 0,
         orderItems: cartItems.map((item) => ({

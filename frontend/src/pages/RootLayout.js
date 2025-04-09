@@ -22,7 +22,7 @@ export default function RootLayout() {
   // }, [user, navigate]);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col bg-gray-50">
       <ScrollToTop />
       <Headers />
       <div className="flex flex-1 pt-14">
