@@ -64,7 +64,7 @@ export default function ShopHome() {
   }, []);
 
   return (
-    <div className="container flex flex-col px-6 min-h-screen">
+    <div className="container flex flex-col px-0 sm:px-6 min-h-screen">
       {/* 장바구니 추가 알림 */}
       {showCartAlert && addedProduct && (
         <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-[2000]">
@@ -76,17 +76,17 @@ export default function ShopHome() {
 
       <main className="flex-1 w-full mx-auto">
         {/* 이벤트 배너 */}
-        <section className="px-3 mb-4 py-2">
+        <section className="px-3 mb-4">
           <EventBanner />
         </section>
 
         {/* 할인 상품 리스트 */}
-        <section className="px-3 mb-4 py-2">
+        <section className="px-3 mb-2">
           <DiscountedProductsList onAddToCart={addToCart} />
         </section>
 
         {/* 인기 상품 리스트 */}
-        <section className="px-3 mb-4 py-2">
+        <section className="px-3 mb-2">
           <PopularProductsList onAddToCart={addToCart} />
         </section>
 
