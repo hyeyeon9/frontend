@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tag, ShoppingBag, Plus, ChevronLeft } from "lucide-react";
@@ -87,7 +85,7 @@ export default function DiscountingPage() {
   };
 
   return (
-    <div className="max-w-[430px] mx-auto bg-gray-50 min-h-screen pb-20">
+    <div className="container flex flex-col px-6 min-h-screen">
       {/* 장바구니 추가 알림 */}
       {showCartAlert && addedProduct && (
         <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50">
@@ -113,7 +111,7 @@ export default function DiscountingPage() {
           </h1>
         </div>
         <p className="text-sm text-gray-600">
-          지금 특별 할인 중인 상품들을 만나보세요! 최대 30% 할인된 가격으로
+          지금 특별 할인 중인 상품들을 만나보세요! 최대 50% 할인된 가격으로
           제공됩니다.
         </p>
       </div>
@@ -128,7 +126,7 @@ export default function DiscountingPage() {
             </p>
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {products.map((product) => (
               <div
                 key={product.goods_id}
@@ -141,7 +139,7 @@ export default function DiscountingPage() {
                   <img
                     src={product.goods_image || "/placeholder.svg"}
                     alt={product.goods_name}
-                    className="object-cover w-full h-36 rounded-t-lg"
+                    className="object-cover w-full rounded-t-lg aspect-square"
                   />
                   {product.goods_stock <= 0 && (
                     <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
@@ -210,7 +208,7 @@ export default function DiscountingPage() {
       </div>
 
       {/* 하단 장바구니 위젯 */}
-      <div className="fixed bottom-0 bg-white border-t p-3 z-10 max-w-[430px] w-full">
+      {/* <div className="fixed bottom-0 bg-white border-t p-3 z-10 max-w-[430px] w-full">
         <Button
           color="blue"
           size="lg"
@@ -220,7 +218,7 @@ export default function DiscountingPage() {
           <ShoppingBag className="h-5 w-5 mr-2" />
           장바구니 보기 {cartCount > 0 && `(${cartCount})`}
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }
