@@ -153,10 +153,12 @@ export default function PopularProductsList({ onAddToCart }) {
 
                   {/* 장바구니 추가 버튼 */}
                   <button
-                    onClick={(e) => handleAddToCart(e, product.goods_id)}
-                    disabled={product.goods_stock <= 0}
+                    onClick={(e) =>
+                      handleAddToCart(e, product.goodsDTO.goods_id)
+                    }
+                    disabled={product.goodsDTO.goods_stock <= 0}
                     className={`absolute bottom-1 right-1 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full shadow-md ${
-                      product.goods_stock <= 0
+                      product.goodsDTO.goods_stock <= 0
                         ? "bg-gray-300 cursor-not-allowed"
                         : "bg-white border border-gray-200 text-blue-600 hover:bg-blue-50"
                     }`}
