@@ -306,7 +306,7 @@ export default function Products({
                   {/* 품절 오버레이 */}
                   {product.goods_stock <= 0 && (
                     <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-                      <span className="text-white font-bold px-2 py-1 rounded-md bg-red-500 text-xs">
+                      <span className="text-white font-bold px-2 py-1 rounded-md bg-red-500 text-md">
                         품절
                       </span>
                     </div>
@@ -326,17 +326,17 @@ export default function Products({
                   </button>
                 </div>
                 <div className="p-2">
-                  <h3 className="font-medium text-xs line-clamp-1">
+                  <h3 className="font-medium text-sm line-clamp-1">
                     {product.goods_name}
                   </h3>
                   <div className="flex justify-between items-center mt-1">
-                    <span className="font-bold text-xs">
+                    <span className="font-bold text-sm">
                       {product.goods_price.toLocaleString()}원
                     </span>
                   </div>
                   {/* 재고 정보 표시 */}
                   {product.goods_stock > 0 && product.goods_stock <= 5 && (
-                    <p className="text-[10px] text-red-500 mt-1">
+                    <p className="text-xs font-bold text-red-500 mt-1">
                       {product.goods_stock}개 남았어요
                     </p>
                   )}
@@ -523,7 +523,7 @@ export default function Products({
                   {/* 품절 오버레이 */}
                   {product.goods_stock <= 0 && (
                     <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-                      <span className="text-white font-bold px-2 py-1 rounded-md bg-red-500 text-xs">
+                      <span className="text-white font-bold px-2 py-1 rounded-md bg-red-500 text-md">
                         품절
                       </span>
                     </div>
@@ -562,7 +562,7 @@ export default function Products({
                 </div>
                 <div className="p-2">
                   <div className="flex flex-col">
-                    <h3 className="font-medium text-xs mb-1 line-clamp-2 min-h-[32px]">
+                    <h3 className="font-medium text-sm mb-1 line-clamp-2 min-h-[32px]">
                       {product.goods_name}
                     </h3>
                     <div className="flex justify-between items-center">
@@ -572,7 +572,7 @@ export default function Products({
                         }`}
                       >
                         {isDiscounted(product) ? (
-                          <span className="text-gray-500 line-through text-[10px]">
+                          <span className="text-gray-500 line-through text-sm">
                             {product.originalPrice.toLocaleString()}원
                           </span>
                         ) : (
@@ -580,8 +580,8 @@ export default function Products({
                         )}
                       </div>
                       <span
-                        className={`font-bold text-xs ${
-                          isDiscounted(product) ? "text-red-600" : ""
+                        className={`font-bold text-sm ${
+                          isDiscounted(product) ? "text-red-600 font-bold" : ""
                         }`}
                       >
                         {product.goods_price.toLocaleString()}원
@@ -590,7 +590,7 @@ export default function Products({
 
                     {/* 재고 정보 표시 */}
                     {product.goods_stock > 0 && product.goods_stock <= 5 && (
-                      <p className="text-[10px] text-red-500 mt-1">
+                      <p className="text-xs font-bold text-red-500 mt-1">
                         {product.goods_stock}개 남았어요
                       </p>
                     )}

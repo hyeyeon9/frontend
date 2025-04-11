@@ -132,7 +132,7 @@ export default function DiscountedProductsList({ onAddToCart }) {
                   />
                   {product.goods_stock <= 0 && (
                     <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-                      <span className="text-white font-bold px-2 py-1 rounded-md bg-red-500 text-xs">
+                      <span className="text-white font-bold px-2 py-1 rounded-md bg-red-500 text-sm">
                         품절
                       </span>
                     </div>
