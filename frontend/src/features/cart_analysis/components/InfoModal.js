@@ -7,16 +7,15 @@ export function InfoModal({ isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
-      // 모달이 DOM에 마운트된 후 애니메이션 적용
       setTimeout(() => setIsVisible(true), 10);
     } else {
       setIsVisible(false);
-      // 애니메이션이 완료된 후 overflow 복원
-      const timer = setTimeout(() => {
-        document.body.style.overflow = "";
-      }, 300);
-      return () => clearTimeout(timer);
+      document.body.style.overflow = ""; // ✅ 스크롤 복원
     }
+
+    return () => {
+      document.body.style.overflow = ""; // ✅ 혹시 모를 cleanup
+    };
   }, [isOpen]);
 
   // 모달이 닫혀있으면 아무것도 렌더링하지 않음
