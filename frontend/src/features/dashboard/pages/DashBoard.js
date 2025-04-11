@@ -315,7 +315,7 @@ export default function DashBoard() {
       : "bg-blue-600";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen  p-6">
       {/* 헤더 */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>

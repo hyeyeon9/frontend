@@ -504,7 +504,7 @@ export default function Products({
         </div>
       ) : products.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-16">
             {products.map((product) => (
               <div
                 key={product.goods_id}
@@ -602,7 +602,7 @@ export default function Products({
 
           {/* 페이지네이션 컨트롤 */}
           {totalPages > 1 && (
-            <div className="flex justify-center mb-16">
+            <div className="flex justify-center mt-8 mb-16">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -610,6 +610,8 @@ export default function Products({
                 showIcons
                 layout="navigation"
                 size="sm"
+                previousLabel="이전"
+                nextLabel="다음"
               />
             </div>
           )}

@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react"; // Using Lucide icons for the mobile toggle
 
 export default function Sidebar() {
+  // 현재 링크
+  const location = useLocation();
+  const isActive = location.pathname === "/"; // 현재 경로가 "/"이면 active
+
   // 메뉴의 열고 닫는 상태를 관리
   const [isSalesOpen, setIsSalesOpen] = useState(false);
   const [isStocksOpen, setIsStocksOpen] = useState(false);
@@ -73,7 +77,12 @@ export default function Sidebar() {
           {/* 사이드메뉴1 */}
           <Link
             to="/"
-            className="flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+            className={`flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start
+        ${
+          isActive
+            ? "bg-blue-700 text-white"
+            : "hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+        }`}
           >
             <div className="grid mr-2 place-items-center">
               <svg
