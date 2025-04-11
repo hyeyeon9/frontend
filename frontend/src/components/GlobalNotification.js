@@ -13,6 +13,9 @@ export default function GlobalNotification() {
   // 알림 드롭다운 표시 여부
   const [showAlertDropdown, setShowAlertDropdown] = useState(false);
 
+  // 애니메이션을 위한 상태 추가
+  const [isAnimating, setIsAnimating] = useState(false);
+
   // 읽지 않은 알림만 표시 여부
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
 
@@ -52,7 +55,7 @@ export default function GlobalNotification() {
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowAlertDropdown(false);
+        closeDropdown();
       }
     }
 
@@ -61,6 +64,41 @@ export default function GlobalNotification() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // 드롭다운 열기 함수
+  const openDropdown = () => {
+    // setIsAnimating(true);
+    setShowAlertDropdown(true);
+  };
+
+  // 드롭다운 열릴 때 애니메이션 시작
+  useEffect(() => {
+    if (showAlertDropdown) {
+      setTimeout(() => {
+        setIsAnimating(true);
+      }, 10); // DOM 렌더링 이후 적용되도록 지연
+    }
+  }, [showAlertDropdown]);
+
+  // 드롭다운 닫기 함수
+  const closeDropdown = () => {
+    setIsAnimating(false);
+    // 애니메이션이 완료된 후 실제로 드롭다운을 숨김
+    setTimeout(() => {
+      if (!isAnimating) {
+        setShowAlertDropdown(false);
+      }
+    }, 300); // 애니메이션 지속 시간과 일치시킴
+  };
+
+  // 드롭다운 토글 함수
+  const toggleDropdown = () => {
+    if (showAlertDropdown) {
+      closeDropdown();
+    } else {
+      openDropdown();
+    }
+  };
 
   // SSE 리스너 설정
   useEffect(() => {
@@ -138,7 +176,7 @@ export default function GlobalNotification() {
           id: Date.now().toString(), // 고유 ID 생성
           type: data.type || "일반",
           message: data.message || "새 알림 도착",
-          time: "방금 전",
+          time: new Date().toISOString(),
           read: false,
         };
 
@@ -208,12 +246,46 @@ export default function GlobalNotification() {
     return "w-96"; // 데스크탑에서는 원래 크기
   };
 
+  // 알림창 시간 포맷 함수
+  const formatAlertTime = (date) => {
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000); // 초 단위
+    const minutes = Math.floor(diff / 60);
+    const hours = Math.floor(diff / 3600);
+
+    const getAmPm = (h) => (h < 12 ? "오전" : "오후");
+    const formatHourMin = (d) => {
+      const hours = d.getHours();
+      const minutes = d.getMinutes().toString().padStart(2, "0");
+      return `${getAmPm(hours)} ${hours % 12 || 12}:${minutes}`;
+    };
+
+    // ✅ 테스트용: 1분 이하 → 방금 전, 1분 이상부터 "N분 전"
+    if (minutes < 1) return "방금 전";
+    if (minutes < 60) return `${minutes}분 전`;
+    if (hours < 3) return `${hours}시간 전`;
+
+    const alertDate = date.toDateString();
+    const today = now.toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString(); // 어제 날짜
+
+    if (alertDate === today) {
+      return formatHourMin(date);
+    } else if (alertDate === yesterday) {
+      return `어제 ${formatHourMin(date)}`;
+    } else {
+      const week = ["일", "월", "화", "수", "목", "금", "토"];
+      const day = week[date.getDay()];
+      return `(${day}) ${formatHourMin(date)}`;
+    }
+  };
+
   return (
     <div className="notification-dropdown" ref={dropdownRef}>
       {/* 알림 아이콘 버튼 */}
       <button
         className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
-        onClick={() => setShowAlertDropdown((prev) => !prev)}
+        onClick={toggleDropdown}
         aria-label="알림"
       >
         <svg
@@ -241,7 +313,12 @@ export default function GlobalNotification() {
       {/* 알림 드롭다운 */}
       {showAlertDropdown && (
         <div
-          className={`absolute right-0 mt-2 ${getDropdownWidth()} bg-white border border-gray-200 rounded-lg shadow-lg z-[110] overflow-hidden`}
+          className={`absolute xl:-left-60 lg:-left-80 mt-2 ${getDropdownWidth()} bg-white border border-gray-200 rounded-lg shadow-lg z-[110] overflow-hidden
+                     transition-all duration-300 ease-in-out ${
+                       isAnimating
+                         ? "opacity-100 transform translate-y-0"
+                         : "opacity-0 transform -translate-y-4"
+                     }`}
         >
           {/* 드롭다운 헤더 */}
           <div className="flex items-center justify-between p-4 border-b">
@@ -328,7 +405,7 @@ export default function GlobalNotification() {
                           </p>
                           <div className="flex items-center justify-between mt-1">
                             <p className="text-xs text-gray-500">
-                              {alert.time}
+                              {formatAlertTime(new Date(alert.time))}
                               {alert.read && (
                                 <span className="ml-2 text-gray-400">읽음</span>
                               )}

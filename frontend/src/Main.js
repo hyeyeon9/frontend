@@ -15,11 +15,17 @@ import GoodsList from "./features/goods/pages/GoodsList";
 
 import DashBoard from "./features/dashboard/pages/DashBoard";
 import ExpiringItemsPage from "./features/dashboard/pages/ExpiringItemsPage";
+
 import DisposalAnalyze from "./features/disposal/pages/DisposalAnalyze";
 import DispoalList from "./features/disposal/pages/DisposalPage";
+
 import OrderingPage from "./features/ordering/pages/OrderingPage";
 
 import SalesReport from "./features/sales_analysis/pages/SalesReport";
+
+import Statistics from "./features/statistics/pages/Statistics";
+import SalesHistory from "./features/statistics/pages/SalesHistory";
+import SalesHistoryDetail from "./features/statistics/pages/SalesHistoryDetail";
 
 import LoginPage from "./features/member/pages/LoginPage";
 import SignUpPage from "./features/member/pages/SignupPage";
@@ -35,7 +41,7 @@ import { SuccessPage } from "./features/shop/feature/payments/Success";
 import { FailPage } from "./features/shop/feature/payments/Fail";
 import PayLayout from "./pages/PayLayout";
 import ChatBot from "./components/ChatBot";
-import Statistics from "./features/statistics/pages/Statistics";
+
 import OrderCompletePage from "./features/shop/pages/OrderCompletePage";
 import DiscountingPage from "./features/shop/pages/DiscountingPage";
 
@@ -60,6 +66,16 @@ const router = createBrowserRouter([
         // 회원가입
         path: "/signup",
         element: <SignUpPage />,
+      },
+      {
+        // 판매내역
+        path: "/salesHistory",
+        element: <SalesHistory />,
+      },
+      {
+        // 상세 판매내역
+        path: "/salesHistory/:orderId",
+        element: <SalesHistoryDetail />,
       },
       {
         // 매출 통계
