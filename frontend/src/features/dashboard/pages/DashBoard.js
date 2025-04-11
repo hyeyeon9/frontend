@@ -405,21 +405,43 @@ export default function DashBoard() {
           }
           footer={
             <div className="flex items-center">
-              <div className="text-green-500 flex items-center">
-                <svg
-                  className="h-4 w-4 mr-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 10l7-7m0 0l7 7m-7-7v18"
-                  />
-                </svg>
-                <span>{sales.difference || 0}%</span>
+              <div
+                className={`flex items-center ${
+                  (sales.difference || 0) >= 0
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
+              >
+                {(sales.difference || 0) >= 0 ? (
+                  <svg
+                    className="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 10l7-7m0 0l7 7m-7-7v18"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                    />
+                  </svg>
+                )}
+                <span>{Math.abs(sales.difference || 0)}%</span>
               </div>
               <span className="text-gray-500 text-sm ml-2">어제 대비</span>
             </div>
