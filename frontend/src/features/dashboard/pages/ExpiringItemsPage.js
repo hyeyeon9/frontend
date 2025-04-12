@@ -79,11 +79,8 @@ export default function ExpiringItemsPage() {
 
   // 할인 페이지로 이동하는 함수
   const goToDiscountPage = () => {
-    localStorage.setItem(
-      "selectedForDiscount",
-      JSON.stringify(selectedItems)
-    );
-    window.location.href ="/categories/findAll"
+    localStorage.setItem("selectedForDiscount", JSON.stringify(selectedItems));
+    window.location.href = "/categories/findAll";
   };
 
   // 유통기한 긴급/위험/3일 이상 상품으로 필터링
@@ -94,13 +91,10 @@ export default function ExpiringItemsPage() {
     const days = getDaysUntil(item.expirationDate);
     return days > 1 && days <= 3;
   });
-  const normalItems = items.filter(
-    (item) => getDaysUntil(item.expirationDate) > 3
-  );
 
   // 손실값 계산하기
   const calculatePotentialLoss = () => {
-    return urgentItems.reduce(
+    return warningItems.reduce(
       (sum, item) => sum + item.stockQuantity * item.goodsPrice,
       0
     );
@@ -114,16 +108,18 @@ export default function ExpiringItemsPage() {
           <h1 className="text-2xl font-bold">유통기한 임박 상품 전체 목록</h1>
         </div>
 
-        {selectedItems.length > 0 && (
-          <button
-            onClick={goToOrderingPage}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            <span>선택한 상품 발주하기 ({selectedItems.length})</span>
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        )}
+        <div className="min-h-[44px] flex items-center">
+          {selectedItems.length > 0 && (
+            <button
+              onClick={goToOrderingPage}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              <span>선택한 상품 발주하기 ({selectedItems.length})</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {showInsights && (
@@ -137,12 +133,13 @@ export default function ExpiringItemsPage() {
               </p>
               <div className="flex gap-2">
                 <Link to="/categories/findAll">
-                  <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goToDiscountPage();
-                  }}
-                  className="text-xs bg-white text-red-700 px-2 py-1 rounded border border-red-300 hover:bg-red-100 transition-colors">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      goToDiscountPage();
+                    }}
+                    className="text-xs bg-white text-red-700 px-2 py-1 rounded border border-red-300 hover:bg-red-100 transition-colors"
+                  >
                     <Tag className="h-3 w-3 inline mr-1" />
                     할인 적용
                   </button>
@@ -214,10 +211,6 @@ export default function ExpiringItemsPage() {
               <span className="w-2 h-2 bg-amber-500 rounded-full mr-1"></span>
               3일 이내: {warningItems.length}
             </span>
-            <span className="inline-flex items-center px-2 py-1 rounded-full bg-slate-100 text-slate-800 text-xs">
-              <span className="w-2 h-2 bg-slate-500 rounded-full mr-1"></span>
-              3일 이상: {normalItems.length}
-            </span>
           </div>
         </div>
 
@@ -248,7 +241,10 @@ export default function ExpiringItemsPage() {
                   }`}
                   onClick={() => toggleItemSelection(item)}
                 >
-                  <div className="col-span-1 flex items-center justify-center">
+                  <div
+                    className="col-span-1 flex items-center justify-center"
+                    onClick={() => toggleItemSelection(item)}
+                  >
                     <input
                       type="checkbox"
                       checked={isSelected}
