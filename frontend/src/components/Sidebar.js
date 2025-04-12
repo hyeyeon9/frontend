@@ -52,7 +52,7 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-12 left-0 z-[80] h-screen transition-all duration-300 ease-in-out
+        className={`fixed top-14 left-0 z-[1000] h-screen transition-all duration-300 ease-in-out
            ${
              isMobileOpen
                ? "translate-x-0"
@@ -62,17 +62,14 @@ export default function Sidebar() {
            bg-white shadow-xl rounded-r-xl lg:rounded-xl dark:bg-gray-800 dark:text-white`}
       >
         <div className="p-3 mb-2 flex justify-between items-center">
-          <h5 className="block lg:hidden font-sans text-lg antialiased font-semibold leading-snug tracking-normal text-blue-gray-900 dark:text-white">
-            Daily24
-          </h5>
           {/* Close button for mobile - only visible on mobile */}
-          <button
+          {/* <button
             onClick={() => setIsMobileOpen(false)}
             className="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white"
             aria-label="Close sidebar"
           >
             <X className="h-5 w-5" />
-          </button>
+          </button> */}
         </div>
 
         <nav className="flex min-w-0 flex-col gap-1 p-2 font-sans text-sm font-normal text-blue-gray-700 dark:text-gray-200">
