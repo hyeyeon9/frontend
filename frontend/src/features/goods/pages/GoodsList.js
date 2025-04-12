@@ -111,7 +111,7 @@ function GoodsList() {
   return (
     <>
       <MenuNavigation />
-      <div className="p-6 bg-gray-100 min-h-screen">
+      <div className="p-6 min-h-screen">
         {showExpiringNotification && discountItems.length > 0 && (
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 flex items-center justify-between">
             <div className="flex items-center">

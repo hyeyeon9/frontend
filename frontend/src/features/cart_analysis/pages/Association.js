@@ -183,7 +183,7 @@ function Association() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         {/* 헤더 */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
@@ -257,7 +257,8 @@ function Association() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-gray-700">
-                      지지도 <span className="lg:hidden xl:inline">(Support)</span> ≥{" "}
+                      지지도{" "}
+                      <span className="lg:hidden xl:inline">(Support)</span> ≥{" "}
                       {(minSupport * 100).toFixed(1)}%
                     </label>
                     <span className="text-xs text-gray-500">
@@ -284,8 +285,9 @@ function Association() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-gray-700">
-                      신뢰도 <span className="lg:hidden xl:inline">(Confidence)</span> ≥{" "}
-                      {(minConfidence * 100).toFixed(0)}%
+                      신뢰도{" "}
+                      <span className="lg:hidden xl:inline">(Confidence)</span>{" "}
+                      ≥ {(minConfidence * 100).toFixed(0)}%
                     </label>
                     <span className="text-xs text-gray-500">
                       {(minConfidence * 100).toFixed(0)}%
@@ -311,8 +313,8 @@ function Association() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-gray-700">
-                      향상도 <span className="lg:hidden xl:inline">(Lift)</span> ≥{" "}
-                      {minLift.toFixed(1)}
+                      향상도 <span className="lg:hidden xl:inline">(Lift)</span>{" "}
+                      ≥ {minLift.toFixed(1)}
                     </label>
                     <span className="text-xs text-gray-500">
                       {minLift.toFixed(1)}

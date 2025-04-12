@@ -53,13 +53,15 @@ function InventoriesList() {
   useEffect(() => {
     async function getInventoryList() {
       try {
-        setLoading(true)
-        const data = await fetchInventoryList()
-        console.log("재고:", data)
-        const nonExpiredList = data.filter((item) => 
-          new Date(item.expirationDate) >= today || item.expirationDate === null
-      )
-        setInventoryList(nonExpiredList)
+        setLoading(true);
+        const data = await fetchInventoryList();
+        console.log("재고:", data);
+        const nonExpiredList = data.filter(
+          (item) =>
+            new Date(item.expirationDate) >= today ||
+            item.expirationDate === null
+        );
+        setInventoryList(nonExpiredList);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -101,8 +103,8 @@ function InventoriesList() {
       groupedInventory[goodsId].totalStock += stockQuantity;
 
       // 폐기 예정 수량 (오늘 자정까지 유통기한인 상품)
-      if (expirationDate  && expDate <= endOfDay) {
-        groupedInventory[goodsId].expiringSoon += stockQuantity
+      if (expirationDate && expDate <= endOfDay) {
+        groupedInventory[goodsId].expiringSoon += stockQuantity;
       }
 
       // 배치 정보 저장
@@ -487,7 +489,7 @@ function InventoriesList() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         {/* 헤더 및 필터 영역 */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">

@@ -22,7 +22,8 @@ function GoodsEdit() {
   const [originalPrice, setOriginalPrice] = useState(0);
   const [discountPeriod, setDiscountPeriod] = useState("7");
 
-  const isDiscounting = goods?.discountRate !== null && goods?.discountEndAt !== null;
+  const isDiscounting =
+    goods?.discountRate !== null && goods?.discountEndAt !== null;
 
   useEffect(() => {
     async function getGoodsDetail() {
@@ -110,7 +111,7 @@ function GoodsEdit() {
   return (
     <>
       <MenuNavigation />
-      <div className="p-6 bg-gray-100 min-h-screen">
+      <div className="p-6 min-h-screen">
         <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
           {/* 헤더 */}
           <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-8 py-6 text-white">
