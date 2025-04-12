@@ -7,12 +7,9 @@ import {
   AlertTriangle,
   BarChart,
   Calendar,
-  CheckCircle,
   ChevronDown,
   Clock,
-  Filter,
   Info,
-  Trash2,
   X,
 } from "lucide-react";
 import { fetchExpiringItems } from "../../inventory/api/HttpInventoryService";
@@ -34,7 +31,6 @@ function DisposalList() {
   const [pendingCount, setPendingCount] = useState(0);
   const [loadingPending, setLoadingPending] = useState(false);
 
-  const [filterType, setFilterType] = useState("all");
 
   // 폐기 테이블 불러오기 (새롭게 업데이트 될때마다 불러옴)
   useEffect(() => {
