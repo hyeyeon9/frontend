@@ -1,22 +1,24 @@
-import { ResponsiveHeatMap } from "@nivo/heatmap"
+import { ResponsiveHeatMap } from "@nivo/heatmap";
 
 function HeatmapChart({ data }) {
   if (!data || data.length === 0) {
-    return <p>데이터가 존재하지 않습니다.</p>
+    return <p>데이터가 존재하지 않습니다.</p>;
   }
 
   // 1️⃣ 세로축(A), 가로축(B) 데이터 추출
-  const itemA = [...new Set(data.map((d) => d.itemset_a))] // 세로축
-  const itemB = [...new Set(data.map((d) => d.itemset_b))] // 가로축
+  const itemA = [...new Set(data.map((d) => d.itemset_a))]; // 세로축
+  const itemB = [...new Set(data.map((d) => d.itemset_b))]; // 가로축
 
   // 2️⃣ Nivo에 맞는 데이터 구조 변환
   const transformedData = itemA.map((a) => ({
     id: a, // 세로축 라벨
     data: itemB.map((b) => {
-      const match = data.find((rule) => rule.itemset_a === a && rule.itemset_b === b)
-      return { x: b, y: match ? match.confidence : 0 } // 없으면 0
+      const match = data.find(
+        (rule) => rule.itemset_a === a && rule.itemset_b === b
+      );
+      return { x: b, y: match ? match.confidence : null }; // 없으면 0
     }),
-  }))
+  }));
 
   return (
     <div className="w-full  xl:w-[800px] lg:w-[580px] h-[400px] md:h-[500px] mx-auto overflow-auto">
@@ -45,11 +47,11 @@ function HeatmapChart({ data }) {
         }}
         colors={{
           type: "diverging",
-          scheme: "purples", // 🔥 부드러운 색상 그라데이션
-          minValue: 0,
-          maxValue: 1,
+          scheme: "blues", // 🔥 부드러운 색상 그라데이션
+          minValue: 0.5,
+          maxValue: 0.9,
         }}
-        emptyColor="#555555"
+        emptyColor="#ffffff"
         legends={[
           {
             anchor: "bottom",
@@ -69,7 +71,7 @@ function HeatmapChart({ data }) {
         ]}
       />
     </div>
-  )
+  );
 }
 
-export default HeatmapChart
+export default HeatmapChart;

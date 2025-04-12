@@ -250,19 +250,19 @@ function GoodsDetail() {
                           className={`h-4 rounded-full ${
                             goods.goods_stock < 5
                               ? "bg-red-500"
-                              : goods.goods_stock < 20
+                              : goods.goods_stock < 15
                               ? "bg-yellow-500"
                               : "bg-green-500"
                           }`}
                           style={{
                             width: `${Math.min(
                               100,
-                              (goods.goods_stock / 50) * 100
+                              (goods.goods_stock / 10) * 100
                             )}%`,
                           }}
                         ></div>
                       </div>
-                      <span className="ml-4 font-medium">
+                      <span className="ml-5 font-medium whitespace-nowrap">
                         {goods.goods_stock}개
                       </span>
                     </div>
@@ -283,7 +283,7 @@ function GoodsDetail() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-gray-500">상품 ID</p>
-                        <p className="font-medium">{id}</p>
+                        <p className="font-medium pl-5">{id}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">상품 코드</p>
