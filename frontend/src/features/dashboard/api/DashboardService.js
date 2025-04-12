@@ -15,8 +15,8 @@ export async function fetchGetTodayVisitors() {
   return response;
 }
 
-// 현재 시각까지의 누적 판매액
+// 현재 시각까지의 누적 판매액과 전일과의 비교 수치
 export async function fetchGetTodaySales() {
-  const response = await instance.get(`/sales`);
+  const response = await instance.get(`/salesAndDiff`);
   return response;
 }

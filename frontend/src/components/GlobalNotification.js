@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import SseNotification from "../features/dashboard/components/SseNotification";
 
 // 전역 알림 컴포넌트
 export default function GlobalNotification() {
@@ -102,66 +101,66 @@ export default function GlobalNotification() {
   };
 
   // SSE 리스너 설정
-  // useEffect(() => {
-  //   console.log("📡 SSE 연결 시도중...");
-  //   // EventSource: SSE (Server-Sent Events)를 위한 브라우저 내장 객체
-  //   const eventSource = new EventSource(
-  //     "http://localhost:8090/app/sse/connect?clientId=admin"
-  //   );
+  useEffect(() => {
+    console.log("📡 SSE 연결 시도중...");
+    // EventSource: SSE (Server-Sent Events)를 위한 브라우저 내장 객체
+    const eventSource = new EventSource(
+      "http://localhost:8090/app/sse/connect?clientId=admin"
+    );
 
-  //   eventSource.onopen = () => {
-  //     console.log("✅ SSE 연결 성공");
-  //   };
+    eventSource.onopen = () => {
+      console.log("✅ SSE 연결 성공");
+    };
 
-  //   // 메시지 수신 시 처리
-  //   eventSource.onmessage = (event) => {
-  //     try {
-  //       const data = JSON.parse(event.data);
-  //       console.log("📡 실시간 알림 수신:", data);
+    // 메시지 수신 시 처리
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log("📡 실시간 알림 수신:", data);
 
-  //       // 알림 타입 매핑 (기존 타입을 새 탭 카테고리로 변환)
-  //       let mappedType = "일반";
+        // 알림 타입 매핑 (기존 타입을 새 탭 카테고리로 변환)
+        let mappedType = "일반";
 
-  //       if (data.type === "유통기한임박" || data.type === "자동폐기") {
-  //         mappedType = "폐기";
-  //       } else if (data.type === "재고부족") {
-  //         mappedType = "재고";
-  //       } else if (
-  //         data.type === "결제완료" ||
-  //         data.type === "환불" ||
-  //         data.type === "주문"
-  //       ) {
-  //         mappedType = "결제";
-  //       }
+        if (data.type === "유통기한임박" || data.type === "자동폐기") {
+          mappedType = "폐기";
+        } else if (data.type === "재고부족") {
+          mappedType = "재고";
+        } else if (
+          data.type === "결제" ||
+          data.type === "환불" ||
+          data.type === "주문"
+        ) {
+          mappedType = "결제";
+        }
 
-  //       // 새 알림 추가
-  //       addNewAlert({
-  //         ...data,
-  //         type: mappedType,
-  //       });
-  //     } catch (error) {
-  //       console.error("SSE 메시지 처리 오류:", error);
-  //     }
-  //   };
+        // 새 알림 추가
+        addNewAlert({
+          ...data,
+          type: mappedType,
+        });
+      } catch (error) {
+        console.error("SSE 메시지 처리 오류:", error);
+      }
+    };
 
-  //   // 에러 처리
-  //   eventSource.onerror = (error) => {
-  //     console.error("SSE 연결 오류:", error);
-  //     eventSource.close();
+    // 에러 처리
+    eventSource.onerror = (error) => {
+      console.error("SSE 연결 오류:", error);
+      eventSource.close();
 
-  //     // 3초 후 재연결 시도
-  //     setTimeout(() => {
-  //       console.log("SSE 재연결 시도...");
-  //       // 컴포넌트가 마운트된 상태일 때만 재연결
-  //     }, 3000);
-  //   };
+      // 3초 후 재연결 시도
+      setTimeout(() => {
+        console.log("SSE 재연결 시도...");
+        // 컴포넌트가 마운트된 상태일 때만 재연결
+      }, 3000);
+    };
 
-  //   // 컴포넌트 언마운트 시 연결 종료
-  //   return () => {
-  //     console.log("SSE 연결 종료");
-  //     eventSource.close();
-  //   };
-  // }, []);
+    // 컴포넌트 언마운트 시 연결 종료
+    return () => {
+      console.log("SSE 연결 종료");
+      eventSource.close();
+    };
+  }, []);
 
   // 새 알림 추가 함수
   const addNewAlert = (data) => {
@@ -261,7 +260,7 @@ export default function GlobalNotification() {
       return `${getAmPm(hours)} ${hours % 12 || 12}:${minutes}`;
     };
 
-    // ✅ 테스트용: 1분 이하 → 방금 전, 1분 이상부터 "N분 전"
+    // 1분 이하 → 방금 전, 1분 이상부터 "N분 전"
     if (minutes < 1) return "방금 전";
     if (minutes < 60) return `${minutes}분 전`;
     if (hours < 3) return `${hours}시간 전`;
@@ -283,7 +282,15 @@ export default function GlobalNotification() {
 
   return (
     <div className="notification-dropdown" ref={dropdownRef}>
-           <SseNotification onMessage={addNewAlert} />
+        <button
+          onClick={() => {
+            setAlertList([]);
+            localStorage.removeItem("admin_alerts");
+          }}
+        >
+          {" "}
+          초기화{" "}
+        </button>
       {/* 알림 아이콘 버튼 */}
       <button
         className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
