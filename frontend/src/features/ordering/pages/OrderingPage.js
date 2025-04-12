@@ -2061,10 +2061,10 @@ function OrderingPage() {
         </div>
       )}
 
-      {/* 검수 확인 모달 */}
+      {/* 각 상품 검수 확인 모달 */}
       {showInspectionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2000]">
-          <div className="bg-white rounded-lg max-w-md w-full mx-4 shadow-xl overflow-hidden">
+          <div className="bg-white rounded-lg max-w-md  w-full mx-4 shadow-xl overflow-hidden">
             {/* 모달 헤더 */}
             <div className="bg-blue-50 p-6 border-b border-blue-100">
               <div className="flex items-center">
@@ -2085,8 +2085,8 @@ function OrderingPage() {
                       발주 검수 완료
                     </h4>
                     <p className="text-sm text-gray-600">
-                      주문번호 #{selectedOrderId}의 발주 상품이 정상적으로
-                      입고되었는지 확인하셨나요?
+                      주문번호 #{selectedOrderId}의 발주 상품이 정상
+                      입고되었나요?
                     </p>
                   </div>
                 </div>
@@ -2095,8 +2095,8 @@ function OrderingPage() {
                   <div className="flex items-start">
                     <AlertCircle className="h-5 w-5 text-yellow-600 mr-2 mt-0.5" />
                     <p className="text-sm text-yellow-800">
-                      검수 확인 후에는 상태가 '입고완료'로 변경되며, 이 작업은
-                      되돌릴 수 없습니다.
+                      검수 확인 후에는 상태가 '입고완료'로 변경되며,
+                       이 작업은 되돌릴 수 없습니다.
                     </p>
                   </div>
                 </div>
@@ -2132,7 +2132,7 @@ function OrderingPage() {
       {/* 검수 확인 모달 */}
       {showBatchInspectionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2000]">
-          <div className="bg-white rounded-lg w-[500px] h-[600px] shadow-xl overflow-hidden">
+          <div className="bg-white rounded-lg w-[500px] h-[400px] shadow-xl overflow-hidden">
             {/* Modal Header */}
             <div className="bg-blue-50 p-6 border-b border-blue-100">
               <div className="flex items-center">
@@ -2156,7 +2156,7 @@ function OrderingPage() {
                     </h4>
                     <p className="text-sm text-gray-600">
                       선택한 {getSelectedOrdersCount()}개의 발주 상품이
-                      정상적으로 입고되었는지 확인하셨나요?
+                      정상 입고되었나요?
                     </p>
                   </div>
                 </div>

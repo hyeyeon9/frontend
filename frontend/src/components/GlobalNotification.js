@@ -126,7 +126,7 @@ export default function GlobalNotification() {
         } else if (data.type === "재고부족") {
           mappedType = "재고";
         } else if (
-          data.type === "결제완료" ||
+          data.type === "결제" ||
           data.type === "환불" ||
           data.type === "주문"
         ) {
@@ -260,7 +260,7 @@ export default function GlobalNotification() {
       return `${getAmPm(hours)} ${hours % 12 || 12}:${minutes}`;
     };
 
-    // ✅ 테스트용: 1분 이하 → 방금 전, 1분 이상부터 "N분 전"
+    // 1분 이하 → 방금 전, 1분 이상부터 "N분 전"
     if (minutes < 1) return "방금 전";
     if (minutes < 60) return `${minutes}분 전`;
     if (hours < 3) return `${hours}시간 전`;
@@ -282,6 +282,15 @@ export default function GlobalNotification() {
 
   return (
     <div className="notification-dropdown" ref={dropdownRef}>
+        <button
+          onClick={() => {
+            setAlertList([]);
+            localStorage.removeItem("admin_alerts");
+          }}
+        >
+          {" "}
+          초기화{" "}
+        </button>
       {/* 알림 아이콘 버튼 */}
       <button
         className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
