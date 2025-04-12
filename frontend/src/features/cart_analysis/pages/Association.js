@@ -71,9 +71,9 @@ function Association() {
   const [month, setMonth] = useState("");
 
   // 지지도, 신뢰도, 향상도 조절을 위한 상태
-  const [minSupport, setMinSupport] = useState(0.04);
-  const [minConfidence, setMinConfidence] = useState(0.3);
-  const [minLift, setMinLift] = useState(1.0);
+  const [minSupport, setMinSupport] = useState(0.03);
+  const [minConfidence, setMinConfidence] = useState(0.5);
+  const [minLift, setMinLift] = useState(1.5);
 
   const [selectedTopRule, setSelectedTopRule] = useState(null);
   const [activeTab, setActiveTab] = useState("heatmap"); // 'heatmap' or 'table'

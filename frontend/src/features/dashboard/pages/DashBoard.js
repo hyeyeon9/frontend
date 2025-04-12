@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ChatWidget from "../../../components/ChatWidget";
@@ -387,7 +385,7 @@ export default function DashBoard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <DashboardCard
           title="오늘 매출"
-          value={`₩${sales.toLocaleString()}`}
+          value={`₩${Number(sales.today || 0).toLocaleString()}`}
           bgColor="bg-blue-100"
           textColor="text-blue-600"
           icon={
@@ -421,7 +419,7 @@ export default function DashBoard() {
                     d="M5 10l7-7m0 0l7 7m-7-7v18"
                   />
                 </svg>
-                <span>27.5%</span>
+                <span>{sales.difference || 0}%</span>
               </div>
               <span className="text-gray-500 text-sm ml-2">어제 대비</span>
             </div>

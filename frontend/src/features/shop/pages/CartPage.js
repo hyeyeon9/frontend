@@ -164,41 +164,41 @@ export default function CartPage() {
   };
 
   return (
-    <div className="max-w-[430px] mx-auto bg-gray-50 min-h-screen">
+    <div className="container flex flex-col px-0 sm:px-6 min-h-screen">
       {/* 알림 메시지 */}
       {showAlert && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[2000]">
           <Alert color={alertType} className="shadow-lg">
             <div className="flex items-center gap-2">
               {alertType === "success" && <Check className="h-4 w-4" />}
-              <span className="font-medium text-sm">{alertMessage}</span>
+              <span className="font-medium text-md">{alertMessage}</span>
             </div>
           </Alert>
         </div>
       )}
 
-      <div className="p-4">
+      <div className="sm:p-4">
         <Button
           color="light"
           as={Link}
           to="/shop"
-          className="mb-4 flex items-center"
+          className="mb-4 flex items-center rounded-none sm:rounded-md"
           size="sm"
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
           쇼핑 계속하기
         </Button>
 
-        <div className="flex items-center mb-4">
+        <div className="flex items-center mb-4 ml-3 sm:ml-0">
           <ShoppingBag className="h-5 w-5 text-blue-600 mr-2" />
           <h1 className="text-xl font-bold">장바구니</h1>
         </div>
 
         {cartItems.length > 0 ? (
-          <div>
-            <div className="mb-4">
+          <div className="md:flex md:gap-4">
+            <div className="md:w-[60%] mb-4">
               {cartItems.map((item) => (
-                <Card key={item.id} className="mb-3">
+                <Card key={item.id} className="mb-3 rounded-none sm:rounded-md">
                   <div className="flex">
                     <div className="relative w-20 h-20 flex-shrink-0">
                       <img
@@ -209,7 +209,7 @@ export default function CartPage() {
                       {item.discountRate > 0 && (
                         <Badge
                           color="failure"
-                          className="absolute top-1 left-1 text-xs px-1 py-0.5"
+                          className="absolute top-1 left-1 text-sm px-1 py-0.5"
                         >
                           {item.discountRate}%
                         </Badge>
@@ -218,15 +218,15 @@ export default function CartPage() {
                     <div className="p-2 flex-1">
                       <div className="flex justify-between">
                         <div className="pr-2">
-                          <h3 className="font-medium text-sm line-clamp-1">
+                          <h3 className="font-medium text-md line-clamp-1">
                             {item.name}
                           </h3>
                           {item.discountRate > 0 && (
                             <div className="flex items-center mt-0.5">
-                              <span className="text-gray-500 line-through text-[10px] mr-1">
+                              <span className="text-gray-500 line-through text-xs mr-1">
                                 {item.originalPrice.toLocaleString()}원
                               </span>
-                              <span className="text-red-600 text-xs font-medium">
+                              <span className="text-red-600 text-sm font-bold">
                                 {item.price.toLocaleString()}원
                               </span>
                             </div>
@@ -271,64 +271,64 @@ export default function CartPage() {
               ))}
             </div>
 
-            <Card className="mb-20">
-              <h3 className="text-base font-semibold mb-3">주문 요약</h3>
-              <div className="mb-3">
-                <div className="grid grid-cols-12 text-xs font-medium border-b pb-2 mb-2">
-                  <span className="col-span-7">상품명</span>
-                  <span className="col-span-2 text-center">수량</span>
-                  <span className="col-span-3 text-right">가격</span>
-                </div>
+            <div className="md:w-[40%]">
+              <Card className="mb-20 rounded-none sm:rounded-md sticky top-4">
+                <h3 className="text-md font-semibold mb-3">주문 요약</h3>
+                <div className="mb-3">
+                  <div className="grid grid-cols-12 text-sm font-medium border-b pb-2 mb-2">
+                    <span className="col-span-8">상품명</span>
+                    <span className="col-span-1 text-center">수량</span>
+                    <span className="col-span-3 text-right">가격</span>
+                  </div>
 
-                {cartItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="grid grid-cols-12 py-2 border-b border-gray-100 text-xs"
-                  >
-                    <span className="col-span-7 pr-2 line-clamp-1">
-                      {item.name}
-                    </span>
-                    <span className="col-span-2 text-center">
-                      {item.quantity}
-                    </span>
-                    <span className="col-span-3 text-right">
-                      {item.discountRate > 0 ? (
-                        <div>
-                          <span className="line-through text-gray-400 block text-[10px]">
-                            {(
-                              item.originalPrice * item.quantity
-                            ).toLocaleString()}
-                            원
-                          </span>
-                          <span className="text-red-600">
+                  {cartItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className="grid grid-cols-12 py-2 border-b border-gray-100 text-sm"
+                    >
+                      <span className="col-span-8 pr-2">{item.name}</span>
+                      <span className="col-span-1 text-center">
+                        {item.quantity}
+                      </span>
+                      <span className="col-span-3 text-right">
+                        {item.discountRate > 0 ? (
+                          <div>
+                            <span className="line-through text-gray-400 block text-xs">
+                              {(
+                                item.originalPrice * item.quantity
+                              ).toLocaleString()}
+                              원
+                            </span>
+                            <span className="text-red-600">
+                              {(item.price * item.quantity).toLocaleString()}원
+                            </span>
+                          </div>
+                        ) : (
+                          <span>
                             {(item.price * item.quantity).toLocaleString()}원
                           </span>
-                        </div>
-                      ) : (
-                        <span>
-                          {(item.price * item.quantity).toLocaleString()}원
-                        </span>
-                      )}
+                        )}
+                      </span>
+                    </div>
+                  ))}
+
+                  <div className="grid grid-cols-12 py-3 mt-2 font-bold text-sm">
+                    <span className="col-span-9">총합</span>
+                    <span className="col-span-3 text-right">
+                      {calculateTotal().toLocaleString()}원
                     </span>
                   </div>
-                ))}
-
-                <div className="grid grid-cols-12 py-3 mt-2 font-bold text-sm">
-                  <span className="col-span-9">총합</span>
-                  <span className="col-span-3 text-right">
-                    {calculateTotal().toLocaleString()}원
-                  </span>
                 </div>
-              </div>
-              <Button
-                color="blue"
-                className="w-full"
-                size="lg"
-                onClick={handlePayment}
-              >
-                결제하기
-              </Button>
-            </Card>
+                <Button
+                  color="blue"
+                  className="w-full"
+                  size="lg"
+                  onClick={handlePayment}
+                >
+                  결제하기
+                </Button>
+              </Card>
+            </div>
           </div>
         ) : (
           <div className="text-center py-12 bg-white rounded-lg shadow-sm">
