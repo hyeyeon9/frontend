@@ -251,7 +251,7 @@ function DisposalAnalyze() {
                 <div className="p-4 bg-indigo-50 rounded-lg">
                   <p className="text-gray-700 leading-relaxed">
                     이번 달에는{" "}
-                    <span className="font-medium text-indigo-700">
+                    <span className="font-bold text-indigo-700">
                       {topItems.map((item, i) => (
                         <span key={item.subName}>
                           {item.subName}

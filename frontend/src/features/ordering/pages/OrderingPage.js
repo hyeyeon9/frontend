@@ -1224,7 +1224,7 @@ function OrderingPage() {
                   <div className="flex bg-gray-100 rounded-lg p-1">
                     <button
                       onClick={() => setStatusFilter("")}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`px-4 py-2 rounded-md text-sm font-bold transition-colors ${
                         statusFilter === ""
                           ? "bg-white text-indigo-700 shadow-sm"
                           : "text-gray-600 hover:bg-gray-200"
@@ -1234,7 +1234,7 @@ function OrderingPage() {
                     </button>
                     <button
                       onClick={() => setStatusFilter("정상")}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`px-4 py-2 rounded-md text-sm font-bold transition-colors ${
                         statusFilter === "정상"
                           ? "bg-white text-green-700 shadow-sm"
                           : "text-gray-600 hover:bg-gray-200"
@@ -1244,7 +1244,7 @@ function OrderingPage() {
                     </button>
                     <button
                       onClick={() => setStatusFilter("재고부족")}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`px-4 py-2 rounded-md text-sm font-bold transition-colors ${
                         statusFilter === "재고부족"
                           ? "bg-white text-red-700 shadow-sm"
                           : "text-gray-600 hover:bg-gray-200"
@@ -1287,10 +1287,10 @@ function OrderingPage() {
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
+                    <table className="w-full table-fixed border-collapse">
                       <thead>
                         <tr className="bg-gray-50 border-b border-gray-200">
-                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="xl:px-6 py-3 lg:px-4 text-left lg:text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                             <input
                               type="checkbox"
                               checked={
@@ -1303,22 +1303,22 @@ function OrderingPage() {
                               className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                             />
                           </th>
-                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider lg:hidden xl:table-cell">
+                          <th className="xl:px-0  xl:w-[50px] py-3  lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider lg:hidden xl:table-cell">
                             ID
                           </th>
-                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                          <th className="xl:px-5 py-3  xl:w-[150px] lg:w-[100px] lg:px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                             이미지
                           </th>
-                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="xl:px-2 py-3 xl:w-[240px] lg:w-[210px] lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             상품명
                           </th>
-                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="xl:px-6 py-3 xl:w-[130px] lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             가격
                           </th>
                           <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             재고
                           </th>
-                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="xl:px-6 py-3 lg:px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider lg:whitespace-nowrap">
                             발주 수량
                           </th>
                         </tr>
@@ -1327,35 +1327,42 @@ function OrderingPage() {
                         {filteredInventory.map((item) => (
                           <tr
                             key={item.goods_id}
-                            className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                            className="hover:bg-gray-50  hover:cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
                           >
-                            <td className="xl:px-6 xl:py-4 whitespace-nowrap lg:px-4">
+                            <td className="xl:px-6 xl:py-4 whitespace-nowrap lg:px-4 text-center">
                               <input
                                 type="checkbox"
                                 checked={Boolean(selectedItems[item.goods_id])}
                                 onChange={() => handleSelectItem(item.goods_id)}
-                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                className="h-4 w-4 hover:cursor-pointer text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                               />
                             </td>
-                            <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap text-sm text-gray-500 lg:hidden xl:table-cell">
-                              {item.goods_id}
+                            <td className="lg:px-4 xl:px-3 py-4 whitespace-nowrap text-sm text-gray-500 lg:hidden xl:table-cell">
+                              <span className="ml-[-10px] inline-block">
+                                {" "}
+                                {/* 텍스트에 직접 적용 */}
+                                {item.goods_id}
+                              </span>
                             </td>
 
-                            <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap lg:w-32 xl:w-24">
+                            <td className="lg:px-3 xl:px-4 py-4 whitespace-nowrap lg:w-32 xl:w-24">
                               <img
                                 src={item.goods_image || "/placeholder.svg"}
                                 alt={item.goods_name}
-                                className="w-20 h-20 lg:w-24 lg:h-16 xl:w-16 xl:h-16 object-cover rounded-md border border-gray-200"
+                                className="w-20 h-20 lg:w-24 lg:h-16 xl:w-20 xl:h-16 object-cover rounded-md border border-gray-200"
                               />
                             </td>
 
-                            <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap max-w-[200px] lg:max-w-[220px] xl:max-w-full">
+                            <td
+                              onClick={() => handleSelectItem(item.goods_id)}
+                              className="lg:px-4 xl:px-2 py-4 whitespace-nowrap xl:w-[240px] lg:max-w-[220px] "
+                            >
                               <div className="text-sm font-medium text-gray-900 truncate">
                                 {item.goods_name}
                               </div>
                             </td>
 
-                            <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap">
+                            <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap xl:w-[130px] ">
                               <div className="text-sm font-semibold text-indigo-600">
                                 {Number(item.goods_price).toLocaleString()}원
                               </div>
@@ -1374,7 +1381,7 @@ function OrderingPage() {
                               )}
                             </td>
                             <td className="lg:px-4 xl:px-6 py-4 whitespace-nowrap">
-                              <div className="flex flex-col space-y-2 w-full">
+                              <div className="flex flex-col space-y-2 w-full min-h-[72px] justify-center">
                                 <div className="flex items-center space-x-2">
                                   <input
                                     type="number"
@@ -1616,7 +1623,7 @@ function OrderingPage() {
                         className="w-full flex items-center gap-2 xl:px-4 py-2 lg:px-2 lg:pl-4 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                       >
                         <Calendar className="h-4 w-4 text-gray-500 lg:hidden" />
-                        <span className="font-medium lg:text-[15px]">
+                        <span className="font-bold lg:text-[15px] xl:pl-12">
                           {orderDateFilter
                             ? formatDateWithDay(new Date(orderDateFilter))
                             : formatDateWithDay(new Date())}
@@ -1676,7 +1683,7 @@ function OrderingPage() {
                   <div className="flex bg-gray-100 rounded-lg p-1">
                     <button
                       onClick={() => setOrderStatusFilter("")}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`px-4 py-2 rounded-md text-sm font-bold transition-colors ${
                         orderStatusFilter === ""
                           ? "bg-white text-indigo-700 shadow-sm"
                           : "text-gray-600 hover:bg-gray-200"
@@ -1686,7 +1693,7 @@ function OrderingPage() {
                     </button>
                     <button
                       onClick={() => setOrderStatusFilter("발주 진행중")}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`px-4 py-2 rounded-md text-sm font-bold transition-colors ${
                         orderStatusFilter === "발주 진행중"
                           ? "bg-white text-yellow-700 shadow-sm"
                           : "text-gray-600 hover:bg-gray-200"
@@ -1696,7 +1703,7 @@ function OrderingPage() {
                     </button>
                     <button
                       onClick={() => setOrderStatusFilter("발주완료")}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`px-4 py-2 rounded-md text-sm font-bold transition-colors ${
                         orderStatusFilter === "발주완료"
                           ? "bg-white text-blue-700 shadow-sm"
                           : "text-gray-600 hover:bg-gray-200"
@@ -1706,7 +1713,7 @@ function OrderingPage() {
                     </button>
                     <button
                       onClick={() => setOrderStatusFilter("입고완료")}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`px-4 py-2 rounded-md text-sm font-bold transition-colors ${
                         orderStatusFilter === "입고완료"
                           ? "bg-white text-green-700 shadow-sm"
                           : "text-gray-600 hover:bg-gray-200"
@@ -2095,8 +2102,8 @@ function OrderingPage() {
                   <div className="flex items-start">
                     <AlertCircle className="h-5 w-5 text-yellow-600 mr-2 mt-0.5" />
                     <p className="text-sm text-yellow-800">
-                      검수 확인 후에는 상태가 '입고완료'로 변경되며,
-                       이 작업은 되돌릴 수 없습니다.
+                      검수 확인 후에는 상태가 '입고완료'로 변경되며, 이 작업은
+                      되돌릴 수 없습니다.
                     </p>
                   </div>
                 </div>
@@ -2155,8 +2162,8 @@ function OrderingPage() {
                       발주 일괄 검수 완료
                     </h4>
                     <p className="text-sm text-gray-600">
-                      선택한 {getSelectedOrdersCount()}개의 발주 상품이
-                      정상 입고되었나요?
+                      선택한 {getSelectedOrdersCount()}개의 발주 상품이 정상
+                      입고되었나요?
                     </p>
                   </div>
                 </div>
