@@ -5,6 +5,7 @@ import Sidebar from "../components/Sidebar";
 import { useUser } from "../features/member/UserContext";
 import AdminToShop from "../components/temp/AdminToShop";
 import ScrollToTop from "../components/ScrollToTop";
+import ChatWidget from "../components/ChatWidget";
 
 export default function RootLayout() {
   const { user } = useUser(); // `user` 상태 가져오기
@@ -39,6 +40,7 @@ export default function RootLayout() {
           <AdminToShop />
         </main>
       </div>
+      <ChatWidget />
     </div>
   );
 }
