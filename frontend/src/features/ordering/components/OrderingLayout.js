@@ -1,14 +1,13 @@
-import { Outlet, Link, useLocation } from "react-router-dom"
-import { ShoppingCart, Package, Download } from "lucide-react"
+import { Outlet, Link, useLocation } from "react-router-dom";
+import { ShoppingCart, Package } from "lucide-react";
 
 export default function OrderingLayout() {
-  const location = useLocation()
-  const isListPage = location.pathname.includes("/orders/list")
+  const location = useLocation();
+  const isListPage = location.pathname.includes("/orders/list");
 
   return (
     <div className="bg-gray-50 min-h-screen p-6 ">
       <div className="max-w-7xl mx-auto">
-
         {/* 네비게이션 탭 */}
         <div className="flex border-b border-gray-200 mb-6">
           <Link
@@ -39,5 +38,5 @@ export default function OrderingLayout() {
         <Outlet />
       </div>
     </div>
-  )
+  );
 }

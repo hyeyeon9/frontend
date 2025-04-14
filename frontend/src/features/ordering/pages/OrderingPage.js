@@ -27,7 +27,6 @@ import {
   Bell,
   ChevronUp,
   ChevronDown,
-  Link,
 } from "lucide-react";
 
 function OrderingPage() {
@@ -54,8 +53,6 @@ function OrderingPage() {
   const [orderSearchQuery, setOrderSearchQuery] = useState("");
   const [orderStatusFilter, setOrderStatusFilter] = useState("");
   const [orderSortOption, setOrderSortOption] = useState("");
-
-  const [activeTab, setActiveTab] = useState("manage");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // 새로운 상태 추가: 각 상품별 재고 및 추천 정보 저장
