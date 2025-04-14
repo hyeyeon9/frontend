@@ -1049,7 +1049,7 @@ function OrderingPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-6">
