@@ -232,7 +232,7 @@ function AddGoods() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-5xl mx-auto">
         {/* 헤더 */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">

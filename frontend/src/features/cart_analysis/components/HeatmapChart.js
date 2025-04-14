@@ -21,14 +21,14 @@ function HeatmapChart({ data }) {
   }));
 
   return (
-    <div className="w-full  xl:w-[800px] lg:w-[580px] h-[400px] md:h-[500px] mx-auto overflow-auto">
+    <div className="w-full  xl:w-[800px] lg:w-[580px] xl:h-[527px] md:h-[450px] mx-auto overflow-auto">
       <ResponsiveHeatMap
         data={transformedData}
         margin={{
           top: 50,
           right: 60,
           bottom: 60,
-          left: 60,
+          left: 95,
         }}
         valueFormat={(value) => (value > 0 ? value.toFixed(2) : "-")}
         axisTop={{

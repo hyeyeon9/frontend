@@ -1,6 +1,5 @@
-"use client";
-
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 // 전역 알림 컴포넌트
 export default function GlobalNotification() {
@@ -100,75 +99,17 @@ export default function GlobalNotification() {
     }
   };
 
-  // SSE 리스너 설정
-  useEffect(() => {
-    console.log("📡 SSE 연결 시도중...");
-    // EventSource: SSE (Server-Sent Events)를 위한 브라우저 내장 객체
-    const eventSource = new EventSource(
-      "http://localhost:8090/app/sse/connect?clientId=admin"
-    );
-
-    eventSource.onopen = () => {
-      console.log("✅ SSE 연결 성공");
-    };
-
-    // 메시지 수신 시 처리
-    eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log("📡 실시간 알림 수신:", data);
-
-        // 알림 타입 매핑 (기존 타입을 새 탭 카테고리로 변환)
-        let mappedType = "일반";
-
-        if (data.type === "유통기한임박" || data.type === "자동폐기") {
-          mappedType = "폐기";
-        } else if (data.type === "재고부족") {
-          mappedType = "재고";
-        } else if (
-          data.type === "결제" ||
-          data.type === "환불" ||
-          data.type === "주문"
-        ) {
-          mappedType = "결제";
-        }
-
-        // 새 알림 추가
-        addNewAlert({
-          ...data,
-          type: mappedType,
-        });
-      } catch (error) {
-        console.error("SSE 메시지 처리 오류:", error);
-      }
-    };
-
-    // 에러 처리
-    eventSource.onerror = (error) => {
-      console.error("SSE 연결 오류:", error);
-      eventSource.close();
-
-      // 3초 후 재연결 시도
-      setTimeout(() => {
-        console.log("SSE 재연결 시도...");
-        // 컴포넌트가 마운트된 상태일 때만 재연결
-      }, 3000);
-    };
-
-    // 컴포넌트 언마운트 시 연결 종료
-    return () => {
-      console.log("SSE 연결 종료");
-      eventSource.close();
-    };
-  }, []);
-
   // 새 알림 추가 함수
   const addNewAlert = (data) => {
+    console.log("🧾 현재 알림 상태:", alertList);
     setAlertList((prevAlerts) => {
       // 중복 알림 체크
-      const isDuplicate = prevAlerts.some(
-        (alert) => alert.message === data.message && alert.type === data.type
-      );
+      let isDuplicate = false;
+      if (data.type !== "결제") {
+        isDuplicate = prevAlerts.some(
+          (alert) => alert.message === data.message && alert.type === data.type
+        );
+      }
 
       if (!isDuplicate) {
         // 새 알림 생성
@@ -192,6 +133,67 @@ export default function GlobalNotification() {
       return prevAlerts; // 중복이면 이전 상태 그대로 반환
     });
   };
+
+  // SSE 리스너 설정
+  useEffect(() => {
+    let eventSource;
+
+    const connectSSE = () => {
+      console.log("📡 SSE 연결 시도중...");
+      eventSource = new EventSource(
+        "http://localhost:8090/app/sse/connect?clientId=admin"
+      );
+
+      eventSource.onopen = () => {
+        console.log("✅ SSE 연결 성공");
+      };
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          console.log("📡 실시간 알림 수신:", data);
+
+          let mappedType = "일반";
+          if (data.type === "유통기한임박" || data.type === "자동폐기") {
+            mappedType = "폐기";
+          } else if (data.type === "품절" || data.type === "재고부족") {
+            mappedType = "재고";
+          } else if (data.type === "결제") {
+            mappedType = "결제";
+          }
+
+          addNewAlert({
+            ...data,
+            type: mappedType,
+          });
+        } catch (error) {
+          console.error("SSE 메시지 처리 오류:", error);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error("❌ SSE 연결 오류:", error);
+        eventSource.close();
+
+        // ⏱️ 재연결 시도
+        setTimeout(() => {
+          console.log("🔄 SSE 재연결 시도...");
+          connectSSE(); // 재귀 호출로 재연결
+        }, 3000);
+      };
+    };
+    connectSSE();
+    return () => {
+      if (eventSource) {
+        console.log("🛑 SSE 연결 종료");
+        eventSource.close();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log("📈 alertList 상태가 바뀜:", alertList);
+  }, [alertList]);
 
   // 알림 읽음/안읽음 상태 토글 함수
   const toggleReadStatus = (alertId) => {
@@ -282,15 +284,15 @@ export default function GlobalNotification() {
 
   return (
     <div className="notification-dropdown" ref={dropdownRef}>
-        <button
-          onClick={() => {
-            setAlertList([]);
-            localStorage.removeItem("admin_alerts");
-          }}
-        >
-          {" "}
-          초기화{" "}
-        </button>
+      {/* <button
+        onClick={() => {
+          setAlertList([]);
+          localStorage.removeItem("admin_alerts");
+        }}
+      >
+        {" "}
+        초기화{" "}
+      </button> */}
       {/* 알림 아이콘 버튼 */}
       <button
         className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -395,42 +397,53 @@ export default function GlobalNotification() {
                 {filteredAlerts.map((alert) => {
                   const { bgColor, icon } = getAlertStyle(alert.type);
 
+                  // 알림별 이동할 경로 설정하기
+                  let targetUrl = "#";
+                  if (alert.type === "결제") targetUrl = "/salesHistory";
+                  else if (alert.type === "재고")
+                    targetUrl = "/inventory/findAll";
+                  else if (alert.type === "폐기") targetUrl = "/disposal";
+
                   return (
-                    <div
-                      key={alert.id}
-                      className={`p-4 ${bgColor} ${
-                        !alert.read ? "bg-opacity-70" : "bg-opacity-30"
-                      } hover:bg-opacity-100 transition-colors`}
-                    >
-                      <div className="flex gap-3">
-                        <div className="text-lg flex-shrink-0">{icon}</div>
-                        <div className="flex-1">
-                          <p
-                            className={`text-[13px] ${
-                              !alert.read ? "font-medium" : ""
-                            } text-gray-800`}
-                          >
-                            {alert.message}
-                          </p>
-                          <div className="flex items-center justify-between mt-1">
-                            <p className="text-xs text-gray-500">
-                              {formatAlertTime(new Date(alert.time))}
-                              {alert.read && (
-                                <span className="ml-2 text-gray-400">읽음</span>
-                              )}
+                    <Link to={targetUrl} key={alert.id}>
+                      <div
+                        key={alert.id}
+                        className={`p-4 ${bgColor} ${
+                          !alert.read ? "bg-opacity-70" : "bg-opacity-30"
+                        } hover:bg-opacity-100 transition-colors`}
+                      >
+                        <div className="flex gap-3">
+                          <div className="text-lg flex-shrink-0">{icon}</div>
+                          <div className="flex-1">
+                            <p
+                              className={`text-[13px] ${
+                                !alert.read ? "font-medium" : ""
+                              } text-gray-800`}
+                            >
+                              {alert.message}
                             </p>
-                            {!alert.read && (
-                              <button
-                                onClick={() => toggleReadStatus(alert.id)}
-                                className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
-                              >
-                                읽음 표시
-                              </button>
-                            )}
+                            <div className="flex items-center justify-between mt-1">
+                              <p className="text-xs text-gray-500">
+                                {formatAlertTime(new Date(alert.time))}
+                                {alert.read && (
+                                  <span className="ml-2 text-gray-400">
+                                    읽음
+                                  </span>
+                                )}
+                              </p>
+                              {!alert.read && (
+                                <button
+                                  onClick={() => toggleReadStatus(alert.id)}
+                                  className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                                >
+                                  읽음 표시
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>

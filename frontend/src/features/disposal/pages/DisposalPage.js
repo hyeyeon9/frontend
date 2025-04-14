@@ -1,102 +1,96 @@
-import { useEffect, useMemo, useState } from "react";
-import { useSortBy, useTable } from "react-table";
-import { fetchDisposalByDate } from "../api/HttpDisposalService";
-import { FormatDate } from "../components/FormatDate";
-import { Link } from "react-router-dom";
-import {
-  AlertTriangle,
-  BarChart,
-  Calendar,
-  ChevronDown,
-  Clock,
-  Info,
-  X,
-} from "lucide-react";
-import { fetchExpiringItems } from "../../inventory/api/HttpInventoryService";
+"use client"
+
+import { useEffect, useMemo, useState } from "react"
+import { useSortBy, useTable } from "react-table"
+import { fetchDisposalByDate } from "../api/HttpDisposalService"
+import { FormatDate } from "../components/FormatDate"
+import { Link, useLocation } from "react-router-dom"
+import { AlertTriangle, BarChart, Calendar, ChevronDown, Clock, Info, X } from "lucide-react"
+import { fetchExpiringItems } from "../../inventory/api/HttpInventoryService"
 
 export function getToday() {
-  return new Date().toISOString().split("T")[0]; // "2025-03-24"
+  return new Date().toISOString().split("T")[0] // "2025-03-24"
 }
 
 function DisposalList() {
-  const [disposal, setDisposal] = useState([]);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+  const location = useLocation()
+  const [disposal, setDisposal] = useState([])
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(true)
 
-  const [selectedDate, setSelectedDate] = useState(getToday()); // "2025-03-24"
+  const [selectedDate, setSelectedDate] = useState(getToday()) // "2025-03-24"
 
-  const [showModal, setShowModal] = useState(false); // 모달 열림/닫힘 상태
-  const [pendingList, setPendingList] = useState([]); // 폐기 예정 항목
+  const [showModal, setShowModal] = useState(false) // 모달 열림/닫힘 상태
+  const [pendingList, setPendingList] = useState([]) // 폐기 예정 항목
 
-  const [pendingCount, setPendingCount] = useState(0);
-  const [loadingPending, setLoadingPending] = useState(false);
-
+  const [pendingCount, setPendingCount] = useState(0)
+  const [loadingPending, setLoadingPending] = useState(false)
 
   // 폐기 테이블 불러오기 (새롭게 업데이트 될때마다 불러옴)
   useEffect(() => {
     async function getDisposalList() {
       try {
-        setLoading(true);
-        const data = await fetchDisposalByDate(selectedDate);
-        setDisposal(data);
+        setLoading(true)
+        const data = await fetchDisposalByDate(selectedDate)
+        setDisposal(data)
       } catch (error) {
-        setError(error.message);
+        setError(error.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
-    getDisposalList();
-  }, [selectedDate, showModal]);
+    getDisposalList()
+  }, [selectedDate, showModal])
 
   // 폐기 예정 아이템 개수를 가져오기 위해서
   useEffect(() => {
     async function loadPendingDisposal() {
       try {
-        const expiringItems = await fetchExpiringItems();
-        console.log("expiringItems", expiringItems);
+        const expiringItems = await fetchExpiringItems()
+        console.log("expiringItems", expiringItems)
 
-        const today = new Date();
-        const oneDayLater = new Date(today);
-        oneDayLater.setDate(today.getDate() + 1);
+        const today = new Date()
+        const oneDayLater = new Date(today)
+        oneDayLater.setDate(today.getDate() + 1)
 
         // 유통기한이 1일인 애들만 가져오기
         const filtered = expiringItems.filter((item) => {
-          const expDate = new Date(item.expirationDate);
-          const diff = (expDate - today) / (1000 * 60 * 60 * 24);
-          return diff >= 0 && diff < 1;
-        });
+          const expDate = new Date(item.expirationDate)
+          const diff = (expDate - today) / (1000 * 60 * 60 * 24)
+          return diff >= 0 && diff < 1
+        })
 
-        setPendingCount(filtered.length);
-        setPendingList(filtered); // 필터링된 목록 저장
+        setPendingCount(filtered.length)
+        setPendingList(filtered) // 필터링된 목록 저장
       } catch (error) {
-        console.error("폐기 예정 항목 가져오기 실패", error.message);
+        console.error("폐기 예정 항목 가져오기 실패", error.message)
       }
     }
-    loadPendingDisposal();
-  }, [disposal]);
+    loadPendingDisposal()
+  }, [disposal])
 
   // 폐기 예정 상품 버튼 클릭 시 모달 열기
   const handleOpenPendingModal = async () => {
-    setLoadingPending(true);
+    setLoadingPending(true)
     try {
-      const expiringItems = await fetchExpiringItems();
+      const expiringItems = await fetchExpiringItems()
 
-      const today = new Date();
+      const today = new Date()
       // 유통기한이 1일인 애들만 가져오기
       const filtered = expiringItems.filter((item) => {
-        const expDate = new Date(item.expirationDate);
-        const diff = (expDate - today) / (1000 * 60 * 60 * 24);
-        return diff >= 0 && diff < 1;
-      });
+        const expDate = new Date(item.expirationDate)
+        const diff = (expDate - today) / (1000 * 60 * 60 * 24)
+        return diff >= 0 && diff < 1
+      })
 
-      setPendingList(filtered);
-      setShowModal(true);
+      setPendingList(filtered)
+      setShowModal(true)
     } catch (error) {
-      console.error("폐기 예정 항목 가져오기 실패", error.message);
+      console.error("폐기 예정 항목 가져오기 실패", error.message)
     } finally {
-      setLoadingPending(false);
+      setLoadingPending(false)
     }
-  };
+  }
 
   // 테이블 헤더
   const columns = useMemo(
@@ -126,66 +120,74 @@ function DisposalList() {
         Header: "폐기이유",
         accessor: "disposal_reason",
         Cell: ({ value }) => {
-          return value;
+          return value
         },
       },
     ],
-    []
-  );
+    [],
+  )
 
   // 필터링된 데이터
-  const filteredData = useMemo(() => disposal, [disposal]);
+  const filteredData = useMemo(() => disposal, [disposal])
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: filteredData }, useSortBy);
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
+    { columns, data: filteredData },
+    useSortBy,
+  )
 
   // 남은 시간 계산 함수
   const getTimeRemaining = (expirationDate) => {
-    const now = new Date();
-    const expDate = new Date(expirationDate);
-    const diffMs = expDate - now;
+    const now = new Date()
+    const expDate = new Date(expirationDate)
+    const diffMs = expDate - now
 
     // 시간, 분 계산
-    const hours = Math.floor(diffMs / (1000 * 60 * 60));
-    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const hours = Math.floor(diffMs / (1000 * 60 * 60))
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
 
     if (hours <= 0 && minutes <= 0) {
-      return "만료됨";
+      return "만료됨"
     }
 
-    return `${hours}시간 ${minutes}분`;
-  };
+    return `${hours}시간 ${minutes}분`
+  }
 
   // 유통기한 날짜 포맷팅
   const formatExpirationDate = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
+    const date = new Date(dateString)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, "0")
+    const day = String(date.getDate()).padStart(2, "0")
+    return `${year}-${month}-${day}`
+  }
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         {/* 네비게이션 탭 */}
-        <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-          <div className="flex gap-4">
-            <Link
-              to="/disposal"
-              className="px-4 py-2 rounded-lg bg-indigo-50 text-indigo-700 font-medium flex items-center"
-            >
-              <AlertTriangle className="h-4 w-4 mr-2" />
-              폐기 내역
-            </Link>
-            <Link
-              to="/disposal/analyze"
-              className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors flex items-center"
-            >
-              <BarChart className="h-4 w-4 mr-2" />
-              폐기 통계
-            </Link>
-          </div>
+        <div className="flex border-b border-gray-200 mb-6">
+          <Link
+            to="/disposal"
+            className={`flex items-center px-4 py-3 ${
+              location.pathname === "/disposal"
+                ? "text-indigo-600 border-b-2 border-indigo-600 font-medium"
+                : "text-gray-500 hover:text-indigo-600"
+            }`}
+          >
+            <AlertTriangle className="h-5 w-5 mr-2" />
+            폐기 내역
+          </Link>
+          <Link
+            to="/disposal/analyze"
+            className={`flex items-center px-4 py-3 ${
+              location.pathname.includes("/disposal/analyze")
+                ? "text-indigo-600 border-b-2 border-indigo-600 font-medium"
+                : "text-gray-500 hover:text-indigo-600"
+            }`}
+          >
+            <BarChart className="h-5 w-5 mr-2" />
+            폐기 통계
+          </Link>
         </div>
 
         {/* 필터 및 컨트롤 영역 */}
@@ -264,9 +266,7 @@ function DisposalList() {
                     >
                       {headerGroup.headers.map((column) => (
                         <th
-                          {...column.getHeaderProps(
-                            column.getSortByToggleProps()
-                          )}
+                          {...column.getHeaderProps(column.getSortByToggleProps())}
                           className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                           key={column.id}
                         >
@@ -292,7 +292,7 @@ function DisposalList() {
 
                 <tbody {...getTableBodyProps()}>
                   {rows.map((row) => {
-                    prepareRow(row);
+                    prepareRow(row)
                     return (
                       <tr
                         {...row.getRowProps()}
@@ -309,7 +309,7 @@ function DisposalList() {
                           </td>
                         ))}
                       </tr>
-                    );
+                    )
                   })}
                 </tbody>
               </table>
@@ -336,16 +336,13 @@ function DisposalList() {
                 </button>
               </div>
               <p className="text-sm text-gray-500 mt-2">
-                유통기한이 24시간 이내로 남은 상품 목록입니다. 총{" "}
-                {pendingList.length}개 항목이 있습니다.
+                유통기한이 24시간 이내로 남은 상품 목록입니다. 총 {pendingList.length}개 항목이 있습니다.
               </p>
             </div>
 
             <div className="p-6 max-h-[60vh] overflow-y-auto">
               {pendingList.length === 0 ? (
-                <div className="text-center text-gray-500 py-8">
-                  폐기 예정 항목이 없습니다.
-                </div>
+                <div className="text-center text-gray-500 py-8">폐기 예정 항목이 없습니다.</div>
               ) : (
                 <div className="space-y-4">
                   <div className="grid grid-cols-12 text-xs font-medium text-gray-500 uppercase px-4 pb-2 border-b">
@@ -356,55 +353,43 @@ function DisposalList() {
                   </div>
 
                   {pendingList.map((item) => {
-                    const timeRemaining = getTimeRemaining(item.expirationDate);
+                    const timeRemaining = getTimeRemaining(item.expirationDate)
                     const isUrgent =
-                      timeRemaining.includes("시간") &&
-                      parseInt(timeRemaining.split("시간")[0]) < 6;
+                      timeRemaining.includes("시간") && Number.parseInt(timeRemaining.split("시간")[0]) < 6
 
                     return (
                       <div
                         key={item.batchId}
                         className={`grid grid-cols-12 items-center p-4 rounded-lg border ${
-                          isUrgent
-                            ? "border-red-200 bg-red-50"
-                            : "border-gray-200 bg-white hover:bg-gray-50"
+                          isUrgent ? "border-red-200 bg-red-50" : "border-gray-200 bg-white hover:bg-gray-50"
                         } transition-colors`}
                       >
                         <div className="col-span-5">
-                          <div className="font-medium text-gray-800">
-                            {item.goodsName}
-                          </div>
+                          <div className="font-medium text-gray-800">{item.goodsName}</div>
                           <div className="text-xs text-gray-500 mt-1">
-                            입고코드:{" "}
-                            <span className="font-mono">{item.batchId}</span>
+                            입고코드: <span className="font-mono">{item.batchId}</span>
                           </div>
                         </div>
 
                         <div className="col-span-2 text-center">
-                          <span className="font-medium text-gray-800">
-                            {item.stockQuantity}개
-                          </span>
+                          <span className="font-medium text-gray-800">{item.stockQuantity}개</span>
                         </div>
 
                         <div className="col-span-3">
-                          <span className="text-gray-700">
-                            {formatExpirationDate(item.expirationDate)}
-                          </span>
+                          <span className="text-gray-700">{formatExpirationDate(item.expirationDate)}</span>
                         </div>
 
                         <div className="col-span-2 text-right">
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              isUrgent
-                                ? "bg-red-100 text-red-800"
-                                : "bg-gray-100 text-gray-800"
+                              isUrgent ? "bg-red-100 text-red-800" : "bg-gray-100 text-gray-800"
                             }`}
                           >
                             {timeRemaining}
                           </span>
                         </div>
                       </div>
-                    );
+                    )
                   })}
                 </div>
               )}
@@ -422,7 +407,7 @@ function DisposalList() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default DisposalList;
+export default DisposalList

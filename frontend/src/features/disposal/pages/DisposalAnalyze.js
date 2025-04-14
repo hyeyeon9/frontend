@@ -45,8 +45,7 @@ function DisposalAnalyze() {
         setData(formatted);
         console.log("년월 formatted 폐기 : ", formatted);
 
-        const filtered_data = [...formatted]
-          .map((item) => item.label);
+        const filtered_data = [...formatted].map((item) => item.label);
 
         setFiltered(filtered_data);
         console.log("filtered_data 년월 폐기", filtered_data);
@@ -72,8 +71,10 @@ function DisposalAnalyze() {
         );
         console.log("년월 폐기 비율 response", response);
 
-        const top3 = response.sort((a,b) => b.disposalRate - a.disposalRate).slice(0,3);
-        console.log("폐기 비율 top3 :",top3)
+        const top3 = response
+          .sort((a, b) => b.disposalRate - a.disposalRate)
+          .slice(0, 3);
+        console.log("폐기 비율 top3 :", top3);
         setTopItems(top3);
         setDisposalRates(top3);
       } catch (error) {
@@ -81,7 +82,7 @@ function DisposalAnalyze() {
       }
     }
     getDisposalRate();
-  }, [filtered,month,year]);
+  }, [filtered, month, year]);
 
   // 이전 달로 이동
   const goToPreviousMonth = () => {
@@ -117,7 +118,7 @@ function DisposalAnalyze() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         {/* 네비게이션 탭 */}
         <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
@@ -251,7 +252,7 @@ function DisposalAnalyze() {
                 <div className="p-4 bg-indigo-50 rounded-lg">
                   <p className="text-gray-700 leading-relaxed">
                     이번 달에는{" "}
-                    <span className="font-medium text-indigo-700">
+                    <span className="font-bold text-indigo-700">
                       {topItems.map((item, i) => (
                         <span key={item.subName}>
                           {item.subName}

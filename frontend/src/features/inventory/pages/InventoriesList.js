@@ -489,7 +489,7 @@ function InventoriesList() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         {/* 헤더 및 필터 영역 */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
@@ -618,7 +618,7 @@ function InventoriesList() {
               <div className="flex bg-gray-100 rounded-lg p-1 w-full">
                 <button
                   onClick={() => setFilterValue("")}
-                  className={`flex-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  className={`flex-1 px-3 py-1 rounded-md text-sm font-bold transition-colors ${
                     filterValue === ""
                       ? "bg-white text-indigo-700 shadow-sm"
                       : "text-gray-600 hover:bg-gray-200"
@@ -628,7 +628,7 @@ function InventoriesList() {
                 </button>
                 <button
                   onClick={() => setFilterValue("정상")}
-                  className={`flex-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  className={`flex-1 px-3 py-1 rounded-md text-sm font-bold transition-colors ${
                     filterValue === "정상"
                       ? "bg-white text-green-700 shadow-sm"
                       : "text-gray-600 hover:bg-gray-200"
@@ -638,7 +638,7 @@ function InventoriesList() {
                 </button>
                 <button
                   onClick={() => setFilterValue("재고부족")}
-                  className={`flex-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  className={`flex-1 px-3 py-1 rounded-md text-sm font-bold transition-colors ${
                     filterValue === "재고부족"
                       ? "bg-white text-red-700 shadow-sm"
                       : "text-gray-600 hover:bg-gray-200"
