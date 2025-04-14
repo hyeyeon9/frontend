@@ -43,6 +43,8 @@ import PayLayout from "./pages/PayLayout";
 
 import OrderCompletePage from "./features/shop/pages/OrderCompletePage";
 import DiscountingPage from "./features/shop/pages/DiscountingPage";
+import OrderingList from "./features/ordering/pages/OrderingList";
+import OrderingLayout from "./features/ordering/components/OrderingLayout";
 
 const router = createBrowserRouter([
   {
@@ -141,10 +143,14 @@ const router = createBrowserRouter([
         path: "/expiring-items",
         element: <ExpiringItemsPage />,
       },
+
       {
-        // 발주 관리 페이지
         path: "/orders",
-        element: <OrderingPage />,
+        element: <OrderingLayout />,
+        children: [
+          { path: "", element: <OrderingPage /> },
+          { path: "list", element: <OrderingList /> },
+        ],
       },
     ],
   },
