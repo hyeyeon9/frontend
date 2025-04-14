@@ -99,14 +99,6 @@ export default function ShopHome() {
         </section>
       </main>
 
-      {/* 하단 장바구니 위젯 */}
-      {/* <div className="sticky bottom-0 bg-white border-t p-3 z-10 max-w-[430px] mx-auto w-full">
-        <Button color="blue" size="lg" className="w-full py-2.5 text-base" onClick={() => navigate("/shop/cart")}>
-          <ShoppingBag className="h-5 w-5 mr-2" />
-          장바구니 보기 {cartCount > 0 && `(${cartCount})`}
-        </Button>
-      </div> */}
-
       <style jsx>{`
         .hide-scrollbar::-webkit-scrollbar {
           display: none;

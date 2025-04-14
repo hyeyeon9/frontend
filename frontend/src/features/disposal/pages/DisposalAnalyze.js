@@ -21,17 +21,18 @@ function DisposalAnalyze() {
   const [year, setYear] = useState(now.getFullYear());
 
   const [topItems, setTopItems] = useState([]);
+  const [filtered, setFiltered] = useState([]);
   const [disposalRates, setDisposalRates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 폐기 월별 통계를 위한 함수
+  //폐기 월별 통계를 위한 함수
   useEffect(() => {
     async function getStats() {
       setLoading(true);
       try {
         const res = await fetchStats(month, year);
-        console.log("년월 폐기", res);
+        console.log("년월 폐기 : ", res);
         // 데이터 가공
         const formatted = res
           .map((item) => ({
@@ -42,14 +43,12 @@ function DisposalAnalyze() {
           .filter((item) => item.value > 0);
 
         setData(formatted);
+        console.log("년월 formatted 폐기 : ", formatted);
 
-        const top3 = [...formatted]
-          .sort((a, b) => b.value - a.value)
-          .slice(0, 3)
-          .map((item) => item.label);
+        const filtered_data = [...formatted].map((item) => item.label);
 
-        setTopItems(top3);
-        console.log("년월 폐기 top3", top3);
+        setFiltered(filtered_data);
+        console.log("filtered_data 년월 폐기", filtered_data);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -62,22 +61,28 @@ function DisposalAnalyze() {
   // 입고 대비 폐기 비율
   useEffect(() => {
     async function getDisposalRate() {
-      if (topItems.length === 0) return;
+      if (!filtered) return;
 
       try {
         const response = await fetchDisposalRate(
-          topItems.join(","),
+          filtered.join(","),
           month,
           year
         );
         console.log("년월 폐기 비율 response", response);
-        setDisposalRates(response);
+
+        const top3 = response
+          .sort((a, b) => b.disposalRate - a.disposalRate)
+          .slice(0, 3);
+        console.log("폐기 비율 top3 :", top3);
+        setTopItems(top3);
+        setDisposalRates(top3);
       } catch (error) {
         console.log(error.message);
       }
     }
     getDisposalRate();
-  }, [topItems, month, year]);
+  }, [filtered, month, year]);
 
   // 이전 달로 이동
   const goToPreviousMonth = () => {
@@ -247,10 +252,10 @@ function DisposalAnalyze() {
                 <div className="p-4 bg-indigo-50 rounded-lg">
                   <p className="text-gray-700 leading-relaxed">
                     이번 달에는{" "}
-                    <span className="font-medium text-indigo-700">
-                      {topItems.map((name, i) => (
-                        <span key={name}>
-                          {name}
+                    <span className="font-bold text-indigo-700">
+                      {topItems.map((item, i) => (
+                        <span key={item.subName}>
+                          {item.subName}
                           {i < topItems.length - 1 && ", "}
                         </span>
                       ))}

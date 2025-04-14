@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import ChatWidget from "../../../components/ChatWidget";
 import DisposalToday from "../../disposal/pages/DisposalToday";
 import ExpiringSoonList from "./ExpiringSoonList";
 
@@ -697,9 +696,6 @@ export default function DashBoard() {
           </div>
         </div>
       </div>
-
-      {/* 챗봇 */}
-      <ChatWidget />
     </div>
   );
 }

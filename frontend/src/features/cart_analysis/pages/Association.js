@@ -28,6 +28,7 @@ import {
   Moon,
   Sun,
 } from "lucide-react";
+import { InfoModal } from "../components/InfoModal";
 
 function getTimePeriod(time) {
   const hour = time.split(":")[0];
@@ -70,12 +71,15 @@ function Association() {
   const [month, setMonth] = useState("");
 
   // 지지도, 신뢰도, 향상도 조절을 위한 상태
-  const [minSupport, setMinSupport] = useState(0.04);
-  const [minConfidence, setMinConfidence] = useState(0.3);
-  const [minLift, setMinLift] = useState(1.0);
+  const [minSupport, setMinSupport] = useState(0.03);
+  const [minConfidence, setMinConfidence] = useState(0.5);
+  const [minLift, setMinLift] = useState(1.5);
 
   const [selectedTopRule, setSelectedTopRule] = useState(null);
   const [activeTab, setActiveTab] = useState("heatmap"); // 'heatmap' or 'table'
+
+  // 장바구니 설명 모달
+  const [showModal, setShowModal] = useState(false);
 
   const topRules = rules
     .sort((a, b) => b.confidence - a.confidence)
@@ -89,13 +93,29 @@ function Association() {
       try {
         setLoading(true);
         const data = await fetchAllAssociationRules(period, month);
-        setRules(data);
+        console.log("원본 data", data);
+
+        // 필터링 추가
+        const filtered = data.filter((rule) => {
+          return (
+            rule.support >= 0.03 &&
+            rule.support <= 0.08 &&
+            rule.confidence >= 0.5 &&
+            rule.confidence <= 0.9 &&
+            rule.lift >= 1.5 &&
+            rule.lift <= 3.0
+          );
+        });
+
+        console.log("필터링된 data", filtered);
+        setRules(filtered);
       } catch (error) {
         setError(error.message);
       } finally {
         setLoading(false);
       }
     }
+
     getAssociationRules();
   }, [period, month]);
 
@@ -191,19 +211,12 @@ function Association() {
             <ShoppingCart className="h-6 w-6 mr-2 text-indigo-600" />
             장바구니 분석
             <div className="group relative ml-2">
-              <button className="text-gray-400 hover:text-indigo-600 transition-colors">
+              <button
+                onClick={() => setShowModal(true)}
+                className="text-gray-400 hover:text-indigo-600 transition-colors"
+              >
                 <Info className="h-5 w-5" />
               </button>
-              <div className="absolute left-0 top-full mt-2 w-[340px] p-4 bg-white rounded-lg shadow-lg border border-gray-200 hidden group-hover:block z-10">
-                <p
-                  className="text-sm
-                text-center text-gray-700 leading-relaxed whitespace-normal"
-                >
-                  "이 상품을 산 고객은 어떤 걸 같이 샀을까?"
-                  <br />
-                  자주 함께 담기는 상품 조합을 분석해드립니다.
-                </p>
-              </div>
             </div>
           </h1>
         </div>
@@ -268,7 +281,7 @@ function Association() {
                   <input
                     type="range"
                     min="0.03"
-                    max="0.2"
+                    max="0.08"
                     step="0.02"
                     value={minSupport}
                     onChange={(e) =>
@@ -278,7 +291,7 @@ function Association() {
                   />
                   <div className="flex justify-between text-xs text-gray-500">
                     <span>3%</span>
-                    <span>20%</span>
+                    <span>8%</span>
                   </div>
                 </div>
 
@@ -295,8 +308,8 @@ function Association() {
                   </div>
                   <input
                     type="range"
-                    min="0.3"
-                    max="0.8"
+                    min="0.5"
+                    max="0.9"
                     step="0.05"
                     value={minConfidence}
                     onChange={(e) =>
@@ -305,8 +318,8 @@ function Association() {
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                   />
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>30%</span>
-                    <span>80%</span>
+                    <span>50%</span>
+                    <span>90%</span>
                   </div>
                 </div>
 
@@ -322,9 +335,9 @@ function Association() {
                   </div>
                   <input
                     type="range"
-                    min="1"
-                    max="3"
-                    step="0.1"
+                    min="1.5"
+                    max="3.0"
+                    step="0.5"
                     value={minLift}
                     onChange={(e) =>
                       setMinLift(Number.parseFloat(e.target.value))
@@ -332,7 +345,7 @@ function Association() {
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                   />
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>1.0</span>
+                    <span>1.5</span>
                     <span>3.0</span>
                   </div>
                 </div>
@@ -597,6 +610,10 @@ function Association() {
           </div>
         </div>
       </div>
+
+      {showModal && (
+        <InfoModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      )}
 
       {/* 애니메이션을 위한 CSS */}
       <style jsx>{`
