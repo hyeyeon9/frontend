@@ -162,7 +162,7 @@ function DisposalList() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         {/* 네비게이션 탭 */}
         <div className="flex border-b border-gray-200 mb-6">

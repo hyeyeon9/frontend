@@ -38,7 +38,7 @@ function GoodsDetail() {
   return (
     <>
       <MenuNavigation />
-      <div className="p-6 bg-gray-100 min-h-screen">
+      <div className="p-6 min-h-screen">
         <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
           {/* 헤더 */}
           <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-8 py-6 text-white">

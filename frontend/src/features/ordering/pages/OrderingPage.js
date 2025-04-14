@@ -647,7 +647,7 @@ function OrderingPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen -mt-3">
+    <div className="min-h-screen -mt-3">
       <div className="max-w-7xl mx-auto">
         {/* 유통기한 임박 상품 알림 */}
         {showExpiringNotification && (
