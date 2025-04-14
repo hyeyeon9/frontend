@@ -115,7 +115,7 @@ export default function SalesHistory() {
   }, [selectedDate]);
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         {/* 페이지 제목 */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-4">

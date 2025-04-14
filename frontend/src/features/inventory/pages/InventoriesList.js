@@ -489,7 +489,7 @@ function InventoriesList() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         {/* 헤더 및 필터 영역 */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">

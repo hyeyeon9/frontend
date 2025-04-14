@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react"; // Using Lucide icons for the mobile toggle
 
 export default function Sidebar() {
+  // 현재 링크
+  const location = useLocation();
+
+  // Add this function inside the Sidebar component
+  const isLinkActive = (path) => location.pathname === path;
+
   // 메뉴의 열고 닫는 상태를 관리
   const [isSalesOpen, setIsSalesOpen] = useState(false);
   const [isStocksOpen, setIsStocksOpen] = useState(false);
@@ -46,7 +52,7 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-12 left-0 z-[80] h-screen transition-all duration-300 ease-in-out
+        className={`fixed top-14 left-0 z-[1000] h-screen transition-all duration-300 ease-in-out
            ${
              isMobileOpen
                ? "translate-x-0"
@@ -56,24 +62,26 @@ export default function Sidebar() {
            bg-white shadow-xl rounded-r-xl lg:rounded-xl dark:bg-gray-800 dark:text-white`}
       >
         <div className="p-3 mb-2 flex justify-between items-center">
-          <h5 className="block lg:hidden font-sans text-lg antialiased font-semibold leading-snug tracking-normal text-blue-gray-900 dark:text-white">
-            Daily24
-          </h5>
           {/* Close button for mobile - only visible on mobile */}
-          <button
+          {/* <button
             onClick={() => setIsMobileOpen(false)}
             className="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white"
             aria-label="Close sidebar"
           >
             <X className="h-5 w-5" />
-          </button>
+          </button> */}
         </div>
 
         <nav className="flex min-w-0 flex-col gap-1 p-2 font-sans text-sm font-normal text-blue-gray-700 dark:text-gray-200">
           {/* 사이드메뉴1 */}
           <Link
             to="/"
-            className="flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+            className={`flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start
+    ${
+      location.pathname === "/"
+        ? "bg-blue-700 text-white"
+        : "hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+    }`}
           >
             <div className="grid mr-2 place-items-center">
               <svg
@@ -150,7 +158,11 @@ export default function Sidebar() {
                   <nav className="flex min-w-0 flex-col gap-1 p-0 font-sans text-sm font-normal text-blue-gray-700 dark:text-gray-300">
                     <Link
                       to="/salesHistory"
-                      className="flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      className={`flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start ${
+                        isLinkActive("/salesHistory")
+                          ? "bg-blue-700 text-white"
+                          : "hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      }`}
                     >
                       <div className="grid mr-2 place-items-center">
                         <svg
@@ -173,7 +185,11 @@ export default function Sidebar() {
                     </Link>
                     <Link
                       to="/statistics"
-                      className="flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      className={`flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start ${
+                        isLinkActive("/statistics")
+                          ? "bg-blue-700 text-white"
+                          : "hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      }`}
                     >
                       <div className="grid mr-2 place-items-center">
                         <svg
@@ -196,7 +212,11 @@ export default function Sidebar() {
                     </Link>
                     <Link
                       to="/salesReport"
-                      className="flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      className={`flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start ${
+                        isLinkActive("/salesReport")
+                          ? "bg-blue-700 text-white"
+                          : "hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      }`}
                     >
                       <div className="grid mr-2 place-items-center">
                         <svg
@@ -225,7 +245,11 @@ export default function Sidebar() {
           {/* 사이드메뉴 3 */}
           <Link
             to="/association"
-            className="flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+            className={`flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start ${
+              isLinkActive("/association")
+                ? "bg-blue-700 text-white"
+                : "hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+            }`}
           >
             <div className="grid mr-2 place-items-center">
               <svg
@@ -298,7 +322,11 @@ export default function Sidebar() {
                   <nav className="flex min-w-0 flex-col gap-1 p-0 font-sans text-sm font-normal text-blue-gray-700 dark:text-gray-300">
                     <Link
                       to="/inventory/findAll"
-                      className="flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      className={`flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start ${
+                        isLinkActive("/inventory/findAll")
+                          ? "bg-blue-700 text-white"
+                          : "hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      }`}
                     >
                       <div className="grid mr-2 place-items-center">
                         <svg
@@ -321,7 +349,11 @@ export default function Sidebar() {
                     </Link>
                     <Link
                       to="/orders"
-                      className="flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      className={`flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start ${
+                        isLinkActive("/orders")
+                          ? "bg-blue-700 text-white"
+                          : "hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      }`}
                     >
                       <div className="grid mr-2 place-items-center">
                         <svg
@@ -344,7 +376,11 @@ export default function Sidebar() {
                     </Link>
                     <Link
                       to="/disposal"
-                      className="flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      className={`flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start ${
+                        isLinkActive("/disposal")
+                          ? "bg-blue-700 text-white"
+                          : "hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      }`}
                     >
                       <div className="grid mr-2 place-items-center">
                         <svg
@@ -429,7 +465,11 @@ export default function Sidebar() {
                   <nav className="flex min-w-0 flex-col gap-1 p-0 font-sans text-sm font-normal text-blue-gray-700 dark:text-gray-300">
                     <Link
                       to="/categories/findAll"
-                      className="flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      className={`flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start ${
+                        isLinkActive("/categories/findAll")
+                          ? "bg-blue-700 text-white"
+                          : "hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      }`}
                     >
                       <div className="grid mr-2 place-items-center">
                         <svg
@@ -452,7 +492,11 @@ export default function Sidebar() {
                     </Link>
                     <Link
                       to="/goods/manage/add"
-                      className="flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      className={`flex items-center w-full p-2 leading-tight transition-all rounded-lg outline-none text-start ${
+                        isLinkActive("/goods/manage/add")
+                          ? "bg-blue-700 text-white"
+                          : "hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
+                      }`}
                     >
                       <div className="grid mr-2 place-items-center">
                         <svg

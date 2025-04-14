@@ -236,7 +236,7 @@ export default function CartPage() {
                           onClick={() => removeItem(item.id)}
                           className="text-gray-400 hover:text-red-500 p-1"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-5 w-5" />
                         </button>
                       </div>
                       <div className="flex justify-between items-center mt-2">
@@ -276,9 +276,13 @@ export default function CartPage() {
                 <h3 className="text-md font-semibold mb-3">주문 요약</h3>
                 <div className="mb-3">
                   <div className="grid grid-cols-12 text-sm font-medium border-b pb-2 mb-2">
-                    <span className="col-span-8">상품명</span>
-                    <span className="col-span-1 text-center">수량</span>
-                    <span className="col-span-3 text-right">가격</span>
+                    <span className="col-span-7 font-bold">상품명</span>
+                    <span className="col-span-2 text-center font-bold">
+                      수량
+                    </span>
+                    <span className="col-span-3 text-right font-bold">
+                      가격
+                    </span>
                   </div>
 
                   {cartItems.map((item) => (
@@ -286,8 +290,8 @@ export default function CartPage() {
                       key={item.id}
                       className="grid grid-cols-12 py-2 border-b border-gray-100 text-sm"
                     >
-                      <span className="col-span-8 pr-2">{item.name}</span>
-                      <span className="col-span-1 text-center">
+                      <span className="col-span-7 pr-2">{item.name}</span>
+                      <span className="col-span-2 text-center">
                         {item.quantity}
                       </span>
                       <span className="col-span-3 text-right">
@@ -299,7 +303,7 @@ export default function CartPage() {
                               ).toLocaleString()}
                               원
                             </span>
-                            <span className="text-red-600">
+                            <span className="text-red-600 font-bold">
                               {(item.price * item.quantity).toLocaleString()}원
                             </span>
                           </div>
@@ -322,7 +326,7 @@ export default function CartPage() {
                 <Button
                   color="blue"
                   className="w-full"
-                  size="lg"
+                  size="md"
                   onClick={handlePayment}
                 >
                   결제하기
@@ -339,7 +343,12 @@ export default function CartPage() {
             <p className="text-gray-500 mb-6 text-sm">
               아직 장바구니에 상품을 추가하지 않으셨습니다.
             </p>
-            <Button as={Link} to="/shop/products" size="sm">
+            <Button
+              as={Link}
+              to="/shop/products"
+              size="sm"
+              className="w-full sm:w-1/2 sm:mx-auto rounded-none sm:rounded-md"
+            >
               쇼핑 시작하기
             </Button>
           </div>
