@@ -29,9 +29,8 @@ function formatDateTime(dateTimeStr) {
 
 // 결제 상태 정보
 const PAYMENT_STATUS = {
-  PENDING: 0, // 결제 대기
+  CANCELED: 0, // 결제 취소
   COMPLETED: 1, // 결제 완료
-  CANCELED: 2, // 결제 취소
 };
 
 // 결제 상태에 따른 스타일 및 텍스트
@@ -41,11 +40,6 @@ const getPaymentStatusInfo = (status) => {
       return {
         text: "결제완료",
         className: "bg-green-100 text-green-800",
-      };
-    case "PENDING":
-      return {
-        text: "결제대기",
-        className: "bg-yellow-100 text-yellow-800",
       };
     case "CANCELED":
       return {
@@ -90,6 +84,8 @@ export default function SalesHistory() {
           pageSize,
           statusParam
         );
+
+        console.log(response);
 
         // 응답 데이터 처리
         setDataList(response.content || []);
@@ -153,7 +149,7 @@ export default function SalesHistory() {
               >
                 <option value={-1}>모든 상태</option>
                 <option value={PAYMENT_STATUS.COMPLETED}>결제 완료</option>
-                <option value={PAYMENT_STATUS.PENDING}>결제 대기</option>
+
                 <option value={PAYMENT_STATUS.CANCELED}>결제 취소</option>
               </select>
             </div>
