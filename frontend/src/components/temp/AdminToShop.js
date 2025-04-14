@@ -2,7 +2,7 @@ import { Blend } from "lucide-react";
 
 export default function AdminToShop() {
   return (
-    <div className="fixed bottom-4 left-4 z-[150]">
+    <div className="fixed bottom-4 left-4 z-[1500]">
       {/* 플로팅 버튼 */}
       <button
         onClick={() => (window.location.href = "/shop")}
