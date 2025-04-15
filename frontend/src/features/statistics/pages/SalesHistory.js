@@ -87,10 +87,14 @@ export default function SalesHistory() {
 
         console.log(response);
 
+        const filtered = (response.content || []).filter(
+          (sale) => sale.orderSummary && sale.orderSummary.trim() !== ""
+        );
+
         // 응답 데이터 처리
-        setDataList(response.content || []);
+        setDataList(filtered);
         setTotalPages(response.totalPages || 0);
-        setTotalElements(response.totalElements || 0);
+        setTotalElements(filtered.totalElements || 0);
       } catch (error) {
         console.error("결제 내역을 불러오는 중 오류 발생", error);
       } finally {
