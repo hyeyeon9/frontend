@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Tag, ShoppingBag, Plus, ChevronLeft } from "lucide-react";
+import { Tag, Plus, ChevronLeft } from "lucide-react";
 import { Badge, Button, Spinner } from "flowbite-react";
 import { fetchGetDiscountedGoods } from "../api/HttpShopService";
 import { addItemToCart, getCartItemCount } from "../utils/CartUtils";
