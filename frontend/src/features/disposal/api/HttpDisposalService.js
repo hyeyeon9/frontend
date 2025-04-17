@@ -1,10 +1,8 @@
-import axios from "axios";
+import axiosInstance from "../../../utils/axios";
 
 // 1. 폐기 테이블 전체 조회
 export async function fetchDisposal() {
-  const response = await axios.get(
-    `http://localhost:8090/app/disposal/findAll`
-  );
+  const response = await axiosInstance.get(`/disposal/findAll`);
 
   if (response.status !== 200) {
     console.log("예외발생");
@@ -17,9 +15,7 @@ export async function fetchDisposal() {
 
 // 2. 폐기 처리
 export async function fetchCheckDisposal() {
-  const response = await axios.post(
-    `http://localhost:8090/app/disposal/check-expired`
-  );
+  const response = await axiosInstance.post(`/disposal/check-expired`);
 
   if (response.status !== 200) {
     console.log("예외발생");
@@ -32,9 +28,7 @@ export async function fetchCheckDisposal() {
 
 // 3. 폐기 테이블 날짜별로 조회
 export async function fetchDisposalByDate(date) {
-  const response = await axios.get(
-    `http://localhost:8090/app/disposal/by-date?date=${date}`
-  );
+  const response = await axiosInstance.get(`/disposal/by-date?date=${date}`);
 
   if (response.status !== 200) {
     console.log("예외발생");
@@ -47,9 +41,7 @@ export async function fetchDisposalByDate(date) {
 
 // 4. 폐기되지 않은 상품 조회
 export async function fetchPendingDisposal() {
-  const response = await axios.get(
-    `http://localhost:8090/app/disposal/pending-disposal`
-  );
+  const response = await axiosInstance.get(`/disposal/pending-disposal`);
 
   if (response.status !== 200) {
     console.log("예외발생");
@@ -62,8 +54,8 @@ export async function fetchPendingDisposal() {
 
 // 5. 수동 폐기 처리
 export async function fetchManualDisposal(batchIdList) {
-  const response = await axios.post(
-    `http://localhost:8090/app/disposal/manual-dispose`,
+  const response = await axiosInstance.post(
+    `/disposal/manual-dispose`,
     batchIdList
   );
 
@@ -80,8 +72,8 @@ export async function fetchManualDisposal(batchIdList) {
 
 // 6. 월별 폐기 통계 조회
 export async function fetchStats(month, year) {
-  const response = await axios.get(
-    `http://localhost:8090/app/disposal/stats?month=${month}&year=${year}`
+  const response = await axiosInstance.get(
+    `/disposal/stats?month=${month}&year=${year}`
   );
 
   console.log("폐기 통계 :", response.data);
@@ -96,8 +88,8 @@ export async function fetchStats(month, year) {
 }
 
 export async function fetchDisposalRate(subNames, month, year) {
-  const response = await axios.get(
-    `http://localhost:8090/app/disposal/rate?subNames=${subNames}&month=${month}&year=${year}`
+  const response = await axiosInstance.get(
+    `/disposal/rate?subNames=${subNames}&month=${month}&year=${year}`
   );
 
   console.log("비율 ", response.data);
