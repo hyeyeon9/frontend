@@ -132,24 +132,6 @@ export default function CartPage() {
         "width=500,height=700,resizable=yes,scrollbars=yes"
       );
 
-      // const timer = setInterval(() => {
-      //   if (paymentWindow && paymentWindow.closed) {
-      //     clearInterval(timer);
-
-      //     const pending = JSON.parse(localStorage.getItem("pendingPayment"));
-      //     const isSuccess = pending?.status === "success";
-
-      //     if (!isSuccess) {
-      //       fetch(`http://localhost:8090/app/payment/fail/${orderId}`, {
-      //         method: "DELETE",
-      //       });
-      //       showAlertMessage("결제가 취소되었습니다.", "warning");
-      //     }
-
-      //     // 삭제
-      //     localStorage.removeItem("pendingPayment");
-      //   }
-      // }, 500);
 
       const timer = setInterval(() => {
         if (paymentWindow && paymentWindow.closed) {

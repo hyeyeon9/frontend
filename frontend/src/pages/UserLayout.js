@@ -11,7 +11,7 @@ export default function UserLayout() {
       <UserHeader />
       <main className="flex justify-center overflow-auto py-0 sm:py-6">
         <Outlet />
-        <ShopToAdmin />
+        {/* <ShopToAdmin /> */}
       </main>
       <UserFooter />
     </div>

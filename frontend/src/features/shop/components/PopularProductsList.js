@@ -73,15 +73,6 @@ export default function PopularProductsList({ onAddToCart }) {
 
   return (
     <section className="sm:mb-6">
-      {/* 장바구니 추가 알림 */}
-      {showCartAlert && addedProduct && (
-        <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-black text-white px-4 py-3 rounded-lg shadow-lg text-center">
-            <p className="text-sm font-medium">장바구니에 상품을 담았어요</p>
-          </div>
-        </div>
-      )}
-
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center ml-3 sm:ml-0">
           <TrendingUp className="h-4 w-4 text-blue-500 mr-1.5" />

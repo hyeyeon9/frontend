@@ -88,6 +88,7 @@ export async function fetchStats(month, year) {
 }
 
 export async function fetchDisposalRate(subNames, month, year) {
+  console.log("subNames",subNames);
   const response = await axiosInstance.get(
     `/disposal/rate?subNames=${subNames}&month=${month}&year=${year}`
   );
