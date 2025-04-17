@@ -1,12 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import {
-  ChevronLeft,
-  Minus,
-  Plus,
-  ChevronRight,
-  ShoppingCart,
-} from "lucide-react";
+import { ChevronLeft, Minus, Plus, ChevronRight } from "lucide-react";
 import { Badge, Button, Spinner } from "flowbite-react";
 import { fetchGoodsDetail } from "../../goods/api/HttpGoodsService";
 import categoryMapping from "../../../components/categoryMapping";
@@ -191,7 +185,7 @@ export default function ProductDetailPage({ onAddToCart }) {
       {showAddedAlert && (
         <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50">
           <div className="bg-black text-white px-4 py-3 rounded-lg shadow-lg text-center">
-            <p className="text-sm font-medium">장바구니에 상품을 담았어요</p>
+            <p className="text-xs font-medium">장바구니에 상품을 담았어요</p>
           </div>
         </div>
       )}

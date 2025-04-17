@@ -101,6 +101,14 @@ const DiffChart = memo(function DiffChart({
         areaOpacity={0}
         enableTouchCrosshair={true}
         useMesh={true}
+        tooltip={({ point }) => (
+          <div className="bg-white p-2 rounded shadow text-sm border border-gray-200">
+            <div>
+              <strong> {point.data.x}시</strong> :{" "}
+              <strong>{point.data.yFormatted}원</strong>
+            </div>
+          </div>
+        )}
         legends={[
           {
             anchor: "top-right",

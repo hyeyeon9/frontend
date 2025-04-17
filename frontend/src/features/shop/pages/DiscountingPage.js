@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Tag, ShoppingBag, Plus, ChevronLeft } from "lucide-react";
+import { Tag, Plus, ChevronLeft } from "lucide-react";
 import { Badge, Button, Spinner } from "flowbite-react";
 import { fetchGetDiscountedGoods } from "../api/HttpShopService";
 import { addItemToCart, getCartItemCount } from "../utils/CartUtils";
@@ -90,7 +90,7 @@ export default function DiscountingPage() {
       {showCartAlert && addedProduct && (
         <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50">
           <div className="bg-black text-white px-4 py-3 rounded-lg shadow-lg text-center">
-            <p className="text-sm font-medium">장바구니에 상품을 담았어요</p>
+            <p className="text-xs font-medium">장바구니에 상품을 담았어요</p>
           </div>
         </div>
       )}
