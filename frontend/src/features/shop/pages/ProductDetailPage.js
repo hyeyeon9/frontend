@@ -1,12 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import {
-  ChevronLeft,
-  Minus,
-  Plus,
-  ChevronRight,
-  ShoppingCart,
-} from "lucide-react";
+import { ChevronLeft, Minus, Plus, ChevronRight } from "lucide-react";
 import { Badge, Button, Spinner } from "flowbite-react";
 import { fetchGoodsDetail } from "../../goods/api/HttpGoodsService";
 import categoryMapping from "../../../components/categoryMapping";

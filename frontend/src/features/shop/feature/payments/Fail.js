@@ -11,7 +11,7 @@ export function FailPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 bg-gray-50">
+    <div className="flex flex-col items-center justify-center min-h-[70vh] p-6">
       <div className="max-w-md w-full bg-white shadow-lg rounded-xl overflow-hidden">
         <div className="bg-red-50 p-4 flex items-center justify-center">
           <div className="bg-white rounded-full p-3 shadow-sm">
