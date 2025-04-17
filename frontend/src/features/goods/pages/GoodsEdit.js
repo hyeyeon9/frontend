@@ -309,9 +309,12 @@ function GoodsEdit() {
                               }
                               className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                             >
+                              <option value="1">당일</option>
+                              <option value="2">2일</option>
+                              <option value="3">3일</option>
                               <option value="7">7일</option>
                               <option value="30">1달</option>
-                              <option value="1">테스트용 1분</option>
+                              {/* <option value="1">테스트용 1분</option> */}
                             </select>
                           </div>
                         )}
