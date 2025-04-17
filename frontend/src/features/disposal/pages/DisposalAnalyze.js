@@ -361,7 +361,7 @@ function DisposalAnalyze() {
                                     }`}
                                   >
                                     {change.increased ? "+" : ""}
-                                    {change.value}%
+                                    {change.value}%p
                                     <ArrowUpRight
                                       className={`h-3 w-3 ml-0.5 ${
                                         !change.increased && "rotate-180"
