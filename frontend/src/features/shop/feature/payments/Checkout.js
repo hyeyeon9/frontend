@@ -73,7 +73,7 @@ export function CheckoutPage() {
   }, [widgets, amount]);
 
   return (
-    <div className="flex flex-col items-center p-6 overflow-auto">
+    <div className="flex flex-col items-center overflow-auto">
       <div className="max-w-[540px] w-full bg-white shadow-md rounded-lg p-6">
         {/* 결제 UI */}
         <div id="payment-method" />
