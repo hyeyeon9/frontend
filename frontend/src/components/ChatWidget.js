@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";

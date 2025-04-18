@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useMemo, useState } from "react";
 import { useSortBy, useTable } from "react-table";
 import { fetchDisposalByDate } from "../api/HttpDisposalService";

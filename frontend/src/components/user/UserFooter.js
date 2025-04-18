@@ -8,8 +8,8 @@ export default function UserFooter() {
           <div className="mb-6 md:mb-0">
             <Footer.Brand
               href="/shop"
-              src="https://flowbite.com/docs/images/logo.svg"
-              alt="Flowbite Logo"
+              src="logo.svg"
+              alt="Daily24 Logo"
               name="Daily24"
             />
             <p className="text-sm text-gray-600 mt-2 md:max-w-xs">
@@ -17,7 +17,7 @@ export default function UserFooter() {
             </p>
           </div>
         </div>
-        <Footer.Copyright href="#" by="Daily24" year={2025} />
+        <Footer.Copyright href="" by="Daily24" year={2025} />
       </div>
     </Footer>
   );

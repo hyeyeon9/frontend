@@ -1,5 +1,3 @@
-"use client";
-
 import { Datepicker } from "flowbite-react";
 import { BarChart2, TrendingUp, Calendar, PieChart } from "lucide-react";
 import { useMemo, useState } from "react";

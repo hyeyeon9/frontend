@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import DisposalPieChart from "./DisposalPieChart";
 import { fetchDisposalRate, fetchStats } from "../api/HttpDisposalService";
@@ -161,7 +159,7 @@ function DisposalAnalyze() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         {/* 네비게이션 탭 */}
         <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
