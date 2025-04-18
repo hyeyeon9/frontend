@@ -18,7 +18,7 @@ export default function Headers() {
           {/* Centered logo */}
           <a href="/" className="flex items-center justify-center">
             <img
-              src="logo.svg"
+              src="https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images//logo.svg"
               className="mr-3 h-6 sm:h-9"
               alt="Daily24 Logo"
             />
@@ -38,7 +38,7 @@ export default function Headers() {
         <div className="hidden md:flex flex-wrap justify-between items-center mx-auto mr-24">
           <a href="/" className="flex items-center ml-12 lg:ml-0">
             <img
-              src="logo.svg"
+              src="https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images//logo.svg"
               className="mr-3 h-6 sm:h-9"
               alt="Daily24 Logo"
             />

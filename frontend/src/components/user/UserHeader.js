@@ -36,7 +36,11 @@ export default function UserHeader() {
       className="border-b sm:shadow-sm sticky sm:px-5 top-0 z-[1000] bg-white dark:bg-gray-800"
     >
       <Navbar.Brand as={Link} to="/shop">
-        <img src="logo.svg" className="mr-3 h-6 sm:h-9" alt="Daily24 Logo" />
+        <img
+          src="https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images//logo.svg"
+          className="mr-3 h-6 sm:h-9"
+          alt="Daily24 Logo"
+        />
         <span className="self-center text-xl font-semibold whitespace-nowrap">
           Daily24
         </span>

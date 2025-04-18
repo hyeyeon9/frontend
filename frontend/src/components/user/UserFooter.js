@@ -8,7 +8,7 @@ export default function UserFooter() {
           <div className="mb-6 md:mb-0">
             <Footer.Brand
               href="/shop"
-              src="logo.svg"
+              src="https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images//logo.svg"
               alt="Daily24 Logo"
               name="Daily24"
             />
