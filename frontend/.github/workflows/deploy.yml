@@ -1,0 +1,57 @@
+name: Reactjs todo CI/CD Pipeline workflow action
+
+on: push
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Clean npm cache and reinstall dependencies
+        run: |
+          npm install --save-dev @babel/plugin-proposal-private-property-in-object
+
+      - name: Build project
+        run: |
+          CI=false npm run build
+          ls ${{github.workspace}}
+
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact
+          path: ./build
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        #   # Download the artifact which was uploaded in the Build Archive's job
+        uses: actions/download-artifact@v4
+        with:
+          name: artifact
+          path: ./build
+
+      # # Deploy the artifact into AWS S3
+      - name: Deploy to s3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --delete
+        env:
+          AWS_S3_BUCKET: daily2js4bucket
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} # This is referred from Github Secrets
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # This is referred from Github Secrets
+          AWS_REGION: ap-northeast-1
+          SOURCE_DIR: ./build

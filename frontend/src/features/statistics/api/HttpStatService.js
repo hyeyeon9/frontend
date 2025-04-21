@@ -103,3 +103,5 @@ export async function fetchGetDetailHistroy(orderId) {
   const response = await axiosInstance.get(`/salesHistory/receipt/${orderId}`);
   return response.data;
 }
+
+

@@ -260,7 +260,7 @@ function InventoriesList() {
               />
             );
           }
-          return <span className="font-medium">{value}개</span>;
+          return <span className="font-medium w-20 ">{value}개</span>;
         },
       },
       {
@@ -280,7 +280,7 @@ function InventoriesList() {
               {updatingStock ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                  저장 중...
+                  저장
                 </>
               ) : (
                 <>
