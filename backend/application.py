@@ -10,10 +10,11 @@ import os
 dotenv.load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-app = FastAPI()
+application=FastAPI()
+app = application
 
 # ✅ CORS 설정 (프론트 연결 허용)
-app.add_middleware(
+application.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],           # 실제 배포 시에는 도메인 지정 권장
     allow_credentials=True,
@@ -32,7 +33,3 @@ async def chat_full(q: Question):
     answer = rag_full_chain.invoke(q.question)
     return {"answer": answer}
 
-# ❌ 이전 Ollama 기반 직접 호출 방식은 아래와 같이 주석 처리함
-# from langchain_ollama import ChatOllama
-# ollama_model = ChatOllama(model="yeon")
-# answer = ollama_model.invoke(q.question)

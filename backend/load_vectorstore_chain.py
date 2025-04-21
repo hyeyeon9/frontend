@@ -1,8 +1,5 @@
 from langchain_community.vectorstores.faiss import FAISS
-# Ollama 관련 임포트
-from langchain_ollama import OllamaEmbeddings, ChatOllama
-# OpenAI GPT 연동
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI 
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import load_prompt
 from langchain_core.runnables import RunnablePassthrough
@@ -11,8 +8,13 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-# 1) 저장된 벡터스토어 불러오기
-embeddings = OllamaEmbeddings(model="bge-m3")
+from langchain_openai import OpenAIEmbeddings
+
+# ✅ OpenAI 임베딩으로 교체
+embeddings = OpenAIEmbeddings(
+    model="text-embedding-3-small",  # 또는 "text-embedding-ada-002"
+    openai_api_key=os.getenv("OPENAI_API_KEY")
+)
 
 vectorstore = FAISS.load_local(
     "vectorstore/index", 
@@ -36,7 +38,7 @@ llm = ChatOpenAI(
 # llm = ChatOllama(model="yeon", temperature=0)
 
 # 4) 프롬프트 로드
-prompt = load_prompt("prompts/rag-exaone.yaml", encoding="utf-8")
+prompt = load_prompt("prompts/rag-exaone.yaml")
 
 # 5) RAG 체인 구성
 rag_full_chain = (
