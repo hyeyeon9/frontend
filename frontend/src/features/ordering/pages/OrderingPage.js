@@ -1,16 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   fetchLatest,
   fetchOrders,
   fetchWeekSales,
   requestOrder,
 } from "../api/HttpOrderingService";
-import { fetchInventoryList } from "../../inventory/api/HttpInventoryService";
-import {
-  fetchGoodsByCategory,
-  fetchGoodsBySubCategory,
-  fetchGoodsList,
-} from "../../goods/api/HttpGoodsService";
+import { useInventoryList } from "../hooks/useInventoryList";
+
 import {
   AlertCircle,
   Calendar,
@@ -29,53 +25,108 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useExpiringItems } from "../hooks/useExpiringItems";
+import useOrderingStore from "../stores/useOrderingStore";
+import { useOrderList } from "../hooks/useOrderList";
+import { useGoodsList } from "../hooks/useGoodsList";
+import { useFilteredInventory } from "../hooks/useFilteredInventory";
+import { useFilteredOrders } from "../hooks/useFilteredOrders";
 
 function OrderingPage() {
-  const [inventoryList, setInventoryList] = useState([]);
-  const [goodsList, setGoodsList] = useState([]);
-  const [filteredInventory, setFilteredInventory] = useState([]);
+  const inventoryList = useOrderingStore((state) => state.inventoryList);
 
-  const [selectedItems, setSelectedItems] = useState({}); // 객체 Object
-  const [latestOrderQuantities, setLatestOrderQuantities] = useState({}); // 최근 발주 수량 저장
+  const goodsList = useOrderingStore((state) => state.goodsList);
 
-  const [category, setCategory] = useState("");
-  const [subCategory, setSubCategory] = useState("");
+  const filteredInventory = useOrderingStore(
+    (state) => state.filteredInventory
+  );
 
-  const [sortOption, setSortOption] = useState("");
-  const [statusFilter, setStatusFilter] = useState(""); // 상품 상태 필터 (정상.재고부족)
-  const [searchQuery, setSearchQuery] = useState(""); // (상품 검색창)
+  const [selectedItems, setSelectedItems] = useState([]);
+  // const selectedItems = useOrderingStore((state) => state.selectedItems);
+  // const setSelectedItems = useOrderingStore((state) => state.setSelectedItems);
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [processingOrder, setProcessingOrder] = useState(false);
+  const setLatestOrderQuantities = useOrderingStore(
+    (state) => state.setLatestOrderQuantities
+  );
 
-  const [orders, setOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
-  const [orderSearchQuery, setOrderSearchQuery] = useState("");
-  const [orderStatusFilter, setOrderStatusFilter] = useState("");
-  const [orderSortOption, setOrderSortOption] = useState("");
+  const category = useOrderingStore((state) => state.category);
+  const setCategory = useOrderingStore((state) => state.setCategory);
+
+  const subCategory = useOrderingStore((state) => state.subCategory);
+  const setSubCategory = useOrderingStore((state) => state.setSubCategory);
+
+  const sortOption = useOrderingStore((state) => state.sortOption);
+  const setSortOption = useOrderingStore((state) => state.setSortOption);
+
+  const statusFilter = useOrderingStore((state) => state.statusFilter);
+  const setStatusFilter = useOrderingStore((state) => state.setStatusFilter);
+
+  const searchQuery = useOrderingStore((state) => state.searchQuery);
+  const setSearchQuery = useOrderingStore((state) => state.setSearchQuery);
+
+  const loading = useOrderingStore((state) => state.loading);
+
+  const error = useOrderingStore((state) => state.error);
+
+  const processingOrder = useOrderingStore((state) => state.processingOrder);
+  const setProcessingOrder = useOrderingStore(
+    (state) => state.setProcessingOrder
+  );
+
+  const orders = useOrderingStore((state) => state.orders);
+  const setOrders = useOrderingStore((state) => state.setOrders);
+
+  const setFilteredOrders = useOrderingStore(
+    (state) => state.setFilteredOrders
+  );
+
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // 새로운 상태 추가: 각 상품별 재고 및 추천 정보 저장
+
+  // const productRecommendations = useOrderingStore(
+  //   (state) => state.productRecommendations
+  // );
+  // const setProductRecommendations = useOrderingStore(
+  //   (state) => state.setProductRecommendations
+  // );
+
   const [productRecommendations, setProductRecommendations] = useState({});
 
-  // State to track if we've loaded items from localStorage
-  const [hasLoadedFromStorage, setHasLoadedFromStorage] = useState(false);
-  // State to show notification about items from expiring page
-  const [showExpiringNotification, setShowExpiringNotification] =
-    useState(false);
-  // Count of items loaded from expiring page
-  const [expiringItemsCount, setExpiringItemsCount] = useState(0);
+  const hasLoadedFromStorage = useOrderingStore(
+    (state) => state.hasLoadedFromStorage
+  );
+  const setHasLoadedFromStorage = useOrderingStore(
+    (state) => state.setHasLoadedFromStorage
+  );
 
-  const getTodayString = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
+  const showExpiringNotification = useOrderingStore(
+    (state) => state.showExpiringNotification
+  );
+  const setShowExpiringNotification = useOrderingStore(
+    (state) => state.setShowExpiringNotification
+  );
 
-  const [orderDateFilter, setOrderDateFilter] = useState(getTodayString());
+  const expiringItemsCount = useOrderingStore(
+    (state) => state.expiringItemsCount
+  );
+  const setExpiringItemsCount = useOrderingStore(
+    (state) => state.setExpiringItemsCount
+  );
+
+  // 재고 리스트 가져오기
+  useInventoryList();
+
+  // 발주 리스트 가져오기
+  useOrderList();
+
+  // 상품 리스트 가져오기
+  useGoodsList();
+
+  // 재고 필터링
+  useFilteredInventory();
+
+  // 발주 리스트 필터링
+  useFilteredOrders();
 
   // 상품별 추천 정보 가져오기 함수
   async function fetchProductRecommendation(goodsId) {
@@ -128,40 +179,6 @@ function OrderingPage() {
     fetchProductRecommendation,
   });
 
-  // 재고 리스트 가져오기
-  useEffect(() => {
-    async function getInventoryList() {
-      try {
-        setLoading(true);
-        const data = await fetchInventoryList();
-        setInventoryList(data);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    getInventoryList();
-  }, []);
-
-  // 발주 리스트 가져오기
-  useEffect(() => {
-    async function getOrdersList() {
-      try {
-        setLoading(true);
-        const data = await fetchOrders();
-        setOrders(data);
-        setFilteredOrders(data);
-        console.log("발주 리스트", data);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    getOrdersList();
-  }, []);
-
   // 발주 버튼을 누른경우
   async function handleConfirmAddStock() {
     setShowConfirmModal(false);
@@ -202,19 +219,6 @@ function OrderingPage() {
       setProcessingOrder(false);
     }
   }
-
-  // 상품 리스트 가져오기
-  useEffect(() => {
-    async function getGoodsList() {
-      try {
-        const data = await fetchGoodsList();
-        setGoodsList(data);
-      } catch (error) {
-        setError(error.message);
-      }
-    }
-    getGoodsList();
-  }, []);
 
   // 발주할 상품 선택 및 추천 정보 가져오기
   async function handleSelectItem(goodsId) {
@@ -324,166 +328,6 @@ function OrderingPage() {
     setCategory(e.target.value);
     setSubCategory(""); // 대분류 바뀌면 소분류 초기화
   }
-
-  async function getFilteredInventory(
-    inventoryList,
-    category,
-    subCategory,
-    statusFilter,
-    searchQuery,
-    sortOption
-  ) {
-    let goodsList = [];
-
-    // 1. 카테고리에 따라 서버에서 goods 불러오기
-    if (category && subCategory) {
-      goodsList = await fetchGoodsBySubCategory(category, subCategory);
-    } else if (category) {
-      goodsList = await fetchGoodsByCategory(category);
-    } else {
-      goodsList = await fetchGoodsList();
-    }
-
-    // 2. 재고 병합 및 상태 재계산
-    const mergedMap = new Map();
-
-    inventoryList.forEach((item) => {
-      const existing = mergedMap.get(item.goodsId);
-      if (existing) {
-        const newStock = existing.stockQuantity + item.stockQuantity;
-        mergedMap.set(item.goodsId, {
-          ...existing,
-          stockQuantity: newStock,
-          stockStatus: newStock >= 5 ? "정상" : "재고부족",
-        });
-      } else {
-        mergedMap.set(item.goodsId, {
-          ...item,
-          stockStatus: item.stockQuantity >= 5 ? "정상" : "재고부족",
-        });
-      }
-    });
-
-    let mergedList = Array.from(mergedMap.values());
-
-    // 3. inventory + goods 병합
-    mergedList = mergedList
-      .filter((item) => goodsList.some((g) => g.goods_id === item.goodsId))
-      .map((item) => {
-        const matched = goodsList.find((g) => g.goods_id === item.goodsId);
-        return {
-          ...item,
-          ...matched,
-        };
-      });
-
-    // 4. 상태 필터링
-    if (statusFilter) {
-      mergedList = mergedList.filter(
-        (item) => item.stockStatus === statusFilter
-      );
-    }
-
-    // 5. 검색 필터링
-    if (searchQuery.trim() !== "") {
-      mergedList = mergedList.filter((item) =>
-        item.goods_name?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // 6. 정렬
-    if (sortOption === "price_asc") {
-      mergedList.sort((a, b) => a.goods_price - b.goods_price);
-    } else if (sortOption === "price_desc") {
-      mergedList.sort((a, b) => b.goods_price - a.goods_price);
-    } else if (sortOption === "stock_asc") {
-      mergedList.sort((a, b) => a.stockQuantity - b.stockQuantity);
-    } else if (sortOption === "stock_desc") {
-      mergedList.sort((a, b) => b.stockQuantity - a.stockQuantity);
-    }
-
-    return mergedList;
-  }
-
-  useEffect(() => {
-    if (!inventoryList.length) return;
-
-    async function fetchAndFilter() {
-      try {
-        const result = await getFilteredInventory(
-          inventoryList,
-          category,
-          subCategory,
-          statusFilter,
-          searchQuery,
-          sortOption
-        );
-        setFilteredInventory(result);
-      } catch (error) {
-        setError(error.message);
-      }
-    }
-
-    fetchAndFilter();
-  }, [
-    inventoryList,
-    category,
-    subCategory,
-    statusFilter,
-    searchQuery,
-    sortOption,
-  ]);
-
-  // 발주 리스트 필터링
-  useEffect(() => {
-    let filtered = [...orders];
-
-    // 7. 날짜 필터링
-    if (orderDateFilter) {
-      filtered = filtered.filter((order) =>
-        order.scheduledTime.startsWith(orderDateFilter)
-      );
-    }
-
-    // 검색어 필터링
-    if (orderSearchQuery.trim() !== "") {
-      filtered = filtered.filter(
-        (order) =>
-          order.goodsName
-            ?.toLowerCase()
-            .includes(orderSearchQuery.toLowerCase()) ||
-          order.orderId?.toString().includes(orderSearchQuery)
-      );
-    }
-
-    // 상태 필터링
-    if (orderStatusFilter) {
-      filtered = filtered.filter((order) => order.status === orderStatusFilter);
-    }
-
-    // 정렬
-    if (orderSortOption === "date_desc") {
-      filtered.sort(
-        (a, b) => new Date(b.scheduledTime) - new Date(a.scheduledTime)
-      );
-    } else if (orderSortOption === "date_asc") {
-      filtered.sort(
-        (a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime)
-      );
-    } else if (orderSortOption === "quantity_desc") {
-      filtered.sort((a, b) => b.orderQuantity - a.orderQuantity);
-    } else if (orderSortOption === "quantity_asc") {
-      filtered.sort((a, b) => a.orderQuantity - b.orderQuantity);
-    }
-
-    setFilteredOrders(filtered);
-  }, [
-    orders,
-    orderSearchQuery,
-    orderStatusFilter,
-    orderSortOption,
-    orderDateFilter,
-  ]);
 
   // 선택된 상품 총 개수
   const selectedCount = Object.keys(selectedItems).length;
@@ -1348,14 +1192,6 @@ function OrderingPage() {
               ) : (
                 <div className="space-y-6">
                   {previousOrders.map(([dayName, dayOrders]) => {
-                    // 요일별 필터링 적용
-                    const filteredDayOrders =
-                      selectedDayFilter === "all"
-                        ? dayOrders
-                        : dayName === selectedDayFilter
-                        ? dayOrders
-                        : [];
-
                     if (
                       selectedDayFilter !== "all" &&
                       dayName !== selectedDayFilter
