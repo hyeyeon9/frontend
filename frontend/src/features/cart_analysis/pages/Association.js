@@ -275,7 +275,7 @@ function Association() {
                       {(minSupport * 100).toFixed(1)}%
                     </label>
                     <span className="text-xs text-gray-500">
-                      {(minSupport * 100).toFixed(1)}%
+                      {(0.08 * 100).toFixed(1)}%
                     </span>
                   </div>
                   <input
@@ -303,7 +303,7 @@ function Association() {
                       ≥ {(minConfidence * 100).toFixed(0)}%
                     </label>
                     <span className="text-xs text-gray-500">
-                      {(minConfidence * 100).toFixed(0)}%
+                      {(0.9 * 100).toFixed(0)}%
                     </span>
                   </div>
                   <input
@@ -330,7 +330,7 @@ function Association() {
                       ≥ {minLift.toFixed(1)}
                     </label>
                     <span className="text-xs text-gray-500">
-                      {minLift.toFixed(1)}
+                      {3.0.toFixed(1)}
                     </span>
                   </div>
                   <input

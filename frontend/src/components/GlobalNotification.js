@@ -323,7 +323,7 @@ export default function GlobalNotification() {
       {/* 알림 드롭다운 */}
       {showAlertDropdown && (
         <div
-          className={`absolute xl:-left-60 lg:-left-80 mt-2 ${getDropdownWidth()} bg-white border border-gray-200 rounded-lg shadow-lg z-[110] overflow-hidden
+          className={`absolute xl:-left-[260px] lg:-left-80 mt-2 ${getDropdownWidth()} bg-white border border-gray-200 rounded-lg shadow-lg z-[110] overflow-hidden
                      transition-all duration-300 ease-in-out ${
                        isAnimating
                          ? "opacity-100 transform translate-y-0"
