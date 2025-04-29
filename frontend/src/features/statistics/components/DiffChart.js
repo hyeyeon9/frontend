@@ -69,6 +69,7 @@ const DiffChart = memo(function DiffChart({
           reverse: false,
         }}
         yFormat=">-0,.0f"
+        curve="monotoneX"
         axisTop={null}
         axisRight={null}
         axisBottom={{

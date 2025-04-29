@@ -132,7 +132,6 @@ export default function CartPage() {
         "width=500,height=700,resizable=yes,scrollbars=yes"
       );
 
-
       const timer = setInterval(() => {
         if (paymentWindow && paymentWindow.closed) {
           clearInterval(timer);

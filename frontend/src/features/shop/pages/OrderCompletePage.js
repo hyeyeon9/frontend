@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle, Home, ShoppingBag, ArrowLeft } from "lucide-react";
+import { CheckCircle, Home, ArrowLeft } from "lucide-react";
 import { Button } from "flowbite-react";
 import confetti from "canvas-confetti";
 
@@ -51,7 +51,7 @@ export default function OrderCompletePage() {
   }, []);
 
   return (
-    <div className="max-w-[430px] mx-auto bg-gray-50 min-h-screen flex flex-col justify-center items-center px-4">
+    <div className="max-w-[430px] mx-auto min-h-screen flex flex-col justify-center items-center px-4">
       <div className="bg-white rounded-xl shadow-md p-8 w-full max-w-md text-center">
         <div className="mb-6 flex justify-center">
           <div

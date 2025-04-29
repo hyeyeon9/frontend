@@ -192,7 +192,7 @@ function GoodsDetail() {
                           </svg>
                           <span className="font-medium">할인 정보</span>
                         </div>
-                        <div className="mt-1 text-sm text-amber-600">
+                        <div className="mt-1 text-sm text-amber-600  whitespace-nowrap ">
                           <span className="font-semibold">
                             {goods.discountRate}% 할인
                           </span>

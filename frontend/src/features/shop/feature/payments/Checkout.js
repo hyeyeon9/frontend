@@ -3,8 +3,8 @@ import { Button } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
-const customerKey = "mC_buQ9sOszT7frxgs4D_";
+const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm"; // 테스트용 클라이언트 키
+const customerKey = "mC_buQ9sOszT7frxgs4D_"; // 테스트용 커스터머 키
 
 export function CheckoutPage() {
   const [searchParams] = useSearchParams(); // 쿼리 스트링 방식
@@ -73,7 +73,7 @@ export function CheckoutPage() {
   }, [widgets, amount]);
 
   return (
-    <div className="flex flex-col items-center p-6 overflow-auto">
+    <div className="flex flex-col items-center overflow-auto">
       <div className="max-w-[540px] w-full bg-white shadow-md rounded-lg p-6">
         {/* 결제 UI */}
         <div id="payment-method" />

@@ -37,9 +37,9 @@ export default function UserHeader() {
     >
       <Navbar.Brand as={Link} to="/shop">
         <img
-          src="https://flowbite.com/docs/images/logo.svg"
-          className="mx-3 h-6 sm:h-9"
-          alt="Flowbite Logo"
+          src="https://wvmmoqvaxudiftvldxts.supabase.co/storage/v1/object/public/kdt-final-images//logo.svg"
+          className="mr-3 h-6 sm:h-9"
+          alt="Daily24 Logo"
         />
         <span className="self-center text-xl font-semibold whitespace-nowrap">
           Daily24

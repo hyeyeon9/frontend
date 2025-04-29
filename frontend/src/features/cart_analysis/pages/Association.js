@@ -37,7 +37,7 @@ function getTimePeriod(time) {
   if (hour >= 11 && hour < 15) return "점심";
   if (hour >= 15 && hour < 18) return "한가한 오후";
   if (hour >= 18 && hour < 23) return "저녁";
-  if (hour >= 23 || hour < 5) return "저녁";
+  if (hour >= 23 || hour < 5) return "심야";
 }
 
 // 시간대별 아이콘 매핑

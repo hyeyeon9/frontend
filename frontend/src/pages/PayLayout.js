@@ -6,7 +6,7 @@ export default function PayLayout() {
   const navigate = useNavigate();
 
   return (
-    <main className="flex-1 p-4 overflow-auto">
+    <main className="overflow-auto">
       <Outlet />
     </main>
   );

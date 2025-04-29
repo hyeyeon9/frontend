@@ -260,7 +260,7 @@ function InventoriesList() {
               />
             );
           }
-          return <span className="font-medium">{value}개</span>;
+          return <span className="font-medium w-20 ">{value}개</span>;
         },
       },
       {
@@ -280,7 +280,7 @@ function InventoriesList() {
               {updatingStock ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                  저장 중...
+                  저장
                 </>
               ) : (
                 <>
@@ -735,23 +735,25 @@ function InventoriesList() {
                     {headerGroups.map((headerGroup) => (
                       <tr
                         {...headerGroup.getHeaderGroupProps()}
-                        className="bg-gray-50 border-b border-gray-200"
+                        className="bg-gray-50 border-b border-gray-200 "
                         key={headerGroup.id}
                       >
                         {/* 확장 버튼 열 추가 */}
-                        <th className="w-10 px-4 py-3"></th>
+                        <th className="w-10 px-6 py-3"></th>
 
                         {headerGroup.headers.map((column) => (
                           <th
                             {...column.getHeaderProps(
                               column.getSortByToggleProps()
                             )}
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                            className={`text-center ${
+                              column.id === "goodsName" ? "px-4" : "px-6"
+                            } py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors`}
                             key={column.id}
                           >
-                            <div className="flex items-center">
+                            <div className="flex items-center justify-center">
                               {column.render("Header")}
-                              <span className="ml-1">
+                              <span className="ml-1 ">
                                 {column.isSorted ? (
                                   column.isSortedDesc ? (
                                     <ChevronDown className="h-4 w-4" />
@@ -779,10 +781,10 @@ function InventoriesList() {
                           <tr
                             {...row.getRowProps()}
                             className="hover:bg-gray-50 transition-colors border-b border-gray-100"
-                            key={row.id}
+                            // key={row.id}
                           >
                             {/* 확장 버튼 */}
-                            <td className="px-4 py-4">
+                            <td className="px-6 py-4">
                               <button
                                 onClick={() =>
                                   toggleRowExpanded(row.original.goodsId)
@@ -800,7 +802,11 @@ function InventoriesList() {
                             {row.cells.map((cell) => (
                               <td
                                 {...cell.getCellProps()}
-                                className="px-6 py-4  whitespace-nowrap text-sm text-gray-700"
+                                className={`${
+                                  cell.column.id === "goodsName"
+                                    ? "px-4"
+                                    : "px-6"
+                                } py-4 text-center whitespace-nowrap text-sm text-gray-700`}
                                 key={cell.column.id}
                               >
                                 {cell.render("Cell")}
@@ -821,14 +827,14 @@ function InventoriesList() {
                                     {row.original.batches.length}개)
                                   </h4>
 
-                                  <div className="overflow-x-auto rounded-lg border border-gray-200">
+                                  <div className="overflow-x-auto rounded-lg border border-gray-200 text-center">
                                     <table className="min-w-full divide-y divide-gray-200">
                                       <thead className="bg-gray-100">
                                         <tr>
                                           {batchColumns.map((column) => (
                                             <th
                                               key={column.Header}
-                                              className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                              className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                                             >
                                               {column.Header}
                                             </th>

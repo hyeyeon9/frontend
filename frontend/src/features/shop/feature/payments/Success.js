@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import axiosInstance from "../../../../utils/axios";
 
 export function SuccessPage() {
   const navigate = useNavigate();
@@ -15,42 +16,37 @@ export function SuccessPage() {
     };
 
     async function confirm() {
-      const response = await fetch(
-        "http://localhost:8090/app/payment/confirm",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestData),
-        }
-      );
-
-      const json = await response.json();
-
-      if (!response.ok) {
-        // 결제 실패 비즈니스 로직을 구현하세요.
-        navigate(`payment/fail?message=${json.message}&code=${json.code}`);
-        return;
-      }
-
-      // ✅ 메인 창에 메시지 보내기
-      if (window.opener) {
-        // ✅ 성공 여부 저장
-        const prev = JSON.parse(
-          window.opener.localStorage.getItem("pendingPayment")
+      try {
+        const response = await axiosInstance.post(
+          "/payment/confirm",
+          requestData
         );
-        if (prev && prev.id === requestData.orderId) {
-          window.opener.localStorage.setItem(
-            "pendingPayment",
-            JSON.stringify({ ...prev, status: "success" })
-          );
-        }
 
-        window.opener.postMessage({ type: "PAYMENT_SUCCESS" }, "*");
-        window.close(); // 결제창 닫기
+        // 성공 처리
+        if (window.opener) {
+          const prev = JSON.parse(
+            window.opener.localStorage.getItem("pendingPayment")
+          );
+          if (prev && prev.id === requestData.orderId) {
+            window.opener.localStorage.setItem(
+              "pendingPayment",
+              JSON.stringify({ ...prev, status: "success" })
+            );
+          }
+
+          window.opener.postMessage({ type: "PAYMENT_SUCCESS" }, "*");
+          window.close();
+        }
+      } catch (error) {
+        const json = error.response?.data || {};
+        navigate(
+          `payment/fail?message=${json.message ?? "알 수 없는 오류"}&code=${
+            json.code ?? "UNKNOWN"
+          }`
+        );
       }
     }
+
     confirm();
   }, []);
 
