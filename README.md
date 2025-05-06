@@ -179,7 +179,7 @@ if (!isDuplicate || data.type === "결제") {
 오프라인 상태에서도 수신이 가능한 FCM 도입도 추후 고려하고 있습니다. 🧐
 
 ## 기타
-- 전체 프로젝트 구조 및 기술스택은 [팀 레포지토리 바로가기](https://github.com/KDT7team1/frontend)에서 확인하실수 있습니다.
+- 전체 프로젝트 구조 및 기술스택은 [팀 레포지토리 바로가기](https://github.com/KDT7team1/backend)에서 확인하실수 있습니다.
 ---
 
 ## 프로젝트 회고
