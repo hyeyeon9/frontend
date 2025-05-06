@@ -21,6 +21,9 @@
 고객들이 자주 함께 구매하는 상품 조합을 분석해 점주에게 진열 전략 및 마케팅에 활용할 수 있도록 도와주는
 연관 분석 시스템을 구현했습니다.
 
+<img width="873" alt="장바구니 분석 화면" src="https://github.com/user-attachments/assets/f8c136c7-1f61-47f1-b493-12564a8f4daa" />
+
+
 ### ✅ 주요 구현 기능
 - Apriori 기반 연관규칙 분석을 통해 support, confidence, lift 필터로 유의미한 조합만 시각화
 - Nivo Heatmap을 사용해 상품 A/B 조합을 직관적으로 보여주는 히트맵 구성
