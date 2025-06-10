@@ -8,14 +8,15 @@ function HeatmapChart({ data }) {
     if (!data || data.length === 0) {
       return { transformedData: null, itemCount: { a: 0, b: 0 } };
     }
-
+    //console.time('HeatmapChart 데이터 변환'); // 🔍 성능 측정 시작
+    
     // 1️⃣ 세로축(A), 가로축(B) 데이터 추출
     const itemA = [...new Set(data.map((d) => d.itemset_a))];
     const itemB = [...new Set(data.map((d) => d.itemset_b))];
 
     // 🚀 핵심 최적화: Map으로 O(1) 조회 가능하게 인덱싱
     const dataMap = new Map(
-      data.map((rule) => [`${rule.itemset_a}_${rule.itemset_b}`, rule])
+      data.map(rule => [`${rule.itemset_a}_${rule.itemset_b}`, rule])
     );
 
     // 2️⃣ 최적화된 데이터 변환 (O(n²) → O(n))
@@ -27,9 +28,12 @@ function HeatmapChart({ data }) {
       }),
     }));
 
-    return {
-      transformedData,
-      itemCount: { a: itemA.length, b: itemB.length },
+    //console.timeEnd('HeatmapChart 데이터 변환'); // 🔍 성능 측정 종료
+    //console.log(`변환된 데이터: ${itemA.length} × ${itemB.length} = ${itemA.length * itemB.length}개 셀`);
+    
+    return { 
+      transformedData, 
+      itemCount: { a: itemA.length, b: itemB.length } 
     };
   }, [data]); // data가 변경될 때만 다시 계산
 
@@ -42,10 +46,9 @@ function HeatmapChart({ data }) {
     <div className="w-full xl:w-[800px] lg:w-[580px] xl:h-[527px] md:h-[450px] mx-auto overflow-auto">
       {/* 🔍 성능 정보 표시 (개발용) */}
       <div className="text-xs text-gray-500 mb-2">
-        히트맵 크기: {itemCount.a} × {itemCount.b} ({itemCount.a * itemCount.b}
-        개 셀)
+        히트맵 크기: {itemCount.a} × {itemCount.b} ({itemCount.a * itemCount.b}개 셀)
       </div>
-
+      
       <ResponsiveHeatMap
         data={transformedData}
         margin={{
